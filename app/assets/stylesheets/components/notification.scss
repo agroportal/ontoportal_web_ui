@@ -55,6 +55,8 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 500;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .notification-text p:last-of-type {
@@ -62,6 +64,8 @@
   color: #6B7280;
   font-size: 0.875rem;
   line-height: 1.25rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .notification-close {
