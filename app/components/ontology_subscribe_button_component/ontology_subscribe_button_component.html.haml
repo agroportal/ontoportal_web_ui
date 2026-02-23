@@ -1,14 +1,34 @@
-%div{@controller_params, style: 'margin-left: 10px;', id: @id}
+%div{@controller_params, style: 'margin-left: 10px; display: inline-flex;', id: @id, class: 'dropdown ontology-subscribe-dropdown'}
   = render PillButtonComponent.new do
-    %a.d-flex.align-items-center{href: @link, 'data-turbo': data_turbo}
-      = inline_svg_tag "eye.svg"
-      %div
-        %span{'data-subscribe-notes-target': 'text'}
-          #{@sub_text}
-        (
-        %span{'data-subscribe-notes-target': 'count'}
-          #{@count}
-        )
-    %span{style:"display: none;", class: 'px-1', 'data-subscribe-notes-target': 'loader'}
-      = render LoaderComponent.new(small: true)
+    .d-flex.align-items-center
+      %a.d-flex.align-items-center{href: @link, 'data-turbo': data_turbo, data: { action: 'click->subscribe-notes#subscribeToNotes' }}
+        = inline_svg_tag "eye.svg"
+        %div
+          %span{'data-subscribe-notes-target': 'text'}
+            #{@sub_text}
+          (
+          %span{'data-subscribe-notes-target': 'count'}
+            #{@count}
+          )
+      %span{style:"display: none;", class: 'px-1', 'data-subscribe-notes-target': 'loader'}
+        = render LoaderComponent.new(small: true)
+      
+      %span{'data-subscribe-notes-target': 'chevronContainer'}
+        %i.fas.fa-chevron-down.ml-2{style: 'cursor: pointer;', data: {toggle: 'dropdown'}, 'aria-haspopup': 'true', 'aria-expanded': 'false'}
+        .dropdown-menu.dropdown-menu-right
+          %div{'data-subscribe-notes-target': 'optionsContainer'}
+            - if @subscribed
+              %a.dropdown-item.d-flex.align-items-center{href: "#", class: ('active-subscription' if @notification_type == 1), data: {action: "click->changeNotificationType@subscribe-notes", value: "1", 'subscribe-notes-target': 'typeOption'}} 
+                %i.fas.fa-check.mr-2{'data-subscribe-notes-target': 'tick', style: "visibility: #{@notification_type == 1 ? 'visible' : 'hidden'};"}
+                Notes only
+              %a.dropdown-item.d-flex.align-items-center{href: "#", class: ('active-subscription' if @notification_type == 2), data: {action: "click->changeNotificationType@subscribe-notes", value: "2", 'subscribe-notes-target': 'typeOption'}} 
+                %i.fas.fa-check.mr-2{'data-subscribe-notes-target': 'tick', style: "visibility: #{@notification_type == 2 ? 'visible' : 'hidden'};"}
+                Processing status Only
+              %a.dropdown-item.d-flex.align-items-center{href: "#", class: ('active-subscription' if @notification_type == 3), data: {action: "click->changeNotificationType@subscribe-notes", value: "3", 'subscribe-notes-target': 'typeOption'}} 
+                %i.fas.fa-check.mr-2{'data-subscribe-notes-target': 'tick', style: "visibility: #{@notification_type == 3 ? 'visible' : 'hidden'};"}
+                All
+              .dropdown-divider
+          %a.dropdown-item.d-flex.align-items-center{href: ontology_watchers_path(@controller_params[:data][:'subscribe-notes-ontology-id-value']), data: { controller: 'show-modal', turbo: true, turbo_frame: 'application_modal_content', action: 'click->show-modal#show', show_modal_title_value: "Watchers" }}
+            %i.fas.fa-users.mr-2
+            See all watchers
   %span.notes_sub_error{style:'color: red; display: none', 'data-subscribe-notes-target': 'error'}
