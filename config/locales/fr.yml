@@ -1769,6 +1769,7 @@ fr:
       note_feature_logged_in: 'Note : cette fonctionnalité ne fonctionne que lorsque
         vous êtes connecté.'
       notes: Notes
+      ontologies: Ontologies
       orcid_id: 'ORCID :'
       please: S'il vous plait
       projects_created: Projets créés
@@ -1777,6 +1778,10 @@ fr:
       submitted_semantic_resources: Ressources ontologies
       subscribe: S'abonner
       subscriptions: Abonnements
+      subscribed_to_ontologies: S'abonner aux nouvelles ontologies
+      subscribed_to_ontologies_tooltip: En activant cette option, vous recevrez une notification à chaque fois qu'une nouvelle ontologie est chargée sur %{portal_name}
+      subscribed_to_projects: S'abonner aux nouveaux projets
+      subscribed_to_projects_tooltip: En activant cette option, vous recevrez une notification à chaque fois qu'un nouveau projet est créé sur %{portal_name}
       unsubscribe: Se désabonner
       upload_semantic_resources: Télécharger des ontologies
       username: 'Nom d''utilisateur :'

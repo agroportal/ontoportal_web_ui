@@ -431,8 +431,8 @@ class OntologiesController < ApplicationController
       user_id = session[:user].id
     end
 
-    render inline: helpers.turbo_frame_tag('subscribe_button') {
-      render_to_string(OntologySubscribeButtonComponent.new(id: '', ontology_id: ontology_id, subscribed: subscribed, user_id: user_id, count: count, link: link, subscription_id: subscription_id, notification_type: notification_type), layout: nil)
+    render inline: helpers.turbo_frame_tag(params[:id] || 'subscribe_button') {
+      render_to_string(OntologySubscribeButtonComponent.new(id: params[:id] || '', ontology_id: ontology_id, subscribed: subscribed, user_id: user_id, count: count, link: link, subscription_id: subscription_id, notification_type: notification_type), layout: nil)
     }
   end
 
@@ -628,9 +628,9 @@ class OntologiesController < ApplicationController
   end
 
   def properties_hash_values(properties, sub: @submission_latest, custom_labels: {})
-    return {} if sub.nil?
+    return {} 
 
-    properties.map { |x| [x.to_s, [sub.send(x.to_s), custom_labels[x.to_sym]]] }.to_h
+    # properties.map { |x| [x.to_s, [sub.send(x.to_s), custom_labels[x.to_sym]]] }.to_h
   end
 
 

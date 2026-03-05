@@ -1,11 +1,14 @@
 %div.switch-filter
-  - if content || !@label.empty?
-    = content_tag(:div, content || @label, style: @style)
-  - if @boolean_switch
-    = hidden_field_tag @name, @value
-  %label.switch{for: check_box_id}
-    = check_box_tag  check_box_name, @value, @checked, class: '', id:  check_box_id, onChange: "#{boolean_switch_action}"
-    %span.slider
+  - if @label.present?
+    %div.switch-label= @label
+  %div.switch-group
+    - if content
+      %div.switch-content= content
+    - if @boolean_switch
+      = hidden_field_tag @name, @value
+    %label.switch{for: check_box_id}
+      = check_box_tag  check_box_name, @value, @checked, class: '', id:  check_box_id, onChange: "#{boolean_switch_action}"
+      %span.slider
 - if @help
   %div.upload-ontology-desc
     = @help

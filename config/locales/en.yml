@@ -1714,6 +1714,7 @@ en:
       not_subscribed: Not subscribed to any ontology
       note_feature_logged_in: 'Note: this feature works only when you are logged in.'
       notes: Notes
+      ontologies: Ontologies
       orcid_id: 'ORCID:'
       please: Please
       projects_created: Projects created
@@ -1722,6 +1723,10 @@ en:
       submitted_semantic_resources: Submitted ontologies
       subscribe: Subscribe
       subscriptions: Subscriptions
+      subscribed_to_ontologies: Subscribe to new ontologies
+      subscribed_to_ontologies_tooltip: By enabling this you'll receive a notification every time a new ontology is uploaded to %{portal_name}
+      subscribed_to_projects: Subscribe to new projects
+      subscribed_to_projects_tooltip: By enabling this you'll receive a notification every time a new project is created in %{portal_name}
       unsubscribe: Unsubscribe
       upload_semantic_resources: Upload Ontologies
       username: 'Username:'

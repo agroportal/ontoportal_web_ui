@@ -15,15 +15,15 @@
         %a{href: "/ontologies/#{viewOfAcronym}"}
           = viewOfAcronym
     = inline_svg_tag 'arrow-right-outlined.svg'
-    %div
+    %a{href: "/ontologies/#{@ontology.acronym}"}
       = @ontology.acronym
   .ontology-details-header-sub-container
     .ontology-details-header-left-container{style:'width: 70%'}
       .ontology-details-name-bar
         %div
           = @ontology.name
-          %span{data: { controller: 'tooltip'}, title: ontology_alternative_names}
-            = "("+ @ontology.acronym+")"
+          %span{data: { controller: 'tooltip'}, title: ontology_alternative_names, class: 'acronym-link'}
+            = "(" + link_to(@ontology.acronym, "/ontologies/#{@ontology.acronym}") + ")"
           - if @ontology.viewOf
             = render ChipButtonComponent.new(class: 'chip_button_small mr-1', text: 'view', type: 'clickable', clickable: false)
           - if @ontology.private?
