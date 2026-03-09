@@ -70,7 +70,7 @@ module SubmissionsHelper
   end
 
   def render_submission_attribute(attribute, submission = @submission, ontology = @ontology)
-    render partial: 'ontologies_metadata_curator/attribute_inline_editable', locals: { attribute: attribute, submission: submission, ontology: ontology }
+    render partial: 'ontologies_metadata_curator/attribute', locals: { attribute: attribute, submission: submission, ontology: ontology }
   end
 
   def attribute_input_frame_id(acronym, submission_id, attribute)
@@ -118,9 +118,16 @@ module SubmissionsHelper
     equivalent_properties(attr.to_s).any? { |x| @selected_attributes.include?(x) }
   end
 
-  def save_button
+  def save_button(attribute: nil)
+    options = { data: { controller: 'tooltip' }, title: 'Save', class: 'btn btn-sm btn-light mx-1' }
+    if @ontology && @submission && attribute
+      options[:formaction] = "/ontologies/#{@ontology.acronym}/submissions/#{@submission.submissionId}?attribute=#{attribute}"
+      options[:formmethod] = 'post'
+      options[:data][:turbo_frame] = attribute_input_frame_id(@ontology.acronym, @submission.submissionId, attribute)
+    end
+
     content_tag :div do
-      button_tag({ data: { controller: 'tooltip' }, title: 'Save', class: 'btn btn-sm btn-light mx-1' }) do
+      button_tag(options) do
         content_tag(:i, "", class: 'fas fa-check')
       end
     end
@@ -149,7 +156,7 @@ module SubmissionsHelper
         if inline_save?
           html += tag.div(class: 'd-flex') do
             html = ''
-            html += save_button
+            html += save_button(attribute: attr)
             html += cancel_button(cancel_link(attribute: attr))
             html.html_safe
           end
