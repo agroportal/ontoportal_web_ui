@@ -10,9 +10,19 @@ Flipper::UI.configure do |config|
     "appliance" => "danger",
     "development" => "info",
   }
-  
+
   config.banner_text = "#{env_display_map[env] || env.titleize} Environment"
   config.banner_class = env_class_map[env] || "secondary"
+
+  # Feature descriptions
+  config.descriptions_source = ->(keys) do
+    {
+      "SPARQL" => "Enables the SPARQL endpoint feature. Requires SPARQL_ENDPOINT_URL environment variable to be configured."
+    }
+  end
+
+  # Show feature descriptions on the list page as well as the view page
+  config.show_feature_description_in_list = true
 end
 
 FlipperSetup.configure!

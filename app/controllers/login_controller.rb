@@ -153,7 +153,7 @@ class LoginController < ApplicationController
       uri = URI.parse(redirect_url) rescue nil
       return redirect_url unless uri
       
-      params = URI.decode_www_form(uri.query || [])
+      params = URI.decode_www_form(uri.query || "")
       # Remove existing apikey if any, then add the user's apikey
       params.reject! { |k, v| k == "apikey" }
       params << ["apikey", user.apikey]

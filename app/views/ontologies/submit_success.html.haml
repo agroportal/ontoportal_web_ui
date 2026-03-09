@@ -1,22 +1,24 @@
-%div.p-4
-  %h2.pb-3= t("ontologies.ontology_submitted")
-  -if @ontology.summaryOnly
-    %p= t("ontologies.ontology_submitted", site: "#{$SITE}")
-    %p
-      = t("ontologies.users_can_see")
-      = link_to t("ontologies.your_ontology"), ontology_path(@ontology.acronym)
-      = t("ontologies.exploring_and_searching")
-  -else
-    -if @ontology.viewOf
-      %p= t("ontologies.submitting_ontology_view", site: "#{$SITE}")
-    -else
-      %p= t("ontologies.submitting_ontology", site: "#{$SITE}")
-    %p
-      = t("ontologies.processing_message", site: "#{$SITE}")
-    %p
-      = t("ontologies.notification_message")
-      = link_to ontology_url(@ontology.acronym), ontology_path(@ontology.acronym)
-    %p
-      = t("ontologies.contact_support_at", site: "#{$SITE}")
-      = mail_to "#{$SUPPORT_EMAIL}", "#{$SUPPORT_EMAIL}"
+%div.submit-success-page.d-flex.justify-content-center.align-items-center.py-5
+  .card.shadow-sm
+    .card-body.p-5
+      .text-center.mb-4
+        %h2.display-6.fw-bold= t("ontologies.ontology_submitted")
+      -if @ontology.summaryOnly
+        %p.text-center
+          = t("ontologies.users_can_see")
+          = link_to t("ontologies.your_ontology"), ontology_path(@ontology.acronym), class: "fw-semibold"
+          = t("ontologies.exploring_and_searching")
+      -else
+        -if @ontology.viewOf
+          %p.text-center.text-muted.mb-3= t("ontologies.submitting_ontology_view", site: "#{$SITE}")
+        -else
+          %p.text-center.text-muted.mb-3= t("ontologies.submitting_ontology", site: "#{$SITE}")
+        %p.text-center.mb-3
+          = t("ontologies.processing_message", site: "#{$SITE}")
+        %p.text-center.mb-3
+          = t("ontologies.notification_message")
+          = link_to ontology_url(@ontology.acronym), ontology_path(@ontology.acronym), class: "fw-semibold"
+        %p.text-center.text-muted
+          = t("ontologies.contact_support_at", site: "#{$SITE}")
+          = mail_to "#{$SUPPORT_EMAIL}", "#{$SUPPORT_EMAIL}"
 

@@ -526,7 +526,7 @@ module ApplicationHelper
     if link.include?(rest_url) || (fairness_url.present? && link.include?(fairness_url))
       uri = URI.parse(link) rescue nil
       return link unless uri
-      params = URI.decode_www_form(uri.query || [])
+      params = URI.decode_www_form(uri.query || "")
       params.reject! { |k, v| k == "apikey" }
       params << ["apikey", user.apikey]
       uri.query = URI.encode_www_form(params)
