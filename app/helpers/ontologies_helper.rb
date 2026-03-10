@@ -629,20 +629,21 @@ module OntologiesHelper
   def ontology_icon_links(links, submission_latest)
     links.map do |icon, attr, label|
       value = submission_latest.nil? ? nil : submission_latest.send(attr)
+      link = Array(value).first || ''
 
       link_options = {
         style: "text-decoration: none; width: 30px; height: 30px"
       }
 
-      if Array(value).empty?
+      if link.blank?
         link_options[:class] = 'disabled-icon'
         link_options[:disabled] = 'disabled'
         title = label
       else
-        title = label + '<br>' + link_to(Array(value).first, target: '_blank')
+        title = label + '<br>' + link_to(link, target: '_blank')
       end
 
-      url, target_attr = api_button_link_and_target(url || '')
+      url, target_attr = api_button_link_and_target(link || '')
 
       content_tag(:span, data: {controller: "tooltip" }, title: title) do
         link_to(inline_svg("#{icon}.svg", width: "32", height: '32'), url, link_options.merge(target: target_attr))
