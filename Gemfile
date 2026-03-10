@@ -100,7 +100,7 @@ gem 'iso-639', '~> 0.3.6'
 gem 'countries', '~> 5.7'
 
 # Custom API client
-gem 'ontologies_api_client', git: 'https://github.com/ontoportal-lirmm/ontologies_api_ruby_client.git', branch: 'development'
+gem 'ontologies_api_client', git: 'https://github.com/agroportal/ontologies_api_ruby_client.git', branch: 'development'
 # Ruby 2.7.8 pinned gems (to remove when migrating to Ruby >= 3.0)
 
 gem 'ffi', '~> 1.16.3'
