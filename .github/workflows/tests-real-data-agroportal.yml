@@ -4,14 +4,14 @@
 # documentation.
 # This workflow will download a prebuilt Ruby version, install dependencies and run tests with Rake
 # For more information see: https://github.com/marketplace/actions/setup-ruby-jruby-and-truffleruby
-name: "Run remote API (stageportal) tests CI"
+name: "Run remote API (agroportal) tests CI"
 
 on:
   push:
   pull_request:
     types: [ opened, reopened ]
 env:
-  API_URL: https://data.stageportal.lirmm.fr/ # or ${{ secrets.API_URL }}
+  API_URL: https://data.agroportal.eu/ # or ${{ secrets.API_URL }}
   API_KEY: 1de0a270-29c5-4dda-b043-7c3580628cd5 # public apikey or ${{ secrets.API_KEY }}
   BIOMIXER_URL: ${{ secrets.BIOMIXER_URL }}
   FAIRNESS_URL: ${{ secrets.FAIRNESS_URL }}
