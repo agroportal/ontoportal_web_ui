@@ -217,8 +217,8 @@ $HOME_PAGE_LOGOS = [
 $PORTALS_INSTANCES = [
   {
     name: 'AgroPortal',
-    api: 'https://data.agroportal.lirmm.fr',
-    ui: 'https://agroportal.lirmm.fr/',
+    api: 'https://data.agroportal.eu',
+    ui: 'https://agroportal.eu/',
     color: '#3CB371',
     apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
     'light-color': '#F1F6FA',
@@ -272,13 +272,6 @@ $PORTALS_INSTANCES = [
     apikey: "c9147279-954f-41bd-b068-da9b0c441288",
     color: '#404696',
     'light-color': '#F0F5F6'
-  },
-  {
-    name: 'TestPortal',
-    ui: 'https://testportal.lirmm.fr/',
-    api: 'https://data.testportal.lirmm.fr/',
-    color: '#74a9cb',
-    apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
   },
   {
     name: 'BiodivPortal',

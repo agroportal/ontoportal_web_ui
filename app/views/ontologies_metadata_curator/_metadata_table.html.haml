@@ -30,7 +30,9 @@
           %tr{id: id+'_row'}
             %th{scope:"row", style: 'width: 5%'}
               %div
-                %h6{style:'margin-top: 0.2rem'}=id
+                %h6{style:'margin-top: 0.2rem'}
+                  = link_to(acronym, "/ontologies/#{acronym}", target: "_blank")
+                  = "##{submission_id}"
             - @metadata_sel.each do |meta|
               %td{style: "width: #{95 / @metadata_sel.size}%; vertical-align: top; word-break: break-word;"}
                 = render partial: "ontologies_metadata_curator/attribute", locals: { attribute: meta, submission: submission , ontology: ontology}

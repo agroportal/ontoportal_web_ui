@@ -1,5 +1,5 @@
 GIT
-  remote: https://github.com/ontoportal-lirmm/ontologies_api_ruby_client.git
+  remote: https://github.com/agroportal/ontologies_api_ruby_client.git
   revision: 6257685e57442d7683288fa8216ff0e0d5900900
   branch: development
   specs:
@@ -182,7 +182,7 @@ GEM
       faraday (~> 2.0.0.alpha.pre.2)
     faraday-follow_redirects (0.3.0)
       faraday (>= 1, < 3)
-    faraday-multipart (1.1.1)
+    faraday-multipart (1.2.0)
       multipart-post (~> 2.0)
     faraday-net_http (2.1.0)
     ffi (1.16.3)

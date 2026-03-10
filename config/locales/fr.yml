@@ -1580,9 +1580,7 @@ fr:
     contact: Contact
     contact_email: Email de %{name}
     contact_name: Nom du %{name}
-    deprecated_help: Une ontologie avec le statut <strong>retired</strong> (retirée)
-      doit nécessairement être également <strong>deprecated</strong> (dépréciée),
-      mais pas l'inverse.
+    deprecated_help: Une ontologie avec le statut retired (retirée) doit nécessairement être également deprecated (dépréciée), mais pas l'inverse.
     edit_metadata_instruction: Modifiez les métadonnées de votre ontologie ici. Certaines
       de ces valeurs sont utilisées par les fonctionnalités de %{portal_name}, notamment
       pour l'évaluation de la FAIRness. %{link}

@@ -87,7 +87,7 @@ class SubmissionsController < ApplicationController
   # When editing a submission (called when submit "Edit submission information" form)
   def update
     @is_update_ontology = true
-    acronym = params[:ontology_id]
+    acronym = params[:ontology_id] || params[:acronym]
     submission_id = params[:id]
     if params[:ontology]
       @ontology, response = update_existent_ontology(acronym)

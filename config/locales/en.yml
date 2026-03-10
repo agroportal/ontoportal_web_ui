@@ -1530,8 +1530,7 @@ en:
     contact: Contact
     contact_email: "%{name} Email"
     contact_name: "%{name} Name"
-    deprecated_help: An ontology with status <strong>retired</strong> shall necessarily
-      be also <strong>deprecated</strong>, but not the opposite.
+    deprecated_help: An ontology with status retired shall necessarily be also deprecated, but not the opposite.
     edit_metadata_instruction: Edit the metadata of your ontology here. Some of these
       values are used by %{portal_name} functionalities, including for FAIRness assessment.
       %{link)
