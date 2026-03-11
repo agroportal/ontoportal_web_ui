@@ -125,7 +125,7 @@ class OntologiesMetadataCuratorController < ApplicationController
       end
     else
       # Get all submissions for the selected ontologies
-      submissions = LinkedData::Client::Models::OntologySubmission.all( acronym: @ontologies_ids.join('|'), display_links: false, display_context: false, include: display_attribute.join(','))
+      submissions = LinkedData::Client::Models::OntologySubmission.all(include_status: "any", acronym: @ontologies_ids.join('|'), display_links: false, display_context: false, include: display_attribute.join(','))
       submissions.reject! { |x| !@ontologies_ids.include?(x.id.split('/')[-3]) } unless @ontologies_ids.empty?
       # Filter and group submissions by ontology acronym
       submissions_by_ontology = submissions.group_by { |sub| sub.id.split('/')[-3] }     
