@@ -2,11 +2,16 @@ class Admin::NotificationsController < AdminController
   def index
     @page = params[:page].to_i > 0 ? params[:page].to_i : 1
     @per_page = 20
-    @show_all = params[:show_all].to_s == "true"
+
+    @show_all = if params.key?(:show_all)
+                  params[:show_all].to_s == "true"
+                else
+                  true
+                end
 
     begin
       url = "#{rest_url}/notifications"
-      response = LinkedData::Client::HTTP.get(url, { page: @page, pagesize: @per_page, apikey: get_apikey, show_all: @show_all})
+      response = LinkedData::Client::HTTP.get(url, { page: @page, pagesize: @per_page, apikey: get_apikey, show_all: @show_all })
 
       if response.is_a?(Array)
         @notifications = response.take(@per_page)
