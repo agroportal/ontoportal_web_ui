@@ -11,7 +11,7 @@
 
 %div
   %div.mx-1
-    - sections = [t('admin.index.analytics'), t('admin.index.site_administration'), t('admin.index.catalog_config'), t('admin.index.licensing'), t('admin.index.ontology_administration'), t('admin.index.metadata_administration'), t('admin.index.users'), t('admin.index.groups'), t('admin.index.categories'), t('admin.index.agents'), t('admin.index.search')]
+    - sections = [t('admin.index.analytics'), t('admin.index.site_administration'), t('admin.index.catalog_config'), t('admin.index.licensing'), t('admin.index.ontology_administration'), t('admin.index.metadata_administration'), t('admin.index.users'), t('admin.index.groups'), t('admin.index.categories'), t('admin.index.agents'), t('admin.index.notifications'), t('admin.index.search')]
     - sections << t('admin.index.sparql') if sparql_enabled?
     - selected = params[:section] || sections.first.downcase
     = render Layout::VerticalTabsComponent.new(header:  t('admin.index.administration_console'), titles: sections, selected: selected, url_parameter: 'section') do |t|
@@ -35,6 +35,8 @@
         = render TurboFrameComponent.new(id: 'categories-list', src: admin_categories_path, loading: 'lazy')
       - t.item_content do
         = render TurboFrameComponent.new(id: 'agents-list', src: admin_agents_path, loading: 'lazy')
+      - t.item_content do
+        = render TurboFrameComponent.new(id: 'notifications-list', src: admin_notifications_path, loading: 'lazy')
       - t.item_content do
         = render TurboFrameComponent.new(id: 'search-admin', src: '/admin/search', loading: 'lazy')
       - if sparql_enabled?

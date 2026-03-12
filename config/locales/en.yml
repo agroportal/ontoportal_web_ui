@@ -109,6 +109,7 @@ en:
       metadata_administration: Metadata Administration
       ontology_administration: Ontology Administration
       agents: Agents
+      notifications: Notifications
       renew_license: Renew license
       report_generated_on: 'Report generated on:'
       search: Search & Indexation
@@ -765,7 +766,9 @@ en:
       search_prompt: Search in %{portal_name} ...
       submit_feedback: Send Feedback
       support: Support
-      agents : Agents
+      agents: Agents
+      notifications: Notifications
+      search: Search
       sparql_editor: SPARQL Editor
       explore: Explore
     notices:
@@ -945,6 +948,17 @@ en:
       submitted_by: submitted by
   notifications:
     you_have_no_notifications: You have no notifications
+    notifications: Notifications
+    see_all: See All
+    description: "Stay updated with all notifications about activities, updates, and events within the portal."
+    title: Title
+    message: Message
+    date: Date
+    created_at: Created At
+    target: Target
+    seen_at: Seen At
+    show_all: Show All Notifications
+    show_mine_only: Show Mine Only
   ontolobridge:
     error_saving_new_term_instructions: Unable to save new term instructions for %{acronym}
       due to a server error

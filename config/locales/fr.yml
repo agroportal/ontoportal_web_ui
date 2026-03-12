@@ -115,6 +115,7 @@ fr:
       metadata_administration: Administration des métadonnées
       ontology_administration: Administration des ontologies
       agents: Agents
+      notifications: Notifications
       renew_license: Renouveler la licence
       report_generated_on: 'Rapport généré le :'
       search: Recherche et Indexation
@@ -975,6 +976,17 @@ fr:
       submitted_by: soumis par
   notifications:
     you_have_no_notifications: Vous n'avez aucune notification
+    notifications: Notifications
+    see_all: Voir tout
+    description: "Restez informé de toutes les notifications concernant les activités, les mises à jour et les événements au sein du portail."
+    title: Titre
+    message: Message
+    date: Date
+    created_at: Créé le
+    target: Cible
+    seen_at: Vu à
+    show_all: Afficher toutes les notifications
+    show_mine_only: Afficher les miennes uniquement
   ontolobridge:
     error_saving_new_term_instructions: Impossible d'enregistrer les nouvelles instructions
       de terme pour %{acronym} en raison d'une erreur serveur

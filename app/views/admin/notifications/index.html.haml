@@ -1,0 +1,82 @@
+= turbo_frame_tag 'notifications-list' do
+  .d-flex.flex-column.py-4
+    .d-flex.justify-content-between.align-items-center
+      = render PageHeaderComponent.new(title: t('admin.index.notifications'), description: t('notifications.description'))
+      .show-all-toggle
+        = switch_input(id: 'show-all-notifications-toggle', name: 'show_all', label: t('notifications.show_all'), checked: @show_all, value: 'true')
+    
+    = render_alerts_container(Admin::NotificationsController)
+    .notifications-table-container
+      = render TableComponent.new(id: 'admin-notifications-table', borderless: true, outline: true) do |t|
+        - t.header do |h|
+          - h.th { t('notifications.title') }
+          - h.th { t('notifications.message') }
+          - h.th { t('notifications.target') }
+          - h.th { t('notifications.created_at') }
+          - h.th { t('notifications.seen_at') }
+
+        - if @notifications.any?
+          - @notifications.each do |notification|
+            - t.row do |r|
+              - r.td do
+                = notification.title
+              - r.td do
+                = raw notification.body
+              - r.td do
+                = notification.respond_to?(:target) ? notification.target : "-"
+              - r.td do
+                = Time.parse(notification.created_at).localtime.strftime("%Y-%m-%d %H:%M:%S")
+              - r.td do
+                = notification.respond_to?(:seen_at) && notification.seen_at ? Time.parse(notification.seen_at).localtime.strftime("%Y-%m-%d %H:%M:%S") : "-"
+        %tr.empty-state
+          %td.text-center{:colspan => "5"}= t('notifications.you_have_no_notifications')
+
+    :css
+      turbo-frame#notifications-list[busy] .notifications-table-container {
+        display: none;
+      }
+
+    :javascript
+      $.fn.dataTable.ext.errMode = 'none';
+      if (!$.fn.DataTable.isDataTable('#admin-notifications-table')) {
+        $("#admin-notifications-table").dataTable();
+      }
+
+      $(document).off('change', '#show-all-notifications-toggle').on('change', '#show-all-notifications-toggle', function() {
+        const showAll = this.checked;
+        const frame = document.getElementById('notifications-list');
+        if (frame) {
+          const url = new URL(frame.src || window.location.href);
+          url.searchParams.set('show_all', showAll);
+          url.searchParams.delete('page');
+          url.searchParams.delete('turbo_frame');
+          url.searchParams.delete('_turbo_frame');
+
+          // Update the frame src to trigger a partial reload
+          frame.setAttribute('busy', 'true');
+          this.disabled = true;
+
+          const enableToggle = () => {
+            this.disabled = false;
+            frame.removeEventListener('turbo:frame-load', enableToggle);
+            frame.removeEventListener('turbo:frame-error', enableToggle);
+          };
+
+          const handleError = () => {
+            frame.removeAttribute('busy');
+            enableToggle();
+          };
+
+          frame.addEventListener('turbo:frame-load', enableToggle, { once: true });
+          frame.addEventListener('turbo:frame-error', handleError, { once: true });
+
+          frame.src = url.toString();
+
+          // Update browser history so refresh/back-button works as expected
+          const browserUrl = new URL(window.location.href);
+          browserUrl.searchParams.set('show_all', showAll);
+          browserUrl.searchParams.delete('page');
+          window.history.pushState({}, '', browserUrl.toString());
+        }
+      });
+

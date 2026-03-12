@@ -37,7 +37,7 @@
               .notifications-dropdown
                 .notifications-header Notifications
                 .notifications-list
-                  = turbo_frame_tag "notifications_list", src: notifications_path, loading: "lazy" do
+                  = turbo_frame_tag "notifications_list", src: notification_list_path, loading: "lazy" do
                     .notifications-skeleton
                       - 5.times do
                         .skeleton-item
@@ -46,6 +46,8 @@
                             .skeleton-line.title
                             .skeleton-line.message
                             .skeleton-line.time
+                .notifications-footer
+                  = link_to t('notifications.see_all'), notifications_path, class: "notifications-see-all-btn"
 
           = render DropdownButtonComponent.new do |d|
             - d.header do

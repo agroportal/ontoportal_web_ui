@@ -1,25 +1,36 @@
-= turbo_frame_tag "notifications_list" do
-  - if @notifications.any?
-    = render InfiniteScrollComponent.new(id: "notifications_list", collection: @notifications, next_url: notifications_path(page: @next_page), current_page: @current_page, next_page: @next_page) do |c|
-      - c.loader do
-        .notifications-skeleton
-          - 5.times do
-            .skeleton-item
-              .skeleton-icon
-              .skeleton-content
-                .skeleton-line.title
-                .skeleton-line.message
-                .skeleton-line.time
+.container.d-flex.flex-column.py-4{ style: "width: 1248px;" }
+  .d-flex.justify-content-between.align-items-center
+    = render PageHeaderComponent.new(title: t('notifications.notifications'), description: t('notifications.description'))
+  
+  = render_alerts_container(NotificationsController)
+  
+  - columns_names = ['title', 'message', 'target', 'created_at', 'seen_at']
+  = render TableComponent.new(id: 'notifications-table', borderless: true, outline: true, paging: true, searching: true, columns: columns_names) do |t|
+    - t.header do |h|
+      - h.th { t('notifications.title') }
+      - h.th { t('notifications.message') }
+      - h.th { t('notifications.target') }
+      - h.th { t('notifications.created_at') }
+      - h.th { t('notifications.seen_at') }
+    
+    - if @notifications.any?
       - @notifications.each do |notification|
-        .notification-item{class: ("unseen" if notification.respond_to?(:seen_at) && notification.seen_at.nil?)}
-          .notification-icon
-            %i.fas.fa-info-circle
-          .notification-content
-            .notification-title= notification.title
-            .notification-message= raw notification.body
-            .notification-time= time_ago_in_words(notification.created_at.is_a?(String) ? Time.parse(notification.created_at) : notification.created_at) 
-  - else
-    .notifications-empty-state
-      = image_tag "empty-box.svg", class: "empty-box-image"
-      %p 
-        = t('notifications.you_have_no_notifications')
+        - t.row do |r|
+          - r.td do
+            = notification.title
+          - r.td do
+            = raw notification.body
+          - r.td do
+            = notification.respond_to?(:target) ? notification.target : "-"
+          - r.td do
+            = Time.parse(notification.created_at).localtime.strftime("%Y-%m-%d %H:%M:%S")
+          - r.td do
+            = notification.respond_to?(:seen_at) && notification.seen_at ? Time.parse(notification.seen_at).localtime.strftime("%Y-%m-%d %H:%M:%S") : "-"
+    %tr.empty-state
+      %td.text-center{:colspan => "5"}= t('notifications.you_have_no_notifications')
+
+  :javascript
+    $.fn.dataTable.ext.errMode = 'none';
+    if (!$.fn.DataTable.isDataTable('#notifications-table')) {
+      $("#notifications-table").dataTable()
+    }
