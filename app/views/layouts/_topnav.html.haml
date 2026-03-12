@@ -47,7 +47,7 @@
                             .skeleton-line.message
                             .skeleton-line.time
                 .notifications-footer
-                  = link_to t('notifications.see_all'), notifications_path, class: "notifications-see-all-btn"
+                  = link_to t('notifications.see_all'), notifications_path, class: "notifications-see-all-btn", style: "display: block; width: 100%; text-align: center;"
 
           = render DropdownButtonComponent.new do |d|
             - d.header do
