@@ -70,11 +70,11 @@ module ApplicationHelper
     end
   end
 
-  def api_button_link_and_target(link)
-    if session[:user].nil?
+  def api_button_link_and_target(link, allow_annonymous = false)
+    if current_user.nil? && !allow_annonymous
       ["/login?redirect=#{escape(link)}", '_top']
     else
-      link = append_apikey_if_rest_url(link, session[:user])
+      link = append_apikey_if_rest_url(link, current_user)
       [link, '_blank']
     end
   end
@@ -519,8 +519,8 @@ module ApplicationHelper
 
   private
 
-  def append_apikey_if_rest_url(link, user)
-    return link if link.blank? || user.nil?
+  def append_apikey_if_rest_url(link, user = current_user)
+    return link if link.blank? 
     rest_url = LinkedData::Client.settings.rest_url
     fairness_url = $FAIRNESS_URL
     if link.include?(rest_url) || (fairness_url.present? && link.include?(fairness_url))
@@ -528,7 +528,7 @@ module ApplicationHelper
       return link unless uri
       params = URI.decode_www_form(uri.query || "")
       params.reject! { |k, v| k == "apikey" }
-      params << ["apikey", user.apikey]
+      params << ["apikey", get_apikey]
       uri.query = URI.encode_www_form(params)
       link = uri.to_s
     end

@@ -144,7 +144,7 @@ class LoginController < ApplicationController
   private
 
   def append_apikey_if_rest_url(redirect_url, user)
-    return redirect_url if redirect_url.blank? || user.nil?
+    return redirect_url if redirect_url.blank?
 
     rest_url = LinkedData::Client.settings.rest_url
     fairness_url = $FAIRNESS_URL

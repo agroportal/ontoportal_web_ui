@@ -176,21 +176,21 @@ module OntologiesHelper
       end
     else
       uri = submission.id + "/download"
-      href, target = api_button_link_and_target(uri)
+      href, target = api_button_link_and_target(uri, allow_annonymous = true)
       links << { href: href, label: submission.pretty_format, target: target }
       if submission_ready?(submission)
         uri = "#{ontology.id}/download?download_format=csv"
-        href, target = api_button_link_and_target(uri)
+        href, target = api_button_link_and_target(uri, allow_annonymous = true)
         links << { href: href, label: "CSV", target: target }
         unless submission.hasOntologyLanguage.eql?('UMLS')
           uri = "#{ontology.id}/download?download_format=rdf"
-          href, target = api_button_link_and_target(uri)
+          href, target = api_button_link_and_target(uri, allow_annonymous = true)
           links << { href: href, label: "RDF/XML", target: target }
         end
       end
       unless submission.diffFilePath.nil?
         uri = submission.id + "/download_diff"
-        href, target = api_button_link_and_target(uri)
+        href, target = api_button_link_and_target(uri, allow_annonymous = true)
         links << { href: href, label: "DIFF", target: target }
       end
     end
@@ -643,8 +643,7 @@ module OntologiesHelper
         title = label + '<br>' + link_to(link, target: '_blank')
       end
 
-      url, target_attr = api_button_link_and_target(link || '')
-
+      url, target_attr = api_button_link_and_target(link || '', allow_annonymous = true)
       content_tag(:span, data: {controller: "tooltip" }, title: title) do
         link_to(inline_svg("#{icon}.svg", width: "32", height: '32'), url, link_options.merge(target: target_attr))
       end
