@@ -166,6 +166,12 @@ $PORTALS_INSTANCES = [
     apikey: "47a57aa3-7b54-4f34-b695-dbb5f5b7363e",
     color: '#349696',
     'light-color': '#EBF5F5',
+  },
+  {
+    name: 'testportal-down',
+    ui: 'https://down.testportal.lirmm.fr/',
+    api: 'https://down.testportal.lirmm.fr/',
+    apikey: "47a57aa3-7b54-4f34-b695-dbb5f5b7363e",
   }
 ]
 

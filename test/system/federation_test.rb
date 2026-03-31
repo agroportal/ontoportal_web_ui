@@ -83,12 +83,12 @@ class FederationTest < ApplicationSystemTestCase
   end
 
   test 'federated_search_when_portal_down' do
-    visit "#{@search_path}?q=#{@query}&lang=all&portals%5B%5D=industryportal"
+    visit "#{@search_path}?q=#{@query}&lang=all&portals%5B%5D=testportal-down"
     assert_selector ".alert-warning-type", visible: true
   end
 
   test 'federated_browse_when_portal_down' do
-    visit "#{@ontologies_path}?sort_by=ontology_name&portals=industryportal"
+    visit "#{@ontologies_path}?sort_by=ontology_name&portals=testportal-down"
     loop do
       loading_element = find_all(".browse-sket").any?
 
