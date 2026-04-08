@@ -203,10 +203,8 @@ module SubmissionsHelper
   end
   
   def equivalent_ontology_property(attr)
-    equivalents = ontology_properties
-    found = equivalents.select { |x| x.is_a?(Array) ? x[1].eql?(attr.to_sym) : x.eql?(attr)}
-    
-    found.empty? ? nil : found.first.is_a?(Array) ? found.first[1] : found.first
+    found = ontology_properties.select { |x| x[1].eql?(attr.to_sym) }
+    found.empty? ? nil : found.first[1]
   end
 
   def equivalent_ontology_properties(attr_labels)
@@ -215,7 +213,16 @@ module SubmissionsHelper
   end
 
   def ontology_properties
-    ['acronym', 'name', [t('submission_inputs.visibility'), :viewingRestriction], 'viewOf', ['Groups', :group], ['Categories', :hasDomain], [t('submission_inputs.administrators'), :administeredBy], ['Sample Queries', :sampleQueries]]
+    [
+      [t('submission_inputs.acronym'), :acronym],
+      [t('submission_inputs.name'), :name],
+      [t('submission_inputs.visibility'), :viewingRestriction],
+      [t('submission_inputs.view_of'), :viewOf],
+      [t('submission_inputs.groups'), :group],
+      [t('submission_inputs.categories'), :hasDomain],
+      [t('submission_inputs.administrators'), :administeredBy],
+      [t('submission_inputs.sample_queries'), :sampleQueries]
+    ]
   end
 
   def submission_editable_properties
@@ -227,9 +234,7 @@ module SubmissionsHelper
       end
     end
 
-    properties += ontology_properties.map do |x|
-      x.is_a?(Array) ? x : [x.to_s.underscore.humanize, x]
-    end
+    properties += ontology_properties
 
     properties
   end

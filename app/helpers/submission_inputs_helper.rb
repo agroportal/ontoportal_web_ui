@@ -150,7 +150,7 @@ module SubmissionInputsHelper
 
   def ontology_submission_subjects_input
     attr_key = "hasDomain"
-    label = "Subjects"
+    label = t('submission_inputs.subjects', default: "Subjects")
     attr = SubmissionMetadataInput.new(attribute_key: attr_key, submission: @submission, label: label, attr_metadata: attr_metadata(attr_key))
     ontologies = get_theme_taxonomy_ontologies || []
     resolved_subjects = []
