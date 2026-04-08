@@ -405,7 +405,7 @@ fr:
     preferred_name: Nom préféré
     type: Type
   components:
-    add_another_object: "Ajouter un(e) autre %{object_name}"
+    add_another_object: "Ajouter un autre %{object_name}"
     contact: "contact"
     portal: "portail"
     all_languages: Toutes les langues
