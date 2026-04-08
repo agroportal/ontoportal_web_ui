@@ -1596,6 +1596,8 @@ en:
     subjects: Subjects
     theme_taxonomy_not_set: Please set the themeTaxonomy field in the admin page to use it for subjects search
     subjects_notice: "The 'Subjects' must be selected from the following set of ontologies: %{ontologies}. If you wish to add another keyword or controlled term, use the 'Keywords' property."
+    attributes:
+      description: Description
   submissions:
     actions: Actions
     delete_submission_alert:

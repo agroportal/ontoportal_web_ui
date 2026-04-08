@@ -1643,7 +1643,9 @@ fr:
     sample_queries: Requêtes d'exemple
     subjects: Sujets
     theme_taxonomy_not_set: Veuillez définir le champ themeTaxonomy dans la page d'administration pour l'utiliser pour la recherche des sujets
-    subjects_notice: "Les 'Sujets' doivent être sélectionnés dans l'ensemble d'ontologies suivant: %{ontologies}. Si vous souhaitez ajouter un autre mot-clé ou terme de vocabulaire, utilisez la propriété 'Mots-clés'."
+    subjects_notice: "Les 'Subjets' doivent être sélectionnés dans l'ensemble d'ontologies suivant: %{ontologies}. Si vous souhaitez ajouter un autre mot-clé ou terme de vocabulaire, utilisez la propriété 'Mots-clés'."
+    attributes:
+      description: Description
   submissions:
     actions: Actions
     delete_submission_alert:
