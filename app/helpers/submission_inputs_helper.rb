@@ -108,11 +108,11 @@ module SubmissionInputsHelper
 
   end
 
-  def ontology_name_input(ontology = @ontology, label: 'Name')
+  def ontology_name_input(ontology = @ontology, label: t('submission_inputs.name', default: "Name"))
     text_input(name: 'ontology[name]', value: ontology.name, label: label_required(label))
   end
 
-  def ontology_acronym_input(ontology = @ontology, update: @is_update_ontology, label: 'Acronym')
+  def ontology_acronym_input(ontology = @ontology, update: @is_update_ontology, label: t('submission_inputs.acronym', default: "Acronym"))
     out = text_input(name: 'ontology[acronym]', value: ontology.acronym, disabled: update, label: label_required(label))
     out += hidden_field_tag('ontology[acronym]', ontology.acronym) if update
     out
@@ -131,7 +131,7 @@ module SubmissionInputsHelper
     categories_children = categories_with_children(categories)
     categories_parents = categories_with_parents(categories_children)
 
-    render Input::InputFieldComponent.new(name: '', label: 'Categories') do
+    render Input::InputFieldComponent.new(name: '', label: t('submission_inputs.categories', default: "Categories")) do
       content_tag(:div, class: 'upload-ontology-chips-container', 'data-controller': 'parent-categories-selector',
       'data-parent-categories-selector-categories-children-value': "#{categories_children.to_json}",
       'data-parent-categories-selector-categories-parents-value': "#{categories_parents.to_json}",
@@ -206,7 +206,7 @@ module SubmissionInputsHelper
   def has_ontology_language_input(submission = @submission)
     render(Layout::RevealComponent.new(possible_values: %w[SKOS OBO UMLS OWL], selected: submission.hasOntologyLanguage)) do |c|
       c.button do
-        attribute_input("hasOntologyLanguage")
+        attribute_input("hasOntologyLanguage", label: t('ontologies.attributes.hasOntologyLanguage', default: 'Representation language'))
       end
 
       c.container { ontology_skos_language_help }

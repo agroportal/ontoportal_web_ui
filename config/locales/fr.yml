@@ -405,6 +405,9 @@ fr:
     preferred_name: Nom préféré
     type: Type
   components:
+    add_another_object: "Ajouter un(e) autre %{object_name}"
+    contact: "contact"
+    portal: "portail"
     all_languages: Toutes les langues
     back: Retour
     by: par
@@ -981,6 +984,12 @@ fr:
     problem_of_creating_new_term: 'Problème de création d''un nouveau terme %{endpoint}
       : %{class} - %{message}'
   ontologies:
+    attributes:
+      description: 'Description'
+      status: 'Statut'
+      valid: 'Date de validité'
+      hasOntologyLanguage: 'Langage de représentation'
+
     access_rights_information: Informations supplémentaires sur la licence et les
       droits d'accès
     admin:
@@ -1574,6 +1583,9 @@ fr:
     title: Statistiques de %{portal}
     users: Utilisateurs
   submission_inputs:
+    name: Nom
+    acronym: Acronyme
+    categories: 'Catégories'
     accounts_allowed: Ajouter ou supprimer des comptes autorisés à voir cette ontologie
       dans %{portal_name}.
     administrators: Administrateurs

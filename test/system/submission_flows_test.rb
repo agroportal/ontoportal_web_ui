@@ -611,7 +611,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
   def fill_ontology(new_ontology, new_submission, add_submission: false)
     within 'form#ontologyForm' do
       # Page 1
-      fill_in 'ontology[name]', with: new_ontology.name
+        fill_in 'ontology[name]', with: new_ontology.name
       fill_in 'ontology[acronym]', with: new_ontology.acronym unless add_submission
 
       tom_select 'ontology[viewingRestriction]', new_ontology.viewingRestriction

@@ -395,6 +395,9 @@ en:
     preferred_name: Preferred name
     type: Type
   components:
+    add_another_object: "Add another %{object_name}"
+    contact: "contact"
+    portal: "portal"
     all_languages: All languages
     back: Back
     by: by
@@ -950,6 +953,12 @@ en:
     problem_of_creating_new_term: 'Problem creating a new term %{endpoint}: %{class}
       - %{message}'
   ontologies:
+    attributes:
+      description: 'Description'
+      status: 'Status'
+      valid: 'Valid date'
+      hasOntologyLanguage: 'Representation language'
+
     access_rights_information: Additional license and access rights information
     admin:
       title: "Administration"
@@ -1524,6 +1533,9 @@ en:
     title: "%{portal} Statistics"
     users: Users
   submission_inputs:
+    name: Name
+    acronym: Acronym
+    categories: Categories
     accounts_allowed: Add or remove accounts that are allowed to see this ontology
       in %{portal_name}.
     administrators: Administrators
