@@ -8,7 +8,6 @@ export default class extends ReadMore {
         super.connect()
 
         this.resizeObserver = new ResizeObserver(() => {
-            // Si la section est visible ET que le bouton n'est pas "déjà ouvert"
             if (this.contentTarget.clientHeight > 0 && !this.open) {
                 if (!this.#isTextClamped()) {
                     this.#hideButton()
