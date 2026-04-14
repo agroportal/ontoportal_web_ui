@@ -383,4 +383,22 @@ module SubmissionsHelper
       output.html_safe
     end
   end
+
+  # Returns the display label for a property key as shown in the dropdown
+  def property_label(key)
+    # Look in ontology_properties first
+    ontology_properties.each do |item|
+      if item.is_a?(Array) && item[1].to_s == key.to_s
+        return item[0]
+      elsif item.to_s == key.to_s
+        return item.to_s.humanize
+      end
+    end
+    # Look in submission_editable_properties
+    submission_editable_properties.each do |label, value|
+      return label if value.to_s == key.to_s
+    end
+    # Fallback to humanize
+    key.to_s.humanize
+  end
 end
