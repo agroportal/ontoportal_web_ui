@@ -984,11 +984,6 @@ fr:
     problem_of_creating_new_term: 'Problème de création d''un nouveau terme %{endpoint}
       : %{class} - %{message}'
   ontologies:
-    attributes:
-      description: 'Description'
-      status: 'Statut'
-      valid: 'Date de validité'
-      hasOntologyLanguage: 'Langage de représentation'
 
     access_rights_information: Informations supplémentaires sur la licence et les
       droits d'accès
@@ -1641,6 +1636,10 @@ fr:
     visibility: Visibilité
     view_of: Vue de
     sample_queries: Requêtes d'exemple
+    description: 'Description'
+    status: 'Statut'
+    valid: 'Date de validité'
+    hasOntologyLanguage: 'Langage de représentation'
     subjects: Sujets
     theme_taxonomy_not_set: Veuillez définir le champ themeTaxonomy dans la page d'administration pour l'utiliser pour la recherche des sujets
     subjects_notice: "Les 'Subjets' doivent être sélectionnés dans l'ensemble d'ontologies suivant: %{ontologies}. Si vous souhaitez ajouter un autre mot-clé ou terme de vocabulaire, utilisez la propriété 'Mots-clés'."

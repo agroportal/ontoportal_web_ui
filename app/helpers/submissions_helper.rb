@@ -203,8 +203,10 @@ module SubmissionsHelper
   end
   
   def equivalent_ontology_property(attr)
-    found = ontology_properties.select { |x| x[1].eql?(attr.to_sym) }
-    found.empty? ? nil : found.first[1]
+    equivalents = ontology_properties
+    found = equivalents.select { |x| x.is_a?(Array) ? x[1].eql?(attr.to_sym) : x.eql?(attr)}
+    
+    found.empty? ? nil : found.first.is_a?(Array) ? found.first[1] : found.first
   end
 
   def equivalent_ontology_properties(attr_labels)
