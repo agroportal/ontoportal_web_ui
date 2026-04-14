@@ -198,6 +198,8 @@ module SubmissionsHelper
     out = submission_metadata.map { |x| x['attribute'] }.reject { |x| equivalents.include?(x) }
     out << [:format, format_equivalent]
     out << [:location, location_equivalent]
+    # Add mapping for subjects to hasDomain for submission scope
+    out << [:subjects, :hasDomain]
 
     out
   end
@@ -221,7 +223,12 @@ module SubmissionsHelper
   def submission_editable_properties
     properties = submission_properties.map do |x|
       if x.is_a? Array
-        [attr_label(x[0], show_tooltip: false), x[0]]
+        # Special case for subjects
+        if x[0] == :subjects
+          ['Subjects', :subjects]
+        else
+          [attr_label(x[0], show_tooltip: false), x[0]]
+        end
       else
         [attr_label(x, show_tooltip: false), x]
       end
