@@ -236,7 +236,9 @@ module SubmissionsHelper
       end
     end
 
-    properties += ontology_properties
+    properties += ontology_properties.map do |x|
+      x.is_a?(Array) ? x : [x.to_s.underscore.humanize, x]
+    end
 
     properties
   end
