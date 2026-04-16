@@ -44,6 +44,8 @@ class UsersController < ApplicationController
 
     projects = LinkedData::Client::Models::Project.all;
     @user_projects = projects.select {|p| p.creator.include? @user.id }
+
+    @user_subscriptions = LinkedData::Client::HTTP.get("/users/#{@user.username}/subscriptions", { apikey: get_apikey }) || []
   end
 
   # GET /users/new
@@ -209,7 +211,7 @@ class UsersController < ApplicationController
     params[:user]["orcidId"] = extract_id_from_url(params[:user]["orcidId"], 'orcid.org')
     params[:user]["githubId"] = extract_id_from_url(params[:user]["githubId"], 'github.com')
     p = params.require(:user).permit(:firstName, :lastName, :username, :orcidId, :githubId, :email, :email_confirmation, :password,
-                                     :password_confirmation, :register_mail_list, :admin, :terms_and_conditions)
+                                     :password_confirmation, :register_mail_list, :admin, :terms_and_conditions, :subscribed_to_ontologies, :subscribed_to_projects)
     p.to_h
   end
 
@@ -286,7 +288,7 @@ class UsersController < ApplicationController
       errors << t('users.last_name_required')
     end
     if params[:username].nil? || params[:username].length < 1
-      errors << t('users.last_name_required')
+      errors << t('users.validate_username')
     end
     if params[:orcidId].present? && ((!params[:orcidId].match(/^\d{4}-\d{4}-\d{4}-\d{4}$/)) || (params[:orcidId].length != 19))
       errors << t('users.validate_orcid')

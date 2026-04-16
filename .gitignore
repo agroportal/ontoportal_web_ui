@@ -55,3 +55,4 @@ docker-sync.yml
 /config/credentials/test.key
 /config/credentials/staging.key
 /config/credentials/appliance.key
+db/schema.rb

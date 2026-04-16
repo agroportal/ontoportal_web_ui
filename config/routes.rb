@@ -84,6 +84,7 @@ Rails.application.routes.draw do
     get 'metrics'
     get 'metrics_evolution'
     get 'subscriptions'
+    get 'watchers'
   end
 
 
@@ -98,6 +99,7 @@ Rails.application.routes.draw do
     resources :groups, only: [:index, :create, :new, :edit, :update, :destroy]
     resources :categories, only: [:index, :create, :new, :edit, :update, :destroy]
     resources :agents, only: [:index]
+    resources :notifications, only: [:index]
     resource :catalog_configuration, only: [:show, :update], controller: 'catalog_configuration'
     get 'catalog_configuration/edit_nested_form/:key', to: 'catalog_configuration#edit_nested_form', as: 'edit_nested_form_catalog_configuration'
     scope :search do
@@ -246,6 +248,10 @@ Rails.application.routes.draw do
 
   get 'check_resolvability' => 'check_resolvability#index'
   get 'check_url_resolvability' => 'check_resolvability#check_resolvability'
+
+  get '/notification-list', to: 'notifications#list', as: :notification_list
+  get '/notifications', to: 'notifications#index', as: :notifications
+  get '/notifications/status', to: 'notifications#status', as: :status_notifications
 
   # Install the default route as the lowest priority.
   get '/:controller(/:action(/:id))'

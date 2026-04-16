@@ -2,12 +2,23 @@
 .switch-filter{
   display:flex;
   align-items: center;
-  
+  justify-content: space-between;
 }
-.switch-filter > p, .switch-filter > div{
+.switch-filter > p, .switch-label{
   font-size: 16px;
   color: #666666;
   margin-bottom: 0;
+  margin-right: 10px;
+}
+
+.switch-group {
+  display: flex;
+  align-items: center;
+}
+
+.switch-content {
+  display: flex;
+  align-items: center;
   margin-right: 10px;
 }
 

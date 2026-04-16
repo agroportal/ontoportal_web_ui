@@ -1,0 +1,36 @@
+.container.d-flex.flex-column.py-4{ style: "width: 1248px;" }
+  .d-flex.justify-content-between.align-items-center
+    = render PageHeaderComponent.new(title: t('notifications.notifications'), description: t('notifications.description'))
+  
+  = render_alerts_container(NotificationsController)
+  
+  - columns_names = ['title', 'message', 'target', 'created_at', 'seen_at']
+  = render TableComponent.new(id: 'notifications-table', borderless: true, outline: true, paging: true, searching: true, columns: columns_names) do |t|
+    - t.header do |h|
+      - h.th { t('notifications.title') }
+      - h.th { t('notifications.message') }
+      - h.th { t('notifications.target') }
+      - h.th { t('notifications.created_at') }
+      - h.th { t('notifications.seen_at') }
+    
+    - if @notifications.any?
+      - @notifications.each do |notification|
+        - t.row do |r|
+          - r.td do
+            = notification.title
+          - r.td do
+            = raw notification.body
+          - r.td do
+            = notification.respond_to?(:target) ? notification.target : "-"
+          - r.td do
+            = Time.parse(notification.created_at).localtime.strftime("%Y-%m-%d %H:%M:%S")
+          - r.td do
+            = notification.respond_to?(:seen_at) && notification.seen_at ? Time.parse(notification.seen_at).localtime.strftime("%Y-%m-%d %H:%M:%S") : "-"
+    %tr.empty-state
+      %td.text-center{:colspan => "5"}= t('notifications.you_have_no_notifications')
+
+  :javascript
+    $.fn.dataTable.ext.errMode = 'none';
+    if (!$.fn.DataTable.isDataTable('#notifications-table')) {
+      $("#notifications-table").dataTable()
+    }

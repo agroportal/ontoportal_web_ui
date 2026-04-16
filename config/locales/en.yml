@@ -109,6 +109,7 @@ en:
       metadata_administration: Metadata Administration
       ontology_administration: Ontology Administration
       agents: Agents
+      notifications: Notifications
       renew_license: Renew license
       report_generated_on: 'Report generated on:'
       search: Search & Indexation
@@ -770,7 +771,9 @@ en:
       search_prompt: Search in %{portal_name} ...
       submit_feedback: Send Feedback
       support: Support
-      agents : Agents
+      agents: Agents
+      notifications: Notifications
+      search: Search
       sparql_editor: SPARQL Editor
       explore: Explore
     notices:
@@ -948,6 +951,19 @@ en:
       save: save
     thread:
       submitted_by: submitted by
+  notifications:
+    you_have_no_notifications: You have no notifications
+    notifications: Notifications
+    see_all: See All
+    description: "Stay updated with all notifications about activities, updates, and events within the portal."
+    title: Title
+    message: Message
+    date: Date
+    created_at: Created At
+    target: Target
+    seen_at: Seen At
+    show_all: Show All Notifications
+    show_mine_only: Show Mine Only
   ontolobridge:
     error_saving_new_term_instructions: Unable to save new term instructions for %{acronym}
       due to a server error
@@ -1727,6 +1743,7 @@ en:
       not_subscribed: Not subscribed to any ontology
       note_feature_logged_in: 'Note: this feature works only when you are logged in.'
       notes: Notes
+      ontologies: Ontologies
       orcid_id: 'ORCID:'
       please: Please
       projects_created: Projects created
@@ -1735,6 +1752,10 @@ en:
       submitted_semantic_resources: Submitted ontologies
       subscribe: Subscribe
       subscriptions: Subscriptions
+      subscribed_to_ontologies: Subscribe to new ontologies
+      subscribed_to_ontologies_tooltip: By enabling this you'll receive a notification every time a new ontology is uploaded to %{portal_name}
+      subscribed_to_projects: Subscribe to new projects
+      subscribed_to_projects_tooltip: By enabling this you'll receive a notification every time a new project is created in %{portal_name}
       unsubscribe: Unsubscribe
       upload_semantic_resources: Upload Ontologies
       username: 'Username:'

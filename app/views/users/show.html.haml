@@ -87,21 +87,37 @@
       .account-page-second-row
         .account-page-card
           %h4.account-page-card-title= t('users.show.subscriptions')
-          - if @user.subscription.nil? || @user.subscription.empty?
-            = t('users.show.not_subscribed')
-          - else
-            - @user.subscription.each do |subscription|
-              - ont_id = subscription[:ontology]
-              - ont = (!subscription[:ontology].nil? ? subscription[:ontology].split('/').last: nil) # ensure we get the acronym
-              - type = (!subscription[:notification_type].nil? ? subscription[:notification_type].downcase : nil)
-              .account-page-subscription
-                %a{:href => "/ontologies/#{ont}?p=notes"}= ont
-                %div
-                  - if type == "notes"
-                    %a.notes{:href => "/ontologies/#{ont}?p=notes"}= t('users.show.notes')
-                  - else
-                    = type
-                  = subscribe_button(ont_id)
+          .account-page-subscriptions-toggle{style: "margin-bottom: 20px;"}
+            = form_for(:user, url: user_path(@user.username), html: { method: :put }) do |f|
+              = user_hidden_fields(f, @user, [:subscribed_to_projects])
+              - is_subscribed_ontologies = @user.subscribed_to_ontologies == true || @user.subscribed_to_ontologies == "true"
+              = render SwitchInputComponent.new(id: 'subscribed_to_ontologies_toggle', name: 'user[subscribed_to_ontologies]', label: t('users.show.subscribed_to_ontologies'), value: is_subscribed_ontologies.to_s, checked: is_subscribed_ontologies, boolean_switch: true) do
+                = render Display::InfoTooltipComponent.new(text: t('users.show.subscribed_to_ontologies_tooltip', portal_name: portal_name))
+              :javascript
+                document.getElementById('subscribed_to_ontologies_toggle_checkbox').addEventListener('change', function() {
+                  this.closest('form').submit();
+                });
+          .account-page-subscriptions-toggle{style: "margin-bottom: 20px;"}
+            = form_for(:user, url: user_path(@user.username), html: { method: :put }) do |f|
+              = user_hidden_fields(f, @user, [:subscribed_to_ontologies])
+              - is_subscribed_projects = @user.subscribed_to_projects == true || @user.subscribed_to_projects == "true"
+              = render SwitchInputComponent.new(id: 'subscribed_to_projects_toggle', name: 'user[subscribed_to_projects]', label: t('users.show.subscribed_to_projects'), value: is_subscribed_projects.to_s, checked: is_subscribed_projects, boolean_switch: true) do
+                = render Display::InfoTooltipComponent.new(text: t('users.show.subscribed_to_projects_tooltip', portal_name: portal_name))
+              :javascript
+                document.getElementById('subscribed_to_projects_toggle_checkbox').addEventListener('change', function() {
+                  this.closest('form').submit();
+                });
+          .account-page-card-list-container{style: "margin-top: 25px; border-top: 1px solid #DFDFDF; padding-top: 20px;"}
+            - if @user_subscriptions.nil? || @user_subscriptions.empty?
+              = t('users.show.not_subscribed')
+            - else
+              - @user_subscriptions.each do |subscription|
+                - subscription = subscription[1] if subscription.is_a?(Array) && subscription.length == 2 && !subscription[1].is_a?(Array)
+                - ont_id = subscription.respond_to?(:ontology) ? subscription.ontology : (subscription[:ontology] rescue subscription["ontology"])
+                - ont = ont_id ? ont_id.split('/').last : nil
+                .account-page-subscription
+                  %a{:href => "/ontologies/#{ont}"}= ont
+                  = subscribe_button(ont_id, id: "subscribe_button_#{ont}")
         .account-page-card
           %h4.account-page-card-title= t('users.show.submitted_semantic_resources')
           .account-page-small-cards-container

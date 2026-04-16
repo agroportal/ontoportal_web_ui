@@ -1,0 +1,85 @@
+.ontology-subscribe-dropdown {
+    position: relative; // Proper positioning context
+
+    // Reset any previous "merged" styles impacting the button
+    .pill-button {
+        position: relative;
+        z-index: auto;
+        border-radius: 20px !important; // Restore pill shape if it was unset
+        // We don't want the button to change shape when open for GitHub style mostly
+    }
+
+    &.show .pill-button {
+        // GitHub buttons often just get a darker background or shadow, but stay buttons
+        // They don't merge.
+        // Let's add a subtle background change to indicate active
+        background-color: #f6f8fa !important;
+        border-color: rgba(27, 31, 35, 0.15) !important;
+        // box-shadow: inset 0 0.15em 0.3em rgba(27, 31, 35, 0.15); // Optional inner shadow like GitHub
+    }
+
+    // Dropdown details
+    .dropdown-menu {
+        margin-top: 8px !important; // Detach from button
+        border: 1px solid #e1e4e8 !important;
+        border-radius: 6px !important;
+        box-shadow: 0 8px 16px rgba(149, 157, 165, 0.2) !important; // Nice robust shadow
+        padding: 4px 0 !important;
+        min-width: 180px; // Ensure decent width
+
+        // Caret (Arrow) pointing up
+        &::before,
+        &::after {
+            content: "";
+            display: inline-block;
+            position: absolute;
+        }
+
+        // The border triangle
+        &::before {
+            border: 8px solid transparent;
+            border-bottom-color: rgba(27, 31, 35, 0.15); // Border color match
+            top: -16px;
+            right: 14px; // Align roughly with chevron. 
+            // If pill button size varies, we might need adjustments or center it.
+            // Right alignment is safer if menu is right-aligned.
+        }
+
+        // The background triangle (to cover the border triangle's bottom)
+        &::after {
+            border: 7px solid transparent;
+            border-bottom-color: white;
+            top: -14px;
+            right: 15px;
+        }
+
+        // Items
+        .dropdown-item {
+            padding: 8px 16px !important;
+            color: #24292e !important; // GitHub standard text color
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+
+            &:hover,
+            &:focus {
+                background-color: #0366d6 !important; // GitHub blue
+                color: white !important;
+
+                // When white, we need the checkmark to be white too
+                i {
+                    color: white !important;
+                }
+            }
+
+            i.fa-check {
+                font-size: 12px;
+                // color is handled by parent color unless overridden
+            }
+
+            &.active-subscription {
+                font-weight: 600;
+            }
+        }
+    }
+}

@@ -1,0 +1,5 @@
+= turbo_frame_tag "notifications_status" do
+  - if @status && @status[:count].to_i > 0
+    %span.badge= @status[:count]
+  - else
+    %span.badge.hidden 0

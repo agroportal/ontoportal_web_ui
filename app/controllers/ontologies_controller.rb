@@ -393,16 +393,75 @@ class OntologiesController < ApplicationController
       link = "/login?redirect=/ontologies/#{ontology_acronym}"
       subscribed = false
       user_id = nil
+      count = 0
     else
-      user = LinkedData::Client::Models::User.find(session[:user].id)
-      subscribed = helpers.subscribed_to_ontology?(ontology_acronym, user)
+      # Call the backend API to get subscription info
+      api_response = LinkedData::Client::HTTP.get("/ontologies/#{ontology_acronym}/subscriptions")
+
+      if api_response.is_a?(Array)
+        count = api_response.length
+        # Find user subscription robustly (handle objects, string keys, or symbol keys)
+        user_subscription = api_response.find do |sub|
+          sub_user = sub.respond_to?(:user) ? sub.user : (sub[:user] || sub['user'])
+          sub_user.to_s.split('/').last == session[:user].username
+        end
+
+        subscribed = !user_subscription.nil?
+        if subscribed
+          # Extract ID robustly
+          sub_id_raw = user_subscription.respond_to?(:id) ? user_subscription.id : (user_subscription[:id] || user_subscription['id'])
+          sub_id_str = sub_id_raw.to_s
+          subscription_id = sub_id_str.include?('/') ? sub_id_str.split('/').last : sub_id_str
+
+          # Extract notification type robustly
+          raw_type = user_subscription.respond_to?(:notification_type) ? user_subscription.notification_type : (user_subscription[:notification_type] || user_subscription['notification_type'])
+          notification_type = raw_type.to_i
+          notification_type = 3 if notification_type == 0 # Default to 3 if missing/invalid
+        else
+          notification_type = 3
+        end
+      else
+        count = 0
+        subscribed = false
+        subscription_id = nil
+        notification_type = 3
+      end
+
       link = "javascript:void(0);"
-      user_id = user.id
+      user_id = session[:user].id
     end
-    count = helpers.count_subscriptions(params[:ontology_id])
-    render inline: helpers.turbo_frame_tag('subscribe_button') {
-      render_to_string(OntologySubscribeButtonComponent.new(id: '', ontology_id: ontology_id, subscribed: subscribed, user_id: user_id, count: count, link: link), layout: nil)
+
+    render inline: helpers.turbo_frame_tag(params[:id] || 'subscribe_button') {
+      render_to_string(OntologySubscribeButtonComponent.new(id: params[:id] || '', ontology_id: ontology_id, subscribed: subscribed, user_id: user_id, count: count, link: link, subscription_id: subscription_id, notification_type: notification_type), layout: nil)
     }
+  end
+
+  def watchers
+    @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology_id]).first
+    return not_found if @ontology.nil?
+
+    api_response = LinkedData::Client::HTTP.get("/ontologies/#{@ontology.acronym}/subscriptions")
+    @subscribers = []
+    
+    if api_response.is_a?(Array)
+      @subscribers = api_response.map do |sub|
+        user_id = sub.respond_to?(:user) ? sub.user : (sub[:user] || sub['user'])
+        # Start fetching user details concurrently if possible, or just gather IDs
+        # For now, simplest is to just return the structure and let view handle it or fetch details?
+        # Ideally we want usernames/emails to display.
+        # Check if user object is fully populated or just a link.
+        # Usually these are links.
+        # We might need to fetch user details. But doing N fetches is bad.
+        # Let's see what `user` field contains. It's likely a URI.
+        # If we can get username from URI, displays that.
+        
+        username = user_id.to_s.split('/').last
+        { username: username, uri: user_id }
+      end
+    end
+
+
+    render partial: "ontologies/sections/watchers_modal", layout: false
   end
 
   def widgets
@@ -569,9 +628,9 @@ class OntologiesController < ApplicationController
   end
 
   def properties_hash_values(properties, sub: @submission_latest, custom_labels: {})
-    return {} if sub.nil?
+    return {} 
 
-    properties.map { |x| [x.to_s, [sub.send(x.to_s), custom_labels[x.to_sym]]] }.to_h
+    # properties.map { |x| [x.to_s, [sub.send(x.to_s), custom_labels[x.to_sym]]] }.to_h
   end
 
 

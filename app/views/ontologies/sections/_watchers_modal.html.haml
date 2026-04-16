@@ -1,0 +1,11 @@
+= render_in_modal do
+  - if @subscribers.any?
+    .list-group.list-group-flush
+      - @subscribers.each do |sub|
+        .list-group-item.d-flex.align-items-center
+          %i.fas.fa-user.mr-3.text-muted
+          %div
+            %div.font-weight-bold= sub[:username]
+  - else
+    .text-center.p-4.text-muted
+      No watchers yet.

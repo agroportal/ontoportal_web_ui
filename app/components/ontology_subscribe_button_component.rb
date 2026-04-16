@@ -2,13 +2,14 @@
 
 class OntologySubscribeButtonComponent < ViewComponent::Base
   include InternationalisationHelper
-  def initialize(id: '', ontology_id:, subscribed:, user_id:, count: 0, link: 'javascript:void(0);')
+  def initialize(id: '', ontology_id:, subscribed:, user_id:, count: 0, link: 'javascript:void(0);', subscription_id: nil, notification_type: 3)
     super
     @id = id
     @subscribed = subscribed
     @sub_text = subscribed ? t('components.unwatch') : t('components.watch')
     @link = link
     @count = count
+    @notification_type = notification_type
     @controller_params = {
       data: {
         controller: "tooltip #{!user_id.nil? && 'subscribe-notes'}",
@@ -17,7 +18,8 @@ class OntologySubscribeButtonComponent < ViewComponent::Base
         'subscribe-notes-user-id-value': user_id,
         'subscribe-notes-watch-value': t('components.watch'),
         'subscribe-notes-unwatch-value': t('components.unwatch'),
-        action: 'click->subscribe-notes#subscribeToNotes',
+        'subscribe-notes-subscription-id-value': subscription_id,
+        'subscribe-notes-notification-type-value': notification_type,
       },
       title: title
     }

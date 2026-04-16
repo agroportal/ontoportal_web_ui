@@ -27,6 +27,28 @@
         - if session[:user].nil?
           %a.nav-a{:href => "/login"}= t('layout.header.login')
         - else
+          .notifications-container
+            %details.dropdown
+              %summary.nav-link
+                %i.fas.fa-bell
+                = turbo_frame_tag "notifications_status", src: status_notifications_path do
+                  %span.badge.hidden 0
+              
+              .notifications-dropdown
+                .notifications-header Notifications
+                .notifications-list
+                  = turbo_frame_tag "notifications_list", src: notification_list_path, loading: "lazy" do
+                    .notifications-skeleton
+                      - 5.times do
+                        .skeleton-item
+                          .skeleton-icon
+                          .skeleton-content
+                            .skeleton-line.title
+                            .skeleton-line.message
+                            .skeleton-line.time
+                .notifications-footer
+                  = link_to t('notifications.see_all'), notifications_path, class: "notifications-see-all-btn", style: "display: block; width: 100%; text-align: center;"
+
           = render DropdownButtonComponent.new do |d|
             - d.header do
               = link_to("#", class: "nav-link top-nav-nav-link supportMenuDropdownLink", role: "button") do

@@ -182,9 +182,9 @@ module ApplicationHelper
     end
   end
 
-  def subscribe_button(ontology_id)
+  def subscribe_button(ontology_id, id: 'subscribe_button')
     return if ontology_id.nil?
-    render TurboFrameComponent.new(id: 'subscribe_button', src: ontology_subscriptions_path(ontology_id: ontology_id.split('/').last), class: 'ml-1') do |t|
+    render TurboFrameComponent.new(id: id, src: ontology_subscriptions_path(ontology_id: ontology_id.split('/').last, id: id), class: 'ml-1') do |t|
       t.loader do
         content_tag(:div, style: 'margin-left: 10px;') do
           render PillButtonComponent.new do

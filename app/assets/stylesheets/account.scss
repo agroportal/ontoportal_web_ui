@@ -238,6 +238,21 @@
   margin-right: 10px;
 }
 
+.account-page-subscriptions-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.account-page-subscriptions-toggle form {
+  width: 100%;
+}
+
+.account-page-subscriptions-toggle .switch-filter {
+  justify-content: space-between;
+  width: 100%;
+}
+
 @media only screen and (max-width: 1200px) {
   .account-page-first-row {
     width: 47vw;
