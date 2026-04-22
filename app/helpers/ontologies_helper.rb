@@ -628,24 +628,45 @@ module OntologiesHelper
 
   def ontology_icon_links(links, submission_latest)
     links.map do |icon, attr, label|
-      value = submission_latest.nil? ? nil : submission_latest.send(attr)
-      link = Array(value).first || ''
+      raw_value = submission_latest.nil? ? nil : submission_latest.send(attr)
+      values = Array(raw_value).compact.reject(&:blank?)
 
       link_options = {
         style: "text-decoration: none; width: 30px; height: 30px"
       }
 
-      if link.blank?
+      if values.empty?
         link_options[:class] = 'disabled-icon'
         link_options[:disabled] = 'disabled'
         title = label
-      else
+        
+        content_tag(:span, data: {controller: "tooltip" }, title: title) do
+          link_to(inline_svg("#{icon}.svg", width: "32", height: '32'), "javascript:void(0);", link_options)
+        end
+      elsif values.size == 1
+        link = values.first
         title = label + '<br>' + link_to(link, target: '_blank')
-      end
-
-      url, target_attr = api_button_link_and_target(link || '', allow_annonymous = true)
-      content_tag(:span, data: {controller: "tooltip" }, title: title) do
-        link_to(inline_svg("#{icon}.svg", width: "32", height: '32'), url, link_options.merge(target: target_attr))
+        url, target_attr = api_button_link_and_target(link, allow_annonymous = true)
+        
+        content_tag(:span, data: {controller: "tooltip" }, title: title) do
+          link_to(inline_svg("#{icon}.svg", width: "32", height: '32'), url, link_options.merge(target: target_attr))
+        end
+      else
+        title = label
+        content_tag(:span, data: {controller: "tooltip"}, title: title) do
+          content_tag(:div, class: "dropdown d-inline-block") do
+            trigger = link_to(inline_svg("#{icon}.svg", width: "32", height: '32'), "#", class: "text-decoration-none", id: "dropdown_icon_#{attr}", data: { toggle: "dropdown", bs_toggle: "dropdown" }, aria: { haspopup: "true", expanded: "false" }, style: "width: 30px; height: 30px;")
+            
+            menu = content_tag(:div, class: "dropdown-menu shadow border-0 rounded p-2", aria: { labelledby: "dropdown_icon_#{attr}" }, style: "left: 50%; transform: translateX(-50%); min-width: max-content;") do
+              values.map do |v|
+                content_tag(:div, class: "p-1") do
+                  render LinkFieldComponent.new(value: v, raw: true, enable_copy: true)
+                end
+              end.join.html_safe
+            end
+            trigger + menu
+          end
+        end
       end
     end.join.html_safe
   end
