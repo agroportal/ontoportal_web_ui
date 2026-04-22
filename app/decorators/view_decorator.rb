@@ -6,7 +6,7 @@ class ViewDecorator
   end
 
   def linked_name
-    view_context.link_to("#{view.name.to_s.upcase_first} (#{view.acronym})", view_context.ontology_path(view.acronym))
+    view_context.link_to("<strong>#{view.name.to_s.upcase_first}</strong> <small>(#{view.acronym})</small>".html_safe, view_context.ontology_path(view.acronym))
   end
 
   def description
