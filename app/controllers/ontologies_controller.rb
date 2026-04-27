@@ -369,7 +369,6 @@ class OntologiesController < ApplicationController
                             %w[summary/homepage homepage],
                             %w[summary/documentation documentation],
                             %w[icons/github repository],
-                            %w[summary/sparql endpoint],
                             %w[icons/publication publication],
                             %w[icons/searching_database openSearchDescription]
     ]

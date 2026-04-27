@@ -71,6 +71,7 @@
   %hr.w-100.my-3
   .icons_container
     = ontology_icon_links(@ontology_icon_links, @submission_latest)
+    = ontology_sparql_endpoint_link(@submission_latest)
   %hr.w-100.my-3
   %div.text-center.pb-3
     = link_to_modal(nil, metadata_export_index_path(ontology: @ontology.acronym), {data: {show_modal_title_value: metadata_filled_count, show_modal_size_value: 'modal-xl' }}) do
