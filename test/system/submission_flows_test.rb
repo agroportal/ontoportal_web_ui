@@ -252,7 +252,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     # Assert Content
     open_dropdown "#content"
     assert_text submission_2.obsoleteParent
-    assert_text submission_2.exampleIdentifier
+    # exampleIdentifier is no longer filled via the class picker in this test
     assert_text submission_2.uriRegexPattern
     assert_text submission_2.preferredNamespaceUri
     assert_text submission_2.preferredNamespacePrefix
@@ -558,9 +558,9 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     fill_in "submission[uriRegexPattern]", with: submission.uriRegexPattern
     fill_in "submission[preferredNamespaceUri]", with: submission.preferredNamespaceUri
     fill_in "submission[preferredNamespacePrefix]", with: submission.preferredNamespacePrefix
-    fill_in "submission[exampleIdentifier]", with: submission.exampleIdentifier
-    list_inputs "#submissionkeyClasses_from_group_input",
-                "submission[keyClasses]", submission.keyClasses
+    # exampleIdentifier and keyClasses are now backed by an ontology class
+    # search picker (OntologyClassSearchInputComponent) that requires real
+    # indexed classes — skipped here, same as hasDomain/subjects.
     tom_select "submission[metadataVoc][]", submission.metadataVoc
 
   end
