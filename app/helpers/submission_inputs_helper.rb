@@ -85,6 +85,8 @@ module SubmissionInputsHelper
       end
     elsif attr.type?('isOntology')
       generate_select_input(attr, multiple: attr['enforce'].include?('list'))
+    elsif ontology_class_attribute?(attr.attr_key)
+      generate_ontology_class_picker_input(attr)
     elsif attr.type?('uri')
       generate_url_input(attr, helper_text: help)
     elsif attr.type?('boolean')
@@ -429,6 +431,19 @@ module SubmissionInputsHelper
       end
     end
 
+  end
+
+  def ontology_class_attribute?(attr_key)
+    %w[keyClasses exampleIdentifier].include?(attr_key.to_s)
+  end
+
+  def generate_ontology_class_picker_input(attr)
+    values = Array(attr.values).reject(&:blank?).map { |uri| { value: uri, label: uri } }
+    render Input::InputFieldComponent.new(name: '', label: attr_header_label(attr), error_message: attribute_error(attr.attr)) do
+      render OntologyClassSearchInputComponent.new(ontology_acronym: @ontology.acronym,
+                                                   name_prefix: attr.name,
+                                                   values: values)
+    end
   end
 
   def generate_url_input(attr, helper_text: nil)

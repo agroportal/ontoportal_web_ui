@@ -107,5 +107,5 @@ import ParentCategoriesSelectorController from "./parent_categories_selector_con
 application.register('parent-categories-selector', ParentCategoriesSelectorController)
 
 
-import SubjectsController from "./subjects_controller.js"
-application.register("subjects", SubjectsController)
+import ClassPickerController from "./class_picker_controller.js"
+application.register("class-picker", ClassPickerController)
