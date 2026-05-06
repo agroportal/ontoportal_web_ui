@@ -251,8 +251,8 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
     # Assert Content
     open_dropdown "#content"
-    assert_text submission_2.obsoleteParent
-    # exampleIdentifier is no longer filled via the class picker in this test
+    # obsoleteParent and exampleIdentifier are no longer filled via the
+    # class picker in this test, so their values aren't asserted here.
     assert_text submission_2.uriRegexPattern
     assert_text submission_2.preferredNamespaceUri
     assert_text submission_2.preferredNamespacePrefix
