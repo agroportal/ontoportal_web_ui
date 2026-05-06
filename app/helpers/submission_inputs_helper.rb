@@ -438,11 +438,11 @@ module SubmissionInputsHelper
   end
 
   def ontology_class_list_attribute?(attr_key)
-    %w[keyClasses exampleIdentifier].include?(attr_key.to_s)
+    %w[keyClasses].include?(attr_key.to_s)
   end
 
   def ontology_class_single_attribute?(attr_key)
-    %w[obsoleteParent].include?(attr_key.to_s)
+    %w[obsoleteParent exampleIdentifier].include?(attr_key.to_s)
   end
 
   def generate_ontology_class_picker_input(attr)
