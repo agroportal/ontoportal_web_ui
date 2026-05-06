@@ -554,13 +554,12 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
   def submission_content_edit_fill(submission)
     wait_for_text "Root of obsolete branch"
 
-    fill_in "submission[obsoleteParent]", with: submission.obsoleteParent
     fill_in "submission[uriRegexPattern]", with: submission.uriRegexPattern
     fill_in "submission[preferredNamespaceUri]", with: submission.preferredNamespaceUri
     fill_in "submission[preferredNamespacePrefix]", with: submission.preferredNamespacePrefix
-    # exampleIdentifier and keyClasses are now backed by an ontology class
-    # search picker (OntologyClassSearchInputComponent) that requires real
-    # indexed classes — skipped here, same as hasDomain/subjects.
+    # obsoleteParent, exampleIdentifier and keyClasses are now backed by an
+    # ontology class search picker (OntologyClassSearchInputComponent) that
+    # requires real indexed classes — skipped here, same as hasDomain/subjects.
     tom_select "submission[metadataVoc][]", submission.metadataVoc
 
   end

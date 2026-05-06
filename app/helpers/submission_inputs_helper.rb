@@ -434,17 +434,27 @@ module SubmissionInputsHelper
   end
 
   def ontology_class_attribute?(attr_key)
+    ontology_class_list_attribute?(attr_key) || ontology_class_single_attribute?(attr_key)
+  end
+
+  def ontology_class_list_attribute?(attr_key)
     %w[keyClasses exampleIdentifier].include?(attr_key.to_s)
   end
 
+  def ontology_class_single_attribute?(attr_key)
+    %w[obsoleteParent].include?(attr_key.to_s)
+  end
+
   def generate_ontology_class_picker_input(attr)
+    multiple = ontology_class_list_attribute?(attr.attr_key)
     values = Array(attr.values).reject(&:blank?).map do |uri|
       { value: uri, label: resolve_ontology_class_label(uri, @ontology.acronym) }
     end
     render Input::InputFieldComponent.new(name: '', label: attr_header_label(attr), error_message: attribute_error(attr.attr)) do
       render OntologyClassSearchInputComponent.new(ontology_acronym: @ontology.acronym,
                                                    name_prefix: attr.name,
-                                                   values: values)
+                                                   values: values,
+                                                   multiple: multiple)
     end
   end
 
