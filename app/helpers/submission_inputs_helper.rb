@@ -438,12 +438,30 @@ module SubmissionInputsHelper
   end
 
   def generate_ontology_class_picker_input(attr)
-    values = Array(attr.values).reject(&:blank?).map { |uri| { value: uri, label: uri } }
+    values = Array(attr.values).reject(&:blank?).map do |uri|
+      { value: uri, label: resolve_ontology_class_label(uri, @ontology.acronym) }
+    end
     render Input::InputFieldComponent.new(name: '', label: attr_header_label(attr), error_message: attribute_error(attr.attr)) do
       render OntologyClassSearchInputComponent.new(ontology_acronym: @ontology.acronym,
                                                    name_prefix: attr.name,
                                                    values: values)
     end
+  end
+
+  def resolve_ontology_class_label(class_uri, ontology_acronym)
+    return class_uri if class_uri.blank? || ontology_acronym.blank?
+
+    response = LinkedData::Client::HTTP.get(
+      "#{rest_url}/ontologies/#{ontology_acronym}/classes/#{CGI.escape(class_uri.strip)}",
+      lang: portal_lang,
+      display_context: false,
+      display_links: false,
+      include: 'prefLabel'
+    )
+
+    main_language_label(response&.prefLabel).presence || class_uri
+  rescue StandardError
+    class_uri
   end
 
   def generate_url_input(attr, helper_text: nil)

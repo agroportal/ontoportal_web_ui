@@ -4,7 +4,8 @@ export default class extends Controller {
   static targets = ["list", "searchWrapper"]
   static values = {
     namePrefix: String,
-    rowClass: { type: String, default: "nested-class-picker-form-input-row" }
+    rowClass: { type: String, default: "nested-class-picker-form-input-row" },
+    showUri: { type: Boolean, default: false }
   }
 
   addResult(event) {
@@ -22,22 +23,39 @@ export default class extends Controller {
     const rowClass = this.rowClassValue
     const nextIndex = document.querySelectorAll(`.${rowClass}`).length
 
-    const visibleInput = document.createElement("input")
-    visibleInput.type = "text"
-    visibleInput.name = `${namePrefix}[${nextIndex}]`
-    visibleInput.value = label
-    visibleInput.readOnly = true
-    visibleInput.className = "form-control"
-    visibleInput.style.fontSize = "13px"
+    const row = document.createElement("div")
+    row.className = rowClass
+
+    if (this.showUriValue) {
+      const display = document.createElement("div")
+      display.className = "class-picker-display"
+
+      const labelEl = document.createElement("p")
+      labelEl.className = "class-label_name"
+      labelEl.textContent = label
+
+      const uriEl = document.createElement("small")
+      uriEl.className = "class-uri"
+      uriEl.textContent = uri
+
+      display.appendChild(labelEl)
+      display.appendChild(uriEl)
+      row.appendChild(display)
+    } else {
+      const visibleInput = document.createElement("input")
+      visibleInput.type = "text"
+      visibleInput.name = `${namePrefix}[${nextIndex}]`
+      visibleInput.value = label
+      visibleInput.readOnly = true
+      visibleInput.className = "form-control"
+      visibleInput.style.fontSize = "13px"
+      row.appendChild(visibleInput)
+    }
 
     const hiddenInput = document.createElement("input")
     hiddenInput.type = "hidden"
     hiddenInput.name = `${namePrefix}[${nextIndex}]`
     hiddenInput.value = uri
-
-    const row = document.createElement("div")
-    row.className = rowClass
-    row.appendChild(visibleInput)
     row.appendChild(hiddenInput)
 
     this.element.appendChild(row)

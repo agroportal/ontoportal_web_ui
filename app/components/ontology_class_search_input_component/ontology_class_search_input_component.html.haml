@@ -1,6 +1,6 @@
 = render NestedFormInputsComponent.new(object_name: 'class') do |c|
   - c.template do
-    .ontology-classes-container{ data: { controller: "class-picker", "class-picker-name-prefix-value": @name_prefix, "class-picker-row-class-value": row_class } }
+    .ontology-classes-container{ data: { controller: "class-picker", "class-picker-name-prefix-value": @name_prefix, "class-picker-row-class-value": row_class, "class-picker-show-uri-value": "true" } }
       .search-wrapper{ data: { "class-picker-target": "searchWrapper" } }
         = helpers.ontology_classes_content_autocomplete(ontology_acronym: @ontology_acronym)
       .ontology-classes-list{ data: { "class-picker-target": "list" } }
@@ -10,7 +10,9 @@
     - label = v[:label]
     - c.row do
       %div{class: row_class}
-        = helpers.text_input(name: "", value: label, readonly: true)
+        .class-picker-display
+          %p.class-label_name= label
+          %small.class-uri= value
         = hidden_field_tag "#{@name_prefix}[#{i}]", value
 
   - c.empty_state do
