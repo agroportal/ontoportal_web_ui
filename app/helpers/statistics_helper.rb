@@ -29,12 +29,21 @@ module StatisticsHelper
   def string_year_month(year, month)
     DateTime.parse("#{year}/#{month}").strftime("%b %Y")
   end
-  def group_by_year_month(data)
-    data.group_by{|x| [Date.parse(x.created).year, Date.parse(x.created).month] }.sort_by { |(year, month), _| [year, month] }.to_h
+  def group_by_year_month(data, fallback: nil)
+    grouped = data.group_by do |x|
+      created = x.respond_to?(:created) ? x.created : nil
+      if created.nil? || created.to_s.strip.empty?
+        fallback
+      else
+        [Date.parse(created).year, Date.parse(created).month]
+      end
+    end
+    grouped.delete(nil)
+    grouped.sort_by { |(year, month), _| [year, month] }.to_h
   end
 
   def merge_time_evolution_data(data)
-    min_year =  data.map{|x| x.keys.first.first}.min
+    min_year = data.map { |x| x.keys.first&.first }.compact.min
     old = data.size.times.map { |x|  0 }
 
     visits_data = { visits: data.size.times.map { |x|  [] }, labels: [] }

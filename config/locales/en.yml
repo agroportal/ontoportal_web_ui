@@ -1524,6 +1524,7 @@ en:
     show_advanced_options: Show options
   show_advanced_options: Show advanced options
   statistics:
+    agents: Agents
     date: Date
     lead: "(last %{last_years} years)"
     ontologies: Ontologies
