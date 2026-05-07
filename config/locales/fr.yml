@@ -1581,6 +1581,7 @@ fr:
     ontologies: Ontologies
     ontology_visits: Visites de l'ontologie
     projects: Projets
+    this_month: ce mois-ci
     title: Statistiques de %{portal}
     users: Utilisateurs
   submission_inputs:

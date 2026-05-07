@@ -77,6 +77,20 @@ module StatisticsHelper
     end.to_json
   end
 
+  def statistics_kpi_cards(merged_data)
+    [
+      { key: :ontologies, label: t('statistics.ontologies'), series: merged_data[:visits][2] },
+      { key: :users,      label: t('statistics.users'),      series: merged_data[:visits][0] },
+      { key: :projects,   label: t('statistics.projects'),   series: merged_data[:visits][1] },
+      { key: :agents,     label: t('statistics.agents'),     series: merged_data[:visits][3] }
+    ].map do |kpi|
+      series = Array(kpi[:series])
+      total = series.last || 0
+      previous = series[-2] || 0
+      kpi.merge(total: total, delta: total - previous, color: STATISTICS_SERIES_COLORS[kpi[:key]])
+    end
+  end
+
   def merge_time_evolution_data(data)
     min_year = data.map { |x| x.keys.first&.first }.compact.min
     old = data.size.times.map { |x|  0 }

@@ -1,6 +1,17 @@
 .container.d-flex.flex-column.py-4{ style: "width: 1248px;" }
   .d-flex.justify-content-between
     = render PageHeaderComponent.new(title: t('statistics.title', portal: portal_name), description: t('statistics.description', portal: portal_name, last_years: Date.today.year - Date.parse(@merged_data[:labels].first).year))
+  .statistics-kpi-grid
+    - statistics_kpi_cards(@merged_data).each do |kpi|
+      .statistics-kpi-card{ style: "--kpi-color: #{kpi[:color]};" }
+        .statistics-kpi-label= kpi[:label]
+        .statistics-kpi-value= number_with_delimiter(kpi[:total])
+        - if kpi[:delta] > 0
+          .statistics-kpi-delta.up
+            = "+#{number_with_delimiter(kpi[:delta])} #{t('statistics.this_month')}"
+        - elsif kpi[:delta] < 0
+          .statistics-kpi-delta.down
+            = "#{number_with_delimiter(kpi[:delta])} #{t('statistics.this_month')}"
   - series = [{ key: :ontologies, label: t('statistics.ontologies'), data: @merged_data[:visits][2], cumulative: true }, { key: :users, label: t('statistics.users'), data: @merged_data[:visits][0], cumulative: true }, { key: :projects, label: t('statistics.projects'), data: @merged_data[:visits][1], cumulative: true }, { key: :agents, label: t('statistics.agents'), data: @merged_data[:visits][3], cumulative: true, hidden: true }]
   .statistics-chart-container
     = chart_component(title: nil, type: 'line', show_legend: true,

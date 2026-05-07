@@ -1531,6 +1531,7 @@ en:
     ontologies: Ontologies
     ontology_visits: Ontology visits
     projects: Projects
+    this_month: this month
     title: "%{portal} Statistics"
     users: Users
   submission_inputs:
