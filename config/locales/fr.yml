@@ -1584,6 +1584,8 @@ fr:
     this_month: ce mois-ci
     title: Statistiques de %{portal}
     users: Utilisateurs
+  table:
+    all: Tous
   submission_inputs:
     name: Nom
     acronym: Acronyme

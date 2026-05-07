@@ -1534,6 +1534,8 @@ en:
     this_month: this month
     title: "%{portal} Statistics"
     users: Users
+  table:
+    all: All
   submission_inputs:
     name: Name
     acronym: Acronym

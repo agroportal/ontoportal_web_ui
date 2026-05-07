@@ -7,7 +7,8 @@ class TableComponent < ViewComponent::Base
 
   def initialize(id: '', stripped: true, borderless: false, custom_class: '', layout_fixed: false,
                  small_text: false, outline: false, sort_column: nil,
-                 paging: false, searching: false, search_placeholder: nil,
+                 paging: false, page_length: nil, show_all: false, all_label: nil,
+                 searching: false, search_placeholder: nil,
                  no_init_sort: false, server_side: false, ajax_url: nil, columns: [], ordering: true)
     super()
     @id = id
@@ -19,6 +20,9 @@ class TableComponent < ViewComponent::Base
     @sort_column = sort_column
     @searching = searching
     @paging = paging
+    @page_length = page_length
+    @show_all = show_all
+    @all_label = all_label || I18n.t('table.all', default: 'All')
     @no_init_sort = no_init_sort
     @custom_class = custom_class
     @search_placeholder = search_placeholder
