@@ -50,11 +50,12 @@ module StatisticsHelper
   }.freeze
 
   def statistics_chart_datasets(series)
-    series.map do |key, label, data|
+    series.map do |entry|
+      key = entry[:key]
       color = STATISTICS_SERIES_COLORS[key]
-      {
-        label: label,
-        data: data,
+      dataset = {
+        label: entry[:label],
+        data: entry[:data],
         borderColor: color,
         backgroundColor: "#{color}1A",
         pointBackgroundColor: color,
@@ -68,6 +69,10 @@ module StatisticsHelper
         tension: 0.4,
         fill: false
       }
+      dataset[:cumulative] = true if entry[:cumulative]
+      dataset[:yAxisID] = entry[:axis] if entry[:axis]
+      dataset[:borderDash] = entry[:dashed] if entry[:dashed]
+      dataset
     end.to_json
   end
 

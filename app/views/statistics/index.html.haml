@@ -4,7 +4,7 @@
     %p.lead
       = t('statistics.lead', last_years: Date.today.year - Date.parse(@merged_data[:labels].first).year)
 %div.container
-  - series = [[:ontologies, t('statistics.ontologies'), @merged_data[:visits][2]], [:users, t('statistics.users'), @merged_data[:visits][0]], [:projects, t('statistics.projects'), @merged_data[:visits][1]], [:agents, t('statistics.agents'), @merged_data[:visits][3]]]
+  - series = [{ key: :ontologies, label: t('statistics.ontologies'), data: @merged_data[:visits][2], cumulative: true }, { key: :users, label: t('statistics.users'), data: @merged_data[:visits][0], cumulative: true }, { key: :projects, label: t('statistics.projects'), data: @merged_data[:visits][1], cumulative: true }, { key: :agents, label: t('statistics.agents'), data: @merged_data[:visits][3], cumulative: true }]
   .statistics-chart-container
     = chart_component(title: nil, type: 'line', show_legend: true,
                       labels: @merged_data[:labels],
