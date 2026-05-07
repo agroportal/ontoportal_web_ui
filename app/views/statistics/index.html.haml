@@ -1,9 +1,6 @@
-%div.px-3.py-3.pt-md-5.pb-md-4.text-center
-  %h1.display-4
-    = t('statistics.title', portal: portal_name)
-    %p.lead
-      = t('statistics.lead', last_years: Date.today.year - Date.parse(@merged_data[:labels].first).year)
-%div.container
+.container.d-flex.flex-column.py-4{ style: "width: 1248px;" }
+  .d-flex.justify-content-between
+    = render PageHeaderComponent.new(title: t('statistics.title', portal: portal_name), description: t('statistics.description', portal: portal_name, last_years: Date.today.year - Date.parse(@merged_data[:labels].first).year))
   - series = [{ key: :ontologies, label: t('statistics.ontologies'), data: @merged_data[:visits][2], cumulative: true }, { key: :users, label: t('statistics.users'), data: @merged_data[:visits][0], cumulative: true }, { key: :projects, label: t('statistics.projects'), data: @merged_data[:visits][1], cumulative: true }, { key: :agents, label: t('statistics.agents'), data: @merged_data[:visits][3], cumulative: true, hidden: true }]
   .statistics-chart-container
     = chart_component(title: nil, type: 'line', show_legend: true,

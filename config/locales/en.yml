@@ -1526,6 +1526,7 @@ en:
   statistics:
     agents: Agents
     date: Date
+    description: "Evolution of resources in %{portal} through numbers (last %{last_years} years)."
     lead: "(last %{last_years} years)"
     ontologies: Ontologies
     ontology_visits: Ontology visits
