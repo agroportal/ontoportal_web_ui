@@ -72,6 +72,7 @@ module StatisticsHelper
       dataset[:cumulative] = true if entry[:cumulative]
       dataset[:yAxisID] = entry[:axis] if entry[:axis]
       dataset[:borderDash] = entry[:dashed] if entry[:dashed]
+      dataset[:hidden] = true if entry[:hidden]
       dataset
     end.to_json
   end
