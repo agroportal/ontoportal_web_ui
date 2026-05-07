@@ -42,14 +42,46 @@ module StatisticsHelper
     grouped.sort_by { |(year, month), _| [year, month] }.to_h
   end
 
+  STATISTICS_SERIES_COLORS = {
+    ontologies: '#1976D2',
+    users: '#F57C00',
+    projects: '#7B1FA2',
+    agents: '#2E7D32'
+  }.freeze
+
+  def statistics_chart_datasets(series)
+    series.map do |key, label, data|
+      color = STATISTICS_SERIES_COLORS[key]
+      {
+        label: label,
+        data: data,
+        borderColor: color,
+        backgroundColor: "#{color}1A",
+        pointBackgroundColor: color,
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: color,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        borderWidth: 2,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+        fill: false
+      }
+    end.to_json
+  end
+
   def merge_time_evolution_data(data)
     min_year = data.map { |x| x.keys.first&.first }.compact.min
     old = data.size.times.map { |x|  0 }
 
     visits_data = { visits: data.size.times.map { |x|  [] }, labels: [] }
 
-    (min_year..Date.today.year).each do |year|
+    today = Date.today
+    (min_year..today.year).each do |year|
       (1..12).each do |month|
+        break if year == today.year && month > today.month
+
         data.each_with_index do |x , i|
           old[i] += x[[year, month]]&.size || 0
         end

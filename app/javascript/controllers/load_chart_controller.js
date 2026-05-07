@@ -28,6 +28,10 @@ export default class extends Controller {
       },
       options: {
         indexAxis: this.indexAxisValue,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
         plugins: {
           colors: {enabled: true},
           title: {
@@ -35,7 +39,21 @@ export default class extends Controller {
             text: this.titleValue
           },
           legend: {
-            display: this.legendValue
+            display: this.legendValue,
+            position: 'top',
+            labels: {
+              usePointStyle: true,
+              boxWidth: 8,
+              padding: 16
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(33, 33, 33, 0.92)',
+            padding: 10,
+            titleFont: { weight: '600' },
+            bodySpacing: 4,
+            cornerRadius: 6,
+            usePointStyle: true
           }
         },
         responsive: true,
@@ -56,27 +74,28 @@ export default class extends Controller {
   #scales (axe) {
     if (this.indexAxisValue === axe) {
       return {
-        border: {
-          display: false
-        },
-        grid: {
-          display: false
-        },
+        border: { display: false },
+        grid: { display: false },
         ticks: {
-          beginAtZero: false
+          beginAtZero: false,
+          maxRotation: 0,
+          autoSkipPadding: 16,
+          color: '#6c757d'
         }
       }
     } else {
       return {
-        border: {
-          display: false
-        },
+        border: { display: false },
         grid: {
-          display: false
+          color: 'rgba(0, 0, 0, 0.06)',
+          drawTicks: false
         },
         ticks: {
-          display: false
-        }
+          color: '#6c757d',
+          padding: 8,
+          maxTicksLimit: 6
+        },
+        beginAtZero: true
       }
     }
   }
