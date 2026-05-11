@@ -21,7 +21,7 @@
   %div.pb-3.pb-md-4
     - size = @merged_data[:labels].size - 1
     - visits =  @year_month_visits
-    = render TableComponent.new(id: 'statistics_table') do |t|
+    = render TableComponent.new(id: 'statistics_table', paging: true, sort_column: '0', no_init_sort: true, show_all: true) do |t|
       - t.header do |h|
         - h.th {t('statistics.date')}
         - h.th {t('statistics.ontologies')}
