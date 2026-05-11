@@ -1,90 +1,19 @@
-#foops-section{ data: { acronym: acronym } }
-  .foops-container.mt-4.p-4.rounded{ style: "background: #fff; border: 1px solid #d1d9e6; box-shadow: 0 4px 15px rgba(0,0,0,0.05);" }
-    .d-flex.align-items-center.mb-3.pb-3{ style: "border-bottom: 2px solid #e2e8f0;" }
-      = image_tag "logos/foopsLogo.png", height: "35", class: "me-2", style: "vertical-align: middle;"
-      %span{ style: "font-weight: 700; color: #2d3748; font-size: 1.1em;" } FOOPS!
-      %span.ms-2{ style: "font-weight: 400; font-size: 0.75em; color: #718096;" } Ontology Pitfall Scanner for FAIR (Beta)
+.summary-card
+  .fair-section-head
+    %h3.fair-section-title FOOPS!
+    .fair-section-actions
+      = image_tag "logos/foopsLogo.png", height: "25", class: "me-2", style: "vertical-align: middle;"
+      = info_tooltip(content_tag(:div, t("fair_score.foops_description"), style: "width: 320px"), interactive: false)
+      = render IconWithTooltipComponent.new(icon: 'json.svg', link: "/ajax/fair_score/foops_json?ontologies=#{acronym}", target: '_blank', title: t('fair_score.go_to_api'), size: 'small', style: 'vertical-align: middle;')
 
-    #foops-content
-      .d-flex.align-items-center.justify-content-center.py-4
-        .spinner-border.text-secondary.me-3{ role: "status", style: "width: 1.5rem; height: 1.5rem;" }
-        %span.text-muted= "Running FOOPS! assessment, this may take a moment..."
+  %section#foops-summary
+    %div.ont-section-toolbar.justify-content-between.flex-row-reverse
+      %div.align-items-start
+        .btn.btn-primary.rounded-pill.right-button
+          %span#foops-total-score{ style: 'cursor: default;' }
+            - if @foops_scores_data
+              = t("ontologies.sections.metadata.total_score", score: @foops_scores_data[:score], normalized_score: @foops_scores_data[:normalizedScore])
 
-:javascript
-  (function() {
-    var section = document.getElementById('foops-section');
-    if (!section) return;
-    var acronym = section.dataset.acronym;
-    var container = document.getElementById('foops-content');
-
-    fetch('/ontologies/' + acronym + '/foops_assessment')
-      .then(function(response) { return response.json(); })
-      .then(function(data) {
-        if (!data || data.error) {
-          container.innerHTML = '<p class="text-muted text-center py-3">FOOPS! assessment is not available for this ontology.</p>';
-          return;
-        }
-
-        var circumference = 2 * Math.PI * 40;
-        var dashVal = (data.overall_score / 100) * circumference;
-        var gapVal = circumference - dashVal;
-        var dashArray = dashVal + ',' + gapVal;
-
-        var cx = 57, cy = 50;
-        var cats = data.categories || {};
-        function ratio(name) {
-          var c = cats[name];
-          return c && c.total > 0 ? c.passed / c.total : 0;
-        }
-        var points = [
-          [cx, cy - ratio('Findable') * 35],
-          [cx + ratio('Accessible') * 34, cy],
-          [cx, cy + ratio('Interoperable') * 35],
-          [cx - ratio('Reusable') * 35, cy]
-        ];
-        var pathD = 'M ' + points[0][0] + ' ' + points[0][1] + ' ' +
-                    'L ' + points[1][0] + ' ' + points[1][1] + ' ' +
-                    'L ' + points[2][0] + ' ' + points[2][1] + ' ' +
-                    'L ' + points[3][0] + ' ' + points[3][1] + ' Z';
-
-        function catLabel(name) {
-          var c = cats[name] || {passed: 0, total: 0};
-          return name + ' (' + c.passed + '/' + c.total + ')';
-        }
-
-        function gridLines() {
-          return [0.25, 0.5, 0.75].map(function(level) {
-            var u = 35*level, r = 34*level, d = 35*level, l = 35*level;
-            return '<path d="M 57 ' + (50-u) + ' L ' + (57+r) + ' 50 L 57 ' + (50+d) + ' L ' + (57-l) + ' 50 Z" fill="none" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="2,2"/>';
-          }).join('');
-        }
-
-        container.innerHTML = [
-          '<div class="row mt-3 justify-content-center">',
-          '  <div class="col-5 d-flex align-items-center justify-content-center">',
-          '    <svg height="100" width="100" transform="scale(1.4,1.4)">',
-          '      <circle cx="50" cy="50" r="45" fill="#FBFBFB"/>',
-          '      <path fill="none" stroke-linecap="round" stroke-width="5" stroke="#E65A28" stroke-dasharray="' + dashArray + '" d="M50 10 a 40 40 0 0 1 0 80 a 40 40 0 0 1 0 -80"/>',
-          '      <text x="50" y="50" text-anchor="middle" dy="7" font-size="24" font-weight="800" fill="#2d3748">' + Math.round(data.overall_score) + '%</text>',
-          '    </svg>',
-          '  </div>',
-          '  <div class="col-6 d-flex align-items-center justify-content-center pt-4">',
-          '    <svg height="200" width="250" viewBox="-120 0 300 100" transform="scale(1.6,1.6)">',
-          '      ' + gridLines(),
-          '      <rect x="50" y="-30" transform="rotate(45)" width="50" height="50" fill="#fff" stroke-width="1" stroke="#CBD5E0"/>',
-          '      <line x1="22" y1="50" x2="91" y2="50" stroke-width="1" stroke="#CBD5E0"/>',
-          '      <line x1="57" y1="15" x2="57" y2="85" stroke-width="1" stroke="#CBD5E0"/>',
-          '      <path fill="#428BCA4A" stroke-linecap="round" stroke-width="1" stroke="#8499B3" d="' + pathD + '"/>',
-          '      <text x="10" y="50" text-anchor="end" dy="7" font-size="8">' + catLabel('Reusable') + '</text>',
-          '      <text x="57" y="0" text-anchor="middle" dy="7" font-size="8">' + catLabel('Findable') + '</text>',
-          '      <text x="95" y="50" text-anchor="start" dy="7" font-size="8">' + catLabel('Accessible') + '</text>',
-          '      <text x="57" y="90" text-anchor="middle" dy="7" font-size="8">' + catLabel('Interoperable') + '</text>',
-          '    </svg>',
-          '  </div>',
-          '</div>'
-        ].join('');
-      })
-      .catch(function() {
-        container.innerHTML = '<p class="text-muted text-center py-3">Unable to load FOOPS! assessment.</p>';
-      });
-  })();
+    %div#foops-score-charts-container
+      = render partial: "fairs_score", locals: { id_prefix: "ont-foops", controller_name: "foops-score-summary", scores_data: @foops_scores_data }
+    .account-page-card-sub-container
