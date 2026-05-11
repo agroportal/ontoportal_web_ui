@@ -48,7 +48,7 @@ module FairScoreHelper
   end
 
   def get_foops_score(ontology)
-    ontology_uri = "#{$UI_URL}/ontologies/#{ontology.acronym}"
+    ontology_uri = "https://agroportal.eu/ontologies/#{ontology.acronym}"
     cache_key = "foops-v2-#{ontology.acronym}"
 
     if Rails.cache.exist?(cache_key)
@@ -77,6 +77,88 @@ module FairScoreHelper
     end
     MultiJson.use :oj
     MultiJson.load(out) rescue {}
+  end
+
+  def create_foops_raw_scores_data(foops_json)
+    return nil if foops_json.nil? || foops_json['checks'].nil? || foops_json['checks'].empty?
+
+    checks = foops_json['checks']
+    overall = (foops_json['overall_score'].to_f * 100).round(2)
+
+    # Group checks by principle_id (F1, A1, R1, etc.) → O'FAIRe criteria
+    criteria_data = Hash.new { |h, k| h[k] = { checks: [] } }
+    checks.each { |c| criteria_data[c['principle_id']][:checks] << c }
+
+    # Prepare output in fair_scores_data format
+    out = {
+      score: overall,
+      normalizedScore: overall,
+      minScore: 0,
+      maxScore: 100,
+      medianScore: overall,
+      maxCredits: 0,
+      principles: {
+        labels: [], scores: [], normalizedScores: [],
+        maxCredits: [], portalMaxCredits: []
+      },
+      criteria: {
+        labels: [], scores: [], normalizedScores: [],
+        portalMaxCredits: [], questions: [],
+        maxCredits: [], descriptions: []
+      }
+    }
+
+    # FOOPS! formula: each check contributes ratio = passed/run, equally weighted
+    # Per-principle/criterion = average of check ratios
+    principle_order = { 'F' => 1, 'A' => 2, 'I' => 3, 'R' => 4 }
+    principle_map = { 'F' => 'Findable', 'A' => 'Accessible', 'I' => 'Interoperable', 'R' => 'Reusable' }
+    principles = Hash.new { |h, k| h[k] = { sum_ratios: 0.0, n: 0 } }
+
+    # Sort criteria: F first, then A, then I, then R; numerically within each principle
+    criteria_data.sort_by { |pid, _| [principle_order[pid[0]] || 99, pid] }.each do |pid, data|
+      # Per-check ratio = passed / run (safe division)
+      ratios = data[:checks].map { |c| c['total_passed_tests'].to_f / [c['total_tests_run'].to_f, 1].max }
+      sum_ratios = ratios.sum
+      n_checks = ratios.size
+      avg_ratio = n_checks > 0 ? sum_ratios / n_checks : 0.0
+
+      out[:criteria][:labels] << pid
+      out[:criteria][:descriptions] << "Checks: #{data[:checks].map { |c| c['abbreviation'] }.join(', ')}"
+      out[:criteria][:scores] << sum_ratios.round(4)
+      out[:criteria][:normalizedScores] << (avg_ratio * 100).round(2)
+      out[:criteria][:maxCredits] << n_checks
+      out[:criteria][:portalMaxCredits] << n_checks
+
+      # Questions hash — each FOOPS! check becomes one question
+      questions = {}
+      data[:checks].each do |check|
+        questions[check['abbreviation']] = {
+          'question'    => check['title'],
+          'explanation' => check['explanation'],
+          'score'       => check['total_passed_tests'].to_f,
+          'maxCredits'  => check['total_tests_run'].to_f,
+          'points'      => [],
+          'properties'  => {
+            'references' => check['reference_resources']&.join(', ')
+          }.compact
+        }
+      end
+      out[:criteria][:questions] << questions
+
+      principles[pid[0]][:sum_ratios] += sum_ratios
+      principles[pid[0]][:n] += n_checks
+    end
+
+    %w[F A I R].each do |pk|
+      out[:principles][:labels] << principle_map[pk]
+      p_data = principles[pk]
+      out[:principles][:scores] << p_data[:sum_ratios].round(4)
+      out[:principles][:normalizedScores] << (p_data[:n] > 0 ? (p_data[:sum_ratios] / p_data[:n] * 100).round(2) : 0.0)
+      out[:principles][:maxCredits] << p_data[:n]
+      out[:principles][:portalMaxCredits] << p_data[:n]
+    end
+
+    out
   end
 
   def parse_foops_data(foops_res)
