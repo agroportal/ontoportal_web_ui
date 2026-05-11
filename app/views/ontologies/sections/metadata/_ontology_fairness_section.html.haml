@@ -1,14 +1,14 @@
 - if fairness_service_enabled? && @ontology.acronym != 'AGROVOC' && @fair_scores_data
-  = render SummarySectionComponent.new(title: t("ontologies.sections.metadata.fair_score_title")) do |s|
-    - s.action_link do
-      = render partial: "fair_score/fair_service_header"
-
-    %div.p-2
-      %section.ont-metadata-card.ont-fair-score-card#fair-summary
-        %div.ont-section-toolbar.justify-content-between.flex-row-reverse
-          %div.align-items-start
-            .btn.btn-primary.rounded-pill.right-button
-              .span{ style: 'cursor: default;' }= t("ontologies.sections.metadata.total_score", score: @fair_scores_data[:score], normalized_score: @fair_scores_data[:normalizedScore])
+  .summary-card
+    .fair-section-head
+      %h3.fair-section-title O'FAIRe
+      .fair-section-actions
+        = render partial: "fair_score/fair_service_header"
+    %section#fair-summary
+      %div.ont-section-toolbar.justify-content-between.flex-row-reverse
+        %div.align-items-start
+          .btn.btn-primary.rounded-pill.right-button
+            .span{ style: 'cursor: default;' }= t("ontologies.sections.metadata.total_score", score: @fair_scores_data[:score], normalized_score: @fair_scores_data[:normalizedScore])
 
       %div#fair-score-charts-container
         = render partial: "fairs_score"
