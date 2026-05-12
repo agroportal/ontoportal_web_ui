@@ -48,7 +48,7 @@ module FairScoreHelper
   end
 
   def get_foops_score(ontology)
-    ontology_uri = "https://agroportal.eu/ontologies/#{ontology.acronym}"
+    ontology_uri = "#{$UI_URL}/ontologies/#{ontology.acronym}"
     cache_key = "foops-v2-#{ontology.acronym}"
 
     if Rails.cache.exist?(cache_key)
@@ -114,6 +114,20 @@ module FairScoreHelper
     principle_map = { 'F' => 'Findable', 'A' => 'Accessible', 'I' => 'Interoperable', 'R' => 'Reusable' }
     principles = Hash.new { |h, k| h[k] = { sum_ratios: 0.0, n: 0 } }
 
+    # Expressive descriptions for each FOOPS! principle
+    foops_descriptions = {
+      'F1' => 'Verifies the ontology has a persistent URL and its URI is resolvable',
+      'F2' => 'Verifies the ontology declares minimum metadata: title, description, license, version IRI, creator, and namespace URI',
+      'F3' => 'Verifies the ontology prefix is declared in the metadata',
+      'F4' => 'Verifies the ontology is registered in prefix.cc or LOV and found in a community registry',
+      'A1' => 'Verifies content negotiation is available for RDF serializations (RDF/XML, TTL, N-Triples, JSON-LD)',
+      'A2' => 'Verifies ontology metadata remain accessible through public registries even when the ontology is unavailable',
+      'I1' => 'Verifies the ontology is available in a valid RDF serialization (TTL, N3, RDF/XML or JSON-LD)',
+      'R1' => 'Verifies the ontology has HTML documentation, recommended metadata, and detailed metadata (DOI, publisher, logo, status, source, issued date)',
+      'R1.1' => 'Verifies the ontology has a license declared and the license URL is resolvable',
+      'R1.2' => 'Verifies basic provenance metadata (creator, creation date) and detailed provenance (issued date, publisher) are declared'
+    }
+
     # Sort criteria: F first, then A, then I, then R; numerically within each principle
     criteria_data.sort_by { |pid, _| [principle_order[pid[0]] || 99, pid] }.each do |pid, data|
       # Per-check ratio = passed / run (safe division)
@@ -123,7 +137,7 @@ module FairScoreHelper
       avg_ratio = n_checks > 0 ? sum_ratios / n_checks : 0.0
 
       out[:criteria][:labels] << pid
-      out[:criteria][:descriptions] << "Checks: #{data[:checks].map { |c| c['abbreviation'] }.join(', ')}"
+      out[:criteria][:descriptions] << (foops_descriptions[pid] || data[:checks].map { |c| c['title'] }.join('; '))
       out[:criteria][:scores] << sum_ratios.round(4)
       out[:criteria][:normalizedScores] << (avg_ratio * 100).round(2)
       out[:criteria][:maxCredits] << n_checks
