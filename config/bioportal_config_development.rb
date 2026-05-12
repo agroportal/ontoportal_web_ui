@@ -40,6 +40,11 @@ $REST_URL = ENV['API_URL']
 
 $SPARQL_ENDPOINT_URL = ENV['SPARQL_ENDPOINT_URL'] || nil
 
+# AI-powered SPARQL query generator (OpenAI-compatible chat completions API)
+$AI_SPARQL_BASE_URL = ENV['AI_SPARQL_BASE_URL']
+$AI_SPARQL_API_KEY = ENV['AI_SPARQL_API_KEY']
+$AI_SPARQL_MODEL = ENV['AI_SPARQL_MODEL']
+
 $SIDEKIQ_UI_URL = ENV['SIDEKIQ_UI_URL'] || $REST_URL + "sidekiq"
 # Annotator REST service address
 # $ANNOTATOR_URL = "http://services.stageportal.lirmm.fr/annotator"

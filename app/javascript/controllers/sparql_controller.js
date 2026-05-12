@@ -6,12 +6,17 @@ export default class extends Controller {
     proxy: String,
     apikey: String,
     graph: String,
-    sampleQueries: Array
+    sampleQueries: Array,
+    aiEnabled: Boolean,
+    aiGenerateUrl: String
   }
+
+  static targets = ['yasgui', 'aiPanel', 'aiPrompt', 'aiButton', 'aiStatus']
 
   connect() {
     localStorage.removeItem('yagui__config');
-    this.yasgui = getYasgui(this.element,
+    const yasguiHost = this.hasYasguiTarget ? this.yasguiTarget : this.element;
+    this.yasgui = getYasgui(yasguiHost,
       {
         copyEndpointOnNewTab: true,
         requestConfig: {
@@ -25,6 +30,89 @@ export default class extends Controller {
 
     this.#setupSaveButton()
 
+  }
+
+  aiGenerate(event) {
+    if (event && event.type === 'keydown') {
+      if (event.shiftKey) return;
+      event.preventDefault();
+    }
+
+    if (!this.aiEnabledValue || !this.aiGenerateUrlValue) return;
+    if (!this.hasAiPromptTarget) return;
+
+    const prompt = this.aiPromptTarget.value.trim();
+    if (!prompt) {
+      this.#setAiStatus('Please enter a prompt.', 'error');
+      return;
+    }
+
+    const tab = this.yasgui.getTab();
+    const currentQuery = tab ? tab.getQuery() : '';
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    this.#setAiBusy(true);
+    this.#setAiStatus('Generating SPARQL query…', 'info');
+
+    const payload = {
+      prompt,
+      graph: this.graphValue || null,
+      current_query: currentQuery || null
+    };
+
+    fetch(this.aiGenerateUrlValue, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-Token': csrfToken || ''
+      },
+      body: JSON.stringify(payload)
+    })
+      .then(async (response) => {
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(data.error || `Request failed (${response.status})`);
+        }
+        return data;
+      })
+      .then((data) => {
+        if (!data.query) throw new Error('Empty response from AI service');
+        this.#applyGeneratedQuery(data.query);
+        this.#setAiStatus('Query generated. Review and run it.', 'success');
+      })
+      .catch((err) => {
+        console.error('AI SPARQL generation failed:', err);
+        this.#setAiStatus(err.message || 'Failed to generate query', 'error');
+      })
+      .finally(() => {
+        this.#setAiBusy(false);
+      });
+  }
+
+  #applyGeneratedQuery(query) {
+    const trimmed = query.trim();
+    let tab = this.yasgui.getTab();
+    if (!tab) {
+      tab = this.yasgui.addTab(true, { name: 'AI query' });
+    }
+    tab.setQuery(trimmed);
+  }
+
+  #setAiBusy(busy) {
+    if (this.hasAiButtonTarget) {
+      this.aiButtonTarget.disabled = busy;
+      this.aiButtonTarget.classList.toggle('is-loading', busy);
+    }
+    if (this.hasAiPromptTarget) {
+      this.aiPromptTarget.disabled = busy;
+    }
+  }
+
+  #setAiStatus(message, type) {
+    if (!this.hasAiStatusTarget) return;
+    this.aiStatusTarget.textContent = message || '';
+    this.aiStatusTarget.dataset.state = type || '';
   }
 
   #proxyUrl() {

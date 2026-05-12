@@ -1574,13 +1574,18 @@ fr:
     show_advanced_options: Afficher les options
   show_advanced_options: Afficher les options avancées
   statistics:
+    agents: Agents
     date: Date
+    description: "Évolution des ressources de %{portal} en chiffres (dernières %{last_years} années)."
     lead: "(dernières %{last_years} années)"
     ontologies: Ontologies
     ontology_visits: Visites de l'ontologie
     projects: Projets
+    this_month: ce mois-ci
     title: Statistiques de %{portal}
     users: Utilisateurs
+  table:
+    all: Tous
   submission_inputs:
     name: Nom
     acronym: Acronyme
@@ -1820,3 +1825,8 @@ fr:
     title: Éditeur de requêtes SPARQL
     private_ontology_warning: Rendez l'ontologie publique pour activer l'accès depuis l’endpoint SPARQL.
     edit_sample_queries: Éditer les requêtes d'exemple
+    ai_assistant:
+      title: Assistant SPARQL IA
+      hint: Décrivez votre besoin en langage naturel — l’IA générera une requête SPARQL.
+      placeholder: ex. Lister toutes les ontologies ayant plus de 1000 classes
+      generate: Générer

@@ -1524,13 +1524,18 @@ en:
     show_advanced_options: Show options
   show_advanced_options: Show advanced options
   statistics:
+    agents: Agents
     date: Date
+    description: "Evolution of resources in %{portal} through numbers (last %{last_years} years)."
     lead: "(last %{last_years} years)"
     ontologies: Ontologies
     ontology_visits: Ontology visits
     projects: Projects
+    this_month: this month
     title: "%{portal} Statistics"
     users: Users
+  table:
+    all: All
   submission_inputs:
     name: Name
     acronym: Acronym
@@ -1764,3 +1769,8 @@ en:
     title: SPARQL Query Editor
     private_ontology_warning: Make the ontology public to enable access from the SPARQL endpoint.
     edit_sample_queries: Edit sample queries
+    ai_assistant:
+      title: AI SPARQL Assistant
+      hint: Describe what you want in plain English — the AI will draft a SPARQL query.
+      placeholder: e.g. List all ontologies that have more than 1000 classes
+      generate: Generate
