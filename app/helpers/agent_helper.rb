@@ -319,27 +319,31 @@ module AgentHelper
   end
 
   def agents_create_button
-    link_to_modal(
-      nil,
-      new_agent_path,
-      id: "new_agent_btn",
-      role: "button",
-      data: {
-        show_modal_title_value: t("agents.index.create_new_agent"),
-        show_modal_size_value: "modal-xl"
-      }
-    ) do
-      regular_button(
-        "new_agent_btn",
-        t("agents.index.create_new_agent"),
-        variant: "secondary",
-        state: "regular",
-        size: nil
-      ) do |btn|
-        btn.icon_left do
-          inline_svg_tag "icons/plus.svg"
-        end
+    button = regular_button(
+      "new_agent_btn",
+      t("agents.index.create_new_agent"),
+      variant: "secondary",
+      state: "regular",
+      size: nil
+    ) do |btn|
+      btn.icon_left do
+        inline_svg_tag "icons/plus.svg"
       end
+    end
+
+    if session[:user]
+      link_to_modal(
+        nil,
+        new_agent_path,
+        id: "new_agent_btn",
+        role: "button",
+        data: {
+          show_modal_title_value: t("agents.index.create_new_agent"),
+          show_modal_size_value: "modal-xl"
+        }
+      ) { button }
+    else
+      link_to(button, "/login?redirect=#{CGI.escape(agents_path)}", id: "new_agent_btn", role: "button")
     end
   end
   def agents_edit_button
