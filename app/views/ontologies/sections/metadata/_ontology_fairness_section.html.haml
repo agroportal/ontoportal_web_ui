@@ -1,16 +1,14 @@
 - if fairness_service_enabled? && @ontology.acronym != 'AGROVOC' && @fair_scores_data
   .summary-card
     .fair-section-head
-      %h3.fair-section-title O'FAIRe
-      .fair-section-actions
-        = image_tag "logos/ofaire.png", height: "25", class: "me-2", style: "vertical-align: middle;"
-        = render partial: "fair_score/fair_service_header"
+      .d-flex.align-items-center.gap-3
+        %h3.fair-section-title O'FAIRe
+        .fair-section-actions
+          = image_tag "logos/ofaire.png", height: "43", class: "me-2", style: "vertical-align: middle;"
+          = render partial: "fair_score/fair_service_header"
+      .btn.btn-primary.rounded-pill.right-button
+        .span{ style: 'cursor: default;' }= t("ontologies.sections.metadata.total_score", score: @fair_scores_data[:score], normalized_score: @fair_scores_data[:normalizedScore])
     %section#fair-summary
-      %div.ont-section-toolbar.justify-content-between.flex-row-reverse
-        %div.align-items-start
-          .btn.btn-primary.rounded-pill.right-button
-            .span{ style: 'cursor: default;' }= t("ontologies.sections.metadata.total_score", score: @fair_scores_data[:score], normalized_score: @fair_scores_data[:normalizedScore])
-
       %div#fair-score-charts-container
         = render partial: "fairs_score"
       .account-page-card-sub-container

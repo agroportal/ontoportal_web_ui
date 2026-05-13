@@ -1,19 +1,17 @@
 .summary-card
   .fair-section-head
-    %h3.fair-section-title FOOPS!
-    .fair-section-actions
-      = image_tag "logos/foopsLogo.png", height: "25", class: "me-2", style: "vertical-align: middle;"
-      = info_tooltip(content_tag(:div, t("fair_score.foops_description"), style: "width: 320px"), interactive: false)
-      = render IconWithTooltipComponent.new(icon: 'json.svg', link: "/ajax/fair_score/foops_json?ontologies=#{acronym}", target: '_blank', title: t('fair_score.go_to_api'), size: 'small', style: 'vertical-align: middle;')
+    .d-flex.align-items-center.gap-3
+      %h3.fair-section-title FOOPS!
+      .fair-section-actions
+        = image_tag "logos/foopsLogo.png", height: "25", class: "me-2", style: "vertical-align: middle;"
+        = info_tooltip(content_tag(:div, t("fair_score.foops_description"), style: "width: 320px"), interactive: false)
+        = render IconWithTooltipComponent.new(icon: 'json.svg', link: "/ajax/fair_score/foops_json?ontologies=#{acronym}", target: '_blank', title: t('fair_score.go_to_api'), size: 'small', style: 'vertical-align: middle;')
+    .btn.btn-primary.rounded-pill.right-button
+      %span#foops-total-score{ style: 'cursor: default;' }
+        - if @foops_scores_data
+          = t("ontologies.sections.metadata.total_score", score: @foops_scores_data[:score], normalized_score: @foops_scores_data[:normalizedScore])
 
   %section#foops-summary
-    %div.ont-section-toolbar.justify-content-between.flex-row-reverse
-      %div.align-items-start
-        .btn.btn-primary.rounded-pill.right-button
-          %span#foops-total-score{ style: 'cursor: default;' }
-            - if @foops_scores_data
-              = t("ontologies.sections.metadata.total_score", score: @foops_scores_data[:score], normalized_score: @foops_scores_data[:normalizedScore])
-
     %div#foops-score-charts-container
       = render partial: "fairs_score", locals: { id_prefix: "ont-foops", controller_name: "foops-score-summary", scores_data: @foops_scores_data }
     .account-page-card-sub-container

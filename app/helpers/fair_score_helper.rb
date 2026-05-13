@@ -48,7 +48,7 @@ module FairScoreHelper
   end
 
   def get_foops_score(ontology)
-    ontology_uri = "#{$UI_URL}/ontologies/#{ontology.acronym}"
+    ontology_uri = "https://agroportal.eu/ontologies/#{ontology.acronym}"
     cache_key = "foops-v2-#{ontology.acronym}"
 
     if Rails.cache.exist?(cache_key)

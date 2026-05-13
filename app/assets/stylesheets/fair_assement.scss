@@ -192,9 +192,8 @@ $non_applicable_color :  rgba(176, 190, 197, 0.4);
 .fair-section-head {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   padding: 12px 16px 0 16px;
-  gap: 16px;
 
   .fair-section-title {
     margin: 0;
