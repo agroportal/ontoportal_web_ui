@@ -1772,5 +1772,5 @@ en:
     ai_assistant:
       title: AI SPARQL Assistant
       hint: Describe what you want in plain English — the AI will draft a SPARQL query.
-      placeholder: e.g. List all ontologies that have more than 1000 classes
+      placeholder: List SKOS Concepts with English Preferred Labels and Definitions
       generate: Generate

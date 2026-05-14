@@ -1828,5 +1828,5 @@ fr:
     ai_assistant:
       title: Assistant SPARQL IA
       hint: Décrivez votre besoin en langage naturel — l’IA générera une requête SPARQL.
-      placeholder: ex. Lister toutes les ontologies ayant plus de 1000 classes
+      placeholder: Lister les concepts SKOS avec leurs libellés préférés et définitions en anglais
       generate: Générer
