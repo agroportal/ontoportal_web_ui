@@ -83,7 +83,7 @@ module AgentHelper
   end
 
 
-  def agent_identifier_input(index, name_prefix, value = '', is_organization: true)
+  def agent_identifier_input(index, name_prefix, value = '', is_organization: true, input_data: nil)
 
     content_tag :div, id: index, class: 'd-flex' do
       content_tag(:div, class: 'w-100') do
@@ -94,7 +94,9 @@ module AgentHelper
         else
           concat inline_svg_tag('orcid.svg', class: 'agent-input-icon')
         end
-        concat text_field_tag(agent_identifier_name(index, :notation, name_prefix), value, class: 'agent-input-with-icon')
+        notation_options = { class: 'agent-input-with-icon' }
+        notation_options[:data] = input_data if input_data
+        concat text_field_tag(agent_identifier_name(index, :notation, name_prefix), value, notation_options)
       end
     end
   end
@@ -275,12 +277,13 @@ module AgentHelper
     if agent.is_a?(String)
       name = agent
       title = nil
+      agent_page_url = nil
     else
       name = agent.agentType.eql?("organization") ? (agent.acronym.presence || agent.name) : agent.name
       agent_icon = agent.agentType.eql?("organization") ? organization_icon : person_icon
       title = agent_tooltip(agent)
+      agent_page_url = agent.id.to_s.include?('/Agents/') ? agents_path + "/#{agent.id.split('/').last}" : nil
     end
-    agent_page_url = agent.id.include?('/Agents/') ? agents_path + "/#{agent.id.split('/').last}" : nil
     render_chip_component(title, agent_icon, name, agent_page_url, target)
   end
 

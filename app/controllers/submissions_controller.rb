@@ -74,7 +74,7 @@ class SubmissionsController < ApplicationController
     category_attributes['general'] << %w[acronym name groups administeredBy sampleQueries]
     category_attributes['licensing'] << 'viewingRestriction'
     category_attributes['relations'] << 'viewOf'
-    category_attributes["description"] << %w[hasDomain categories]
+    category_attributes["description"] << %w[hasDomain subjects]
     category_attributes["usage"].delete("hasDomain")
     @selected_attributes = Array(params[:properties])
     if @selected_attributes.empty?
@@ -103,6 +103,10 @@ class SubmissionsController < ApplicationController
       'Expires' => '0'
     }
     if params[:submission].nil?
+      if params[:attribute] && @ontology
+        @submission = @ontology.explore.submissions({ display: 'submissionId' }, submission_id)
+        return render_submission_attribute(params[:attribute])
+      end
       return redirect_to edit_ontology_submission_path(acronym), headers: headers, notice: t('submissions.submission_updated_successfully')
     end
 

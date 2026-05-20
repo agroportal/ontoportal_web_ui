@@ -7,6 +7,7 @@
   border: none;
   box-shadow: 2px 30px 60px rgba(0, 0, 0, 0.1);
   position: absolute;
+  z-index: 10;
 }
 
 .search-container.search-container-scroll{
@@ -50,6 +51,27 @@
 .search-element{
   margin-bottom: 0;
   max-width: 280px;
+}
+
+.class-picker-display{
+  display: flex;
+  flex-direction: column;
+  padding: 6px 10px;
+  border: 1px solid #e6e6e6;
+  border-radius: 4px;
+  background: #fafafa;
+
+  .class-label_name{
+    margin: 0;
+    font-weight: 500;
+    color: #333;
+    word-break: break-word;
+  }
+
+  .class-uri{
+    color: #777;
+    word-break: break-all;
+  }
 }
 
 .searched-elements{

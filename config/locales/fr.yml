@@ -225,8 +225,10 @@ fr:
       clear_cache: Vider le cache de l'UI
       clear_goo_cache: Vider le cache GOO
       clear_http_cache: Vider le cache HTTP
-      flipper_description: Utilisez Flipper pour contrôler la visibilité de fonctionnalités
-        spécifiques de %{portal_name} dans l'interface utilisateur.
+      flipper_description: 
+        Utilisez Flipper pour contrôler la visibilité des fonctionnalités spécifiques de %{portal_name} dans l'interface utilisateur.
+      sidekiq_description:
+        Utilisez Sidekiq pour surveiller et gérer le traitement des tâches en arrière-plan, les files d'attente et les tâches cron.
       reset_cache: 'Réinitialiser la connexion au cache de l''UI '
       settings: Paramètres
       version_management: Gestion des versions
@@ -255,6 +257,7 @@ fr:
       homepage: Page d'accueil
       identifiers: Identifiants
       name: Nom
+      name_placeholder: Recherchez dans le registre ROR ou créez une nouvelle organisation
       organization: Organisation
       person: Personne
       type: Type
@@ -405,6 +408,10 @@ fr:
     preferred_name: Nom préféré
     type: Type
   components:
+    add_another_object: "Ajouter un autre %{object_name}"
+    class: "classe"
+    contact: "contact"
+    portal: "portail"
     all_languages: Toutes les langues
     back: Retour
     by: par
@@ -1138,6 +1145,7 @@ fr:
       statuts suivants : %{status}'
     ontology_search_prompt: Rechercher une ontologie ou un terme (e.g., hauteur de
       plante)
+    class_search_prompt: Rechercher une classe (e.g., hauteur de plante)
     ontology_submitted: Ontologie soumise avec succès !
     ontology_types: Types d'ontologies
     outside: extérieur
@@ -1581,6 +1589,9 @@ fr:
     title: Statistiques de %{portal}
     users: Utilisateurs
   submission_inputs:
+    name: Nom
+    acronym: Acronyme
+    categories: 'Catégories'
     accounts_allowed: Ajouter ou supprimer des comptes autorisés à voir cette ontologie
       dans %{portal_name}.
     administrators: Administrateurs
@@ -1634,8 +1645,17 @@ fr:
       de version dans une ontologie, consultez %{link}
     version_helper_link: recommandations.
     visibility: Visibilité
+    view_of: Vue de
+    sample_queries: Requêtes d'exemple
+    description: 'Description'
+    status: 'Statut'
+    valid: 'Date de validité'
+    hasOntologyLanguage: 'Langage de représentation'
+    subjects: Sujets
     theme_taxonomy_not_set: Veuillez définir le champ themeTaxonomy dans la page d'administration pour l'utiliser pour la recherche des sujets
-    subjects_notice: "Les 'Subjets' doivent être sélectionnés dans l'ensemble d'ontologies suivant: %{ontologies}. Si vous souhaitez ajouter un autre mot-clés ou termes de vocabulaires, utiliser la propriété 'Keywords'."
+    subjects_notice: "Les 'Subjets' doivent être sélectionnés dans l'ensemble d'ontologies suivant: %{ontologies}. Si vous souhaitez ajouter un autre mot-clé ou terme de vocabulaire, utilisez la propriété 'Mots-clés'."
+    attributes:
+      description: Description
   submissions:
     actions: Actions
     delete_submission_alert:
@@ -1643,6 +1663,7 @@ fr:
       content_2: "</span> pour l'ontologie <span style='color:red;font-weight:bold;'>"
       content_3: "</span> ?<br/><b>Cette action est IRREVERSIBLE !!!</b>"
     download: Télécharger
+    download_metadata: Métadonnées
     edit_button: Éditer
     filter:
       all_formats: Formats
