@@ -48,7 +48,7 @@ module FairScoreHelper
   end
 
   def get_foops_score(ontology)
-    ontology_uri = "https://agroportal.eu/ontologies/#{ontology.acronym}"
+    ontology_uri = "#{$UI_URL}/ontologies/#{ontology.acronym}"
     cache_key = "foops-v2-#{ontology.acronym}"
 
     if Rails.cache.exist?(cache_key)
@@ -70,13 +70,16 @@ module FairScoreHelper
             end
           end
         end
-        puts "Call FOOPS service for: #{ontology.acronym} (#{time}s)"
+        Rails.logger.info "Call FOOPS service for: #{ontology.acronym} (#{time}s)"
       rescue StandardError => e
         Rails.logger.warn "FOOPS unreachable: #{e.message}"
       end
     end
     MultiJson.use :oj
-    MultiJson.load(out) rescue {}
+    MultiJson.load(out)
+  rescue StandardError => e
+    Rails.logger.warn "FOOPS JSON parse error: #{e.message}"
+    {}
   end
 
   def create_foops_raw_scores_data(foops_json)

@@ -4,11 +4,14 @@
     .summary-page-first-row
       = render partial: 'ontologies/sections/metadata/ontology_description_section'
       = render partial: 'ontologies/sections/metadata/ontology_metrics_section'
-      .fairness-section
+      .fairness-section{data: {controller: "fairness-carousel"}}
         %h2.card_title
           %span.mr-2= t("ontologies.sections.metadata.fair_score_title")
           = info_tooltip(t("fair_score.description"))
-        .fairness-carousel{data: {controller: "fairness-carousel"}}
+        .fairness-tabs
+          %button.fairness-tab.active{data: {action: "fairness-carousel#goTo", "fairness-carousel-target": "tab"}} O'FAIRe
+          %button.fairness-tab{data: {action: "fairness-carousel#goTo", "fairness-carousel-target": "tab"}} FOOPS!
+        .fairness-carousel
           .fairness-carousel-viewport
             .fairness-carousel-track{data: {"fairness-carousel-target": "container"}}
               = render partial: 'ontologies/sections/metadata/ontology_fairness_section'

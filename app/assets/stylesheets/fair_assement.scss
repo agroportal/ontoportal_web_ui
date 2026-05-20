@@ -126,6 +126,34 @@ $non_applicable_color :  rgba(176, 190, 197, 0.4);
   color: white !important;
 }
 
+.fairness-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 16px;
+  margin-bottom: 12px;
+
+  .fairness-tab {
+    padding: 6px 16px;
+    border: 1px solid var(--primary-color);
+    border-radius: 20px;
+    background: white;
+    color: var(--primary-color);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    &:hover:not(.active) {
+      opacity: 0.8;
+    }
+  }
+}
+
 .fairness-carousel {
   position: relative;
 

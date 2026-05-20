@@ -394,7 +394,7 @@ class OntologiesController < ApplicationController
     foops_data = parse_foops_data(foops_res)
 
     if foops_data.nil?
-      render json: { error: 'unavailable' }, status: :ok
+      render json: { error: 'unavailable' }, status: :service_unavailable
       return
     end
 
