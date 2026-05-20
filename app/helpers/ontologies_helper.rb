@@ -665,8 +665,6 @@ module OntologiesHelper
     end
   end
 
-  private
-
   def ontology_icon_button(icon, url, title, interactive: false, **options)
     data = { controller: 'tooltip' }
     data['tooltip-interactive-value'] = 'true' if interactive
