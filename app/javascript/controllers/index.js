@@ -109,3 +109,6 @@ application.register('parent-categories-selector', ParentCategoriesSelectorContr
 
 import SubjectsController from "./subjects_controller.js"
 application.register("subjects", SubjectsController)
+
+import PasswordToggleController from "./password_toggle_controller.js"
+application.register("password-toggle", PasswordToggleController)
