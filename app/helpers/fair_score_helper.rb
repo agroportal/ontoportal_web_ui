@@ -117,18 +117,23 @@ module FairScoreHelper
     principle_map = { 'F' => 'Findable', 'A' => 'Accessible', 'I' => 'Interoperable', 'R' => 'Reusable' }
     principles = Hash.new { |h, k| h[k] = { sum_ratios: 0.0, n: 0 } }
 
-    # Expressive descriptions for each FOOPS! principle
+    # FAIR principle descriptions
     foops_descriptions = {
-      'F1' => 'Verifies the ontology has a persistent URL and its URI is resolvable',
-      'F2' => 'Verifies the ontology declares minimum metadata: title, description, license, version IRI, creator, and namespace URI',
-      'F3' => 'Verifies the ontology prefix is declared in the metadata',
-      'F4' => 'Verifies the ontology is registered in prefix.cc or LOV and found in a community registry',
-      'A1' => 'Verifies content negotiation is available for RDF serializations (RDF/XML, TTL, N-Triples, JSON-LD)',
-      'A2' => 'Verifies ontology metadata remain accessible through public registries even when the ontology is unavailable',
-      'I1' => 'Verifies the ontology is available in a valid RDF serialization (TTL, N3, RDF/XML or JSON-LD)',
-      'R1' => 'Verifies the ontology has HTML documentation, recommended metadata, and detailed metadata (DOI, publisher, logo, status, source, issued date)',
-      'R1.1' => 'Verifies the ontology has a license declared and the license URL is resolvable',
-      'R1.2' => 'Verifies basic provenance metadata (creator, creation date) and detailed provenance (issued date, publisher) are declared'
+      'F1' => 'Ontologies and ontology metadata are assigned a globally unique and persistent identifier.',
+      'F2' => 'Ontologies are described with rich ontology metadata.',
+      'F3' => 'Ontology metadata clearly and explicitly include the identifier of the ontology they describe.',
+      'F4' => 'Ontologies and ontology metadata are registered or indexed in a searchable resource typically an ontology repository.',
+      'A1' => 'Ontologies and ontology metadata are retrievable by their identifier using a standardized communication protocol.',
+      'A1.1' => 'The protocol to retrieve ontologies and ontology metadata is open, free and universally implementable.',
+      'A1.2' => 'The protocol to retrieve ontologies and ontology metadata support authentification and authorization when an ontology has access restriction.',
+      'A2' => 'Ontology metadata should be accessible even when the ontology is no longer available.',
+      'I1' => 'Ontologies and ontology metadata use a formal, accessible, shared and broadly applicable language for knowledge representation.',
+      'I2' => 'Ontologies and ontology metadata use vocabularies that follow FAIR principles.',
+      'I3' => 'Ontologies or ontology metadata include qualified references to other (meta)data.',
+      'R1' => 'Ontologies and ontology metadata are richly described with a plurality of accurate and relevant attributes.',
+      'R1.1' => 'Ontologies and ontology metadata are released with a clear and accessible usage license.',
+      'R1.2' => 'Ontologies and ontology metadata are associated with detailed provenance.',
+      'R1.3' => 'Ontologies and ontology metadata meet domain-relevant community standards.'
     }
 
     # Sort criteria: F first, then A, then I, then R; numerically within each principle
