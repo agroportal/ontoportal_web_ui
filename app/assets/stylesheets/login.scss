@@ -64,13 +64,13 @@
 
 .password-toggle-wrapper {
     position: relative;
-    display: block;
-    width: 100%;
+    display: inline-block;
 }
 
 .password-toggle-wrapper input {
     margin-bottom: 0;
     box-sizing: border-box;
+    padding-right: 40px;
 }
 
 .password-toggle-btn {
