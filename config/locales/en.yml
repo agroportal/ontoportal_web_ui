@@ -216,8 +216,10 @@ en:
       clear_cache: Flush UI cache
       clear_goo_cache: Flush GOO cache
       clear_http_cache: Flush HTTP cache
-      flipper_description: Use Flipper to control the visibility of specific %{portal_name}
-        features within the user interface.
+      flipper_description: 
+        Use Flipper to control the visibility of specific %{portal_name} features within the user interface.
+      sidekiq_description:
+        Use Sidekiq to monitor and manage background job processing, queues, and cron jobs.
       reset_cache: Reset UI cache connection
       settings: Settings
       version_management: Version management
@@ -248,6 +250,7 @@ en:
       identifiers: Identifiers
       identifier: Identifier
       name: Name
+      name_placeholder: Lookup the ROR registry or create a new organization
       organization: Organization
       person: Person
       type: Type
@@ -395,6 +398,10 @@ en:
     preferred_name: Preferred name
     type: Type
   components:
+    add_another_object: "Add another %{object_name}"
+    class: "class"
+    contact: "contact"
+    portal: "portal"
     all_languages: All languages
     back: Back
     by: by
@@ -1095,6 +1102,7 @@ en:
     ontology_processing_failed: 'The ontology processing failed, with the current
       statuses: %{status}'
     ontology_search_prompt: Search an ontology or a term (e.g., plant height)
+    class_search_prompt: Search a class (e.g., plant height)
     ontology_submitted: Ontology submitted successfully!
     ontology_types: Ontology types
     outside: outside
@@ -1524,6 +1532,9 @@ en:
     title: "%{portal} Statistics"
     users: Users
   submission_inputs:
+    name: Name
+    acronym: Acronym
+    categories: Categories
     accounts_allowed: Add or remove accounts that are allowed to see this ontology
       in %{portal_name}.
     administrators: Administrators
@@ -1579,8 +1590,15 @@ en:
       an ontology, see %{link}
     version_helper_link: guidelines and recommendations.
     visibility: Visibility
+    view_of: View of
+    sample_queries: Sample queries
+    subjects: Subjects
     theme_taxonomy_not_set: Please set the themeTaxonomy field in the admin page to use it for subjects search
     subjects_notice: "The 'Subjects' must be selected from the following set of ontologies: %{ontologies}. If you wish to add another keyword or controlled term, use the 'Keywords' property."
+    description: 'Description'
+    status: 'Status'
+    valid: 'Valid date'
+    hasOntologyLanguage: 'Representation language'
   submissions:
     actions: Actions
     delete_submission_alert:
@@ -1588,6 +1606,7 @@ en:
       content_2: "</span> for ontology <span style='color:red;font-weight:bold;'>"
       content_3: "</span>?<br/><b>This action CAN NOT be undone!!!</b>"
     download: Download
+    download_metadata: Metadata
     edit_button: Edit
     filter:
       all_formats: Formats
