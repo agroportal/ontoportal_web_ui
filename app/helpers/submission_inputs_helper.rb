@@ -25,13 +25,13 @@ module SubmissionInputsHelper
     end
 
     def values
-      @submission.send(@attr_metadata['attribute'])
+      @submission.send(@attr_metadata['attribute']) if @attr_metadata && @submission
     rescue StandardError
       nil
     end
 
     def help_text
-      CGI.unescape_html(@attr_metadata['helpText']) if @attr_metadata['helpText']
+      CGI.unescape_html(@attr_metadata['helpText']) if @attr_metadata && @attr_metadata['helpText']
     end
 
     def label
@@ -41,7 +41,7 @@ module SubmissionInputsHelper
     end
 
     def type?(type)
-      @attr_metadata['enforce'].include?(type)
+      @attr_metadata && @attr_metadata['enforce'] && @attr_metadata['enforce'].include?(type)
     end
 
     def metadata
@@ -49,7 +49,7 @@ module SubmissionInputsHelper
     end
 
     def required?
-      Array(@attr_metadata['enforce']).include?('existence')
+      @attr_metadata && Array(@attr_metadata['enforce']).include?('existence')
     end
   end
 
@@ -85,6 +85,8 @@ module SubmissionInputsHelper
       end
     elsif attr.type?('isOntology')
       generate_select_input(attr, multiple: attr['enforce'].include?('list'))
+    elsif ontology_class_attribute?(attr.attr_key)
+      generate_ontology_class_picker_input(attr)
     elsif attr.type?('uri')
       generate_url_input(attr, helper_text: help)
     elsif attr.type?('boolean')
@@ -108,11 +110,11 @@ module SubmissionInputsHelper
 
   end
 
-  def ontology_name_input(ontology = @ontology, label: 'Name')
+  def ontology_name_input(ontology = @ontology, label: t('submission_inputs.name'))
     text_input(name: 'ontology[name]', value: ontology.name, label: label_required(label))
   end
 
-  def ontology_acronym_input(ontology = @ontology, update: @is_update_ontology, label: 'Acronym')
+  def ontology_acronym_input(ontology = @ontology, update: @is_update_ontology, label: t('submission_inputs.acronym'))
     out = text_input(name: 'ontology[acronym]', value: ontology.acronym, disabled: update, label: label_required(label))
     out += hidden_field_tag('ontology[acronym]', ontology.acronym) if update
     out
@@ -130,45 +132,64 @@ module SubmissionInputsHelper
     categories ||= LinkedData::Client::Models::Category.all(display_links: false, display_context: false)
     categories_children = categories_with_children(categories)
     categories_parents = categories_with_parents(categories_children)
+    field_name = 'ontology[hasDomain][]'
 
-    render Input::InputFieldComponent.new(name: '', label: 'Categories') do
-      content_tag(:div, class: 'upload-ontology-chips-container', 'data-controller': 'parent-categories-selector',
-      'data-parent-categories-selector-categories-children-value': "#{categories_children.to_json}",
-      'data-parent-categories-selector-categories-parents-value': "#{categories_parents.to_json}",
-      'data-parent-categories-selector-target': "chips") do
-        hidden_field_tag('ontology[hasDomain][]') +
-        categories.map do |category|
-          content_tag(:div, 'data-action': 'click->parent-categories-selector#check') do
-            category_chip_component(id: category[:acronym], name: "ontology[hasDomain][]",
-                                    object: category, value: category[:id],
-                                    checked: ontology.hasDomain&.any? { |x| x.eql?(category[:id]) })
-            end
-          end.join.html_safe
+    input_field = -> {
+      render Input::InputFieldComponent.new(name: '', label: t('submission_inputs.categories')) do
+        content_tag(:div, class: 'upload-ontology-chips-container', 'data-controller': 'parent-categories-selector',
+        'data-parent-categories-selector-categories-children-value': "#{categories_children.to_json}",
+        'data-parent-categories-selector-categories-parents-value': "#{categories_parents.to_json}",
+        'data-parent-categories-selector-target': "chips") do
+          hidden_field_tag(field_name) +
+          categories.map do |category|
+            content_tag(:div, 'data-action': 'click->parent-categories-selector#check') do
+              category_chip_component(id: category[:acronym], name: field_name,
+                                      object: category, value: category[:id],
+                                      checked: ontology.hasDomain&.any? { |x| x.eql?(category[:id]) })
+              end
+            end.join.html_safe
+        end
       end
+    }
+
+    return input_field.call unless inline_save?
+
+    tag.div(class: 'd-flex w-100 mb-3') do
+      html = tag.div(class: 'flex-grow-1 mr-1') do
+        input_field.call
+      end
+      html += tag.div(class: 'd-flex') do
+        (save_button(attribute: 'hasDomain') + cancel_button(cancel_link(attribute: 'hasDomain'))).html_safe
+      end
+      html
     end
   end
 
   def ontology_submission_subjects_input
     attr_key = "hasDomain"
-    label = "Subjects"
+    label = t('submission_inputs.subjects')
     attr = SubmissionMetadataInput.new(attribute_key: attr_key, submission: @submission, label: label, attr_metadata: attr_metadata(attr_key))
     ontologies = get_theme_taxonomy_ontologies || []
     resolved_subjects = []
     attr.values.each do |subject|
-      resolved_subjects << {value: subject, label: resolve_subject_uri(subject, ontologies)[:text]} 
+      resolved_subjects << {value: subject, label: resolve_subject_uri(subject, ontologies)[:text]}
     end
-    output = render(TurboFrameComponent.new(id: "submission#{attr}_from_group_input")) do
+    render(TurboFrameComponent.new(id: "submission#{attr_key}_from_group_input")) do
       tag.div(class: 'd-flex w-100 mb-3') do
         html = tag.div(class: 'flex-grow-1 mr-1') do
           render Input::InputFieldComponent.new(name: '', label: attr_header_label(attr, label, show_tooltip: true), error_message: attribute_error(attr_key.to_sym)) do
             render SubjectsSearchInputComponent.new(attr: attr, attr_key: attr_key, values: resolved_subjects, ontologies: ontologies)
           end
         end
+
+        if inline_save?
+          html += tag.div(class: 'd-flex') do
+            (save_button(attribute: 'subjects') + cancel_button(cancel_link(attribute: 'subjects'))).html_safe
+          end
+        end
         html
       end
     end
-
-    return output
   end
 
   def ontology_skos_language_help
@@ -206,7 +227,7 @@ module SubmissionInputsHelper
   def has_ontology_language_input(submission = @submission)
     render(Layout::RevealComponent.new(possible_values: %w[SKOS OBO UMLS OWL], selected: submission.hasOntologyLanguage)) do |c|
       c.button do
-        attribute_input("hasOntologyLanguage")
+        attribute_input("hasOntologyLanguage", label: t('submission_inputs.hasOntologyLanguage'))
       end
 
       c.container { ontology_skos_language_help }
@@ -265,7 +286,8 @@ module SubmissionInputsHelper
       end
       c.container do
         content_tag(:div) do
-          render SelectInputComponent.new(id: 'viewOfSelect', values: onts_for_select, name: 'ontology[viewOf]', selected: ontology.viewOf&.split('/')&.last)
+          filtered_values = onts_for_select.reject { |label, acronym| acronym == ontology.acronym }
+          render SelectInputComponent.new(id: 'viewOfSelect', values: filtered_values, name: 'ontology[viewOf]', selected: ontology.viewOf&.split('/')&.last)
         end
       end
     end
@@ -430,6 +452,47 @@ module SubmissionInputsHelper
 
   end
 
+  def ontology_class_attribute?(attr_key)
+    ontology_class_list_attribute?(attr_key) || ontology_class_single_attribute?(attr_key)
+  end
+
+  def ontology_class_list_attribute?(attr_key)
+    %w[keyClasses].include?(attr_key.to_s)
+  end
+
+  def ontology_class_single_attribute?(attr_key)
+    %w[obsoleteParent exampleIdentifier].include?(attr_key.to_s)
+  end
+
+  def generate_ontology_class_picker_input(attr)
+    multiple = ontology_class_list_attribute?(attr.attr_key)
+    values = Array(attr.values).reject(&:blank?).map do |uri|
+      { value: uri, label: resolve_ontology_class_label(uri, @ontology.acronym) }
+    end
+    render Input::InputFieldComponent.new(name: '', label: attr_header_label(attr), error_message: attribute_error(attr.attr)) do
+      render OntologyClassSearchInputComponent.new(ontology_acronym: @ontology.acronym,
+                                                   name_prefix: attr.name,
+                                                   values: values,
+                                                   multiple: multiple)
+    end
+  end
+
+  def resolve_ontology_class_label(class_uri, ontology_acronym)
+    return class_uri if class_uri.blank? || ontology_acronym.blank?
+
+    response = LinkedData::Client::HTTP.get(
+      "#{rest_url}/ontologies/#{ontology_acronym}/classes/#{CGI.escape(class_uri.strip)}",
+      lang: portal_lang,
+      display_context: false,
+      display_links: false,
+      include: 'prefLabel'
+    )
+
+    main_language_label(response&.prefLabel).presence || class_uri
+  rescue StandardError
+    class_uri
+  end
+
   def generate_url_input(attr, helper_text: nil)
     label = attr_header_label(attr)
     values = attr.values
@@ -537,25 +600,29 @@ module SubmissionInputsHelper
     label = attr.label
     help = attr.help_text
     required = attr.required?
-    attr = attr.metadata
-    attribute = !attr['namespace'].nil? ? "#{attr['namespace']}:#{attr['attribute']}" : "bioportal:#{attr['attribute']}"
+    metadata = attr.metadata
+    if metadata
+      attribute = !metadata['namespace'].nil? ? "#{metadata['namespace']}:#{metadata['attribute']}" : "bioportal:#{metadata['attribute']}"
+    else
+      attribute = attr.attr_key.to_s
+    end
 
     title = content_tag(:span, "#{label} (#{attribute})")
     title += content_tag(:span, 'required', class: 'badge badge-danger mx-1') if required
 
     render SummarySectionComponent.new(title: title, show_card: false) do
       help_text = ''
-      unless attr['metadataMappings'].nil?
-        help_text += render(FieldContainerComponent.new(label: t('submission_inputs.equivalents'), value: attr['metadataMappings'].join(', ')))
+      if metadata && !metadata['metadataMappings'].nil?
+        help_text += render(FieldContainerComponent.new(label: t('submission_inputs.equivalents'), value: metadata['metadataMappings'].join(', ')))
       end
 
-      unless attr['enforce'].nil? || attr['enforce'].empty?
-        help_text += render(FieldContainerComponent.new(label: t('submission_inputs.validators'), value: attr['enforce'].map do |x|
+      if metadata && !metadata['enforce'].nil? && !metadata['enforce'].empty?
+        help_text += render(FieldContainerComponent.new(label: t('submission_inputs.validators'), value: metadata['enforce'].map do |x|
           content_tag(:span, x.humanize, class: 'badge badge-primary mx-1')
         end.join.html_safe))
       end
 
-      unless attr['helpText'].nil?
+      if help.present?
         help_text += render(FieldContainerComponent.new(label: t('submission_inputs.help_text'), value: help.html_safe))
       end
 
