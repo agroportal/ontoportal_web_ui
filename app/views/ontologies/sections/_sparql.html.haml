@@ -2,6 +2,4 @@
   - if @ontology.private?
     = render Display::AlertComponent.new(type:'warning', closable: false, message: t('sparql_endpoint.private_ontology_warning'))
   - sparql_submission = @sparql_submission || @submission_latest
-  - if sparql_submission && @submission_latest && sparql_submission.id != @submission_latest.id
-    = render Display::AlertComponent.new(type: 'warning', closable: false, message: t('sparql_endpoint.latest_submission_not_ready', submission_id: sparql_submission.submissionId))
   = sparql_query_container(graph: sparql_submission.id.gsub($REST_URL, 'http://data.bioontology.org'), sample_queries: @ontology.sampleQueries || [])

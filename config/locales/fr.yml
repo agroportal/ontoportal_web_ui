@@ -1822,5 +1822,4 @@ fr:
       pour récupérer, filtrer et manipuler efficacement des artefacts sémantiques.
     title: Éditeur de requêtes SPARQL
     private_ontology_warning: Rendez l'ontologie publique pour activer l'accès depuis l’endpoint SPARQL.
-    latest_submission_not_ready: La dernière soumission n'est pas encore prête à être interrogée. Utilisation de la soumission n˚%{submission_id} à la place.
     edit_sample_queries: Éditer les requêtes d'exemple

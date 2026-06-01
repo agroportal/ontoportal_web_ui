@@ -1766,5 +1766,4 @@ en:
       manipulate semantic artefacts efficiently. '
     title: SPARQL Query Editor
     private_ontology_warning: Make the ontology public to enable access from the SPARQL endpoint.
-    latest_submission_not_ready: The latest submission isn't ready yet to be queried. Using submission n˚%{submission_id} instead.
     edit_sample_queries: Edit sample queries
