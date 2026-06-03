@@ -24,7 +24,7 @@ module FairScoreHelper
           end
           response = conn.get(get_fairness_service_url(apikey) + "&ontologies=#{ontologies_acronyms}&combined")
           if response.status.eql?(200)
-            out = response.body.force_encoding('UTF-8')
+            out = response.body.force_encoding('ISO-8859-1').encode('UTF-8')
             unless out.empty? || out.strip.eql?('{}')
               cache_large_data("fairness-#{ontologies_acronyms.gsub(',', '-')}-#{apikey}", out)
             end
