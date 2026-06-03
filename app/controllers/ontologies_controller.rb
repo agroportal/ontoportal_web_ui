@@ -386,26 +386,6 @@ class OntologiesController < ApplicationController
     end
   end
 
-  def foops_assessment
-    @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology_id]).first
-    return render json: { error: 'not found' }, status: :not_found if @ontology.nil?
-
-    foops_res = get_foops_score(@ontology)
-    foops_data = parse_foops_data(foops_res)
-
-    if foops_data.nil?
-      render json: { error: 'unavailable' }, status: :service_unavailable
-      return
-    end
-
-    render json: {
-      overall_score: foops_data[:overall_score],
-      categories: foops_data[:categories].transform_values do |cat|
-        { passed: cat[:passed], total: cat[:total] }
-      end
-    }
-  end
-
   def subscriptions
     ontology_id = params[:ontology_id]
     return not_found if ontology_id.nil?

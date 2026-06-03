@@ -84,7 +84,6 @@ Rails.application.routes.draw do
     get 'metrics'
     get 'metrics_evolution'
     get 'subscriptions'
-    get 'foops_assessment'
   end
 
 

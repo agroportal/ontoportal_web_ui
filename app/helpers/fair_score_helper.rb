@@ -183,37 +183,6 @@ module FairScoreHelper
     out
   end
 
-  def parse_foops_data(foops_res)
-    return nil if foops_res.nil? || foops_res.empty? || foops_res['checks'].nil?
-
-    parsed = {
-      overall_score: (foops_res['overall_score'].to_f * 100).round(2),
-      categories: {},
-      metadata: {
-        title: foops_res['ontology_title'],
-        license: foops_res['ontology_license'],
-        uri: foops_res['ontology_URI']
-      }
-    }
-
-    foops_res['checks'].each do |check|
-      cat = check['category_id']
-      parsed[:categories][cat] ||= { passed: 0, total: 0, checks: [] }
-      parsed[:categories][cat][:total] += 1
-      parsed[:categories][cat][:passed] += 1 if check['status'] == 'ok'
-      parsed[:categories][cat][:checks] << {
-        id: check['id'],
-        title: check['title'],
-        status: check['status'],
-        explanation: check['explanation'],
-        description: check['description'] || "",
-        principle: check['principle_id']
-      }
-    end
-
-    parsed
-  end
-
   def calculate_foops_gauge_dash(score_percent)
     circumference = 2 * Math::PI * 40
     dash_val = (score_percent.to_f / 100) * circumference
