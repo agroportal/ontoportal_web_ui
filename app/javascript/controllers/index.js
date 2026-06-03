@@ -118,5 +118,8 @@ application.register("subjects", SubjectsController)
 import FairnessCarouselController from "./fairness_carousel_controller.js"
 application.register("fairness-carousel", FairnessCarouselController)
 
+import PasswordToggleController from "./password_toggle_controller.js"
+application.register("password-toggle", PasswordToggleController)
+
 import RorSearchController from "./ror_search_controller.js"
 application.register("ror-search", RorSearchController)
