@@ -1,7 +1,7 @@
 - id_prefix ||= "ont-fair"
-- controller_name ||= "fair-score-summary"
+- stimulus_controller ||= "fair-score-summary"
 - scores_data ||= @fair_scores_data
-%div.statistics_container.d-flex.flex-grow-1{id: "#{id_prefix}-details", data:{controller: controller_name}}
+%div.statistics_container.d-flex.flex-grow-1{id: "#{id_prefix}-details", data:{controller: stimulus_controller}}
   %div.w-50
     = render partial: "shared/fair_score_radar" , locals: {data: scores_data, id_prefix: id_prefix}
   %div.w-50
