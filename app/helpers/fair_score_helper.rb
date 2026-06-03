@@ -181,51 +181,6 @@ module FairScoreHelper
     out
   end
 
-  def calculate_foops_gauge_dash(score_percent)
-    circumference = 2 * Math::PI * 40
-    dash_val = (score_percent.to_f / 100) * circumference
-    gap_val = circumference - dash_val
-    "#{dash_val},#{gap_val}"
-  end
-
-  def calculate_foops_spider_data(categories)
-    center_x = 57
-    center_y = 50
-    
-    max_up = 35    
-    max_right = 34 
-    max_down = 35  
-    max_left = 35  
-
-    ratios = {
-      'Findable' => 0,
-      'Accessible' => 0,
-      'Interoperable' => 0,
-      'Reusable' => 0
-    }
-
-    categories.each do |name, data|
-      ratios[name] = data[:passed].to_f / data[:total] if data[:total] > 0
-    end
-
-    points = [
-      [center_x, center_y - (ratios['Findable'] * max_up)],
-      [center_x + (ratios['Accessible'] * max_right), center_y],
-      [center_x, center_y + (ratios['Interoperable'] * max_down)],
-      [center_x - (ratios['Reusable'] * max_left), center_y]
-    ]
-
-    path_d = "M #{points[0][0]} #{points[0][1]} "
-    path_d += "L #{points[1][0]} #{points[1][1]} "
-    path_d += "L #{points[2][0]} #{points[2][1]} "
-    path_d += "L #{points[3][0]} #{points[3][1]} "
-    path_d += "Z"
-
-    { path_d: path_d, ratios: ratios }
-  end
-
-  
-
   def create_fair_scores_data(fair_scores, count = nil)
     return nil if fair_scores.nil?
 
