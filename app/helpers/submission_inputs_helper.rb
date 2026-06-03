@@ -203,8 +203,15 @@ module SubmissionInputsHelper
     end
   end
 
+  def ontology_xlsx_language_help
+    content_tag(:div, class: 'upload-ontology-desc has_ontology_language_input') do
+      text = t('submission_inputs.ontology_xlsx_language_help', portal_name: portal_name)
+      text.html_safe
+    end
+  end
+
   def has_ontology_language_input(submission = @submission)
-    render(Layout::RevealComponent.new(possible_values: %w[SKOS OBO UMLS OWL], selected: submission.hasOntologyLanguage)) do |c|
+    render(Layout::RevealComponent.new(possible_values: %w[SKOS OBO UMLS OWL XLSX], selected: submission.hasOntologyLanguage)) do |c|
       c.button do
         attribute_input("hasOntologyLanguage")
       end
@@ -216,6 +223,8 @@ module SubmissionInputsHelper
       c.container { ontology_umls_language_help }
 
       c.container { ontology_owl_language_help }
+
+      c.container { ontology_xlsx_language_help }
 
     end
   end

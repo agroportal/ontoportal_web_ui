@@ -319,7 +319,7 @@ module SubmissionFilter
       { 'id' => id, 'name' => helpers.link_last_part(id), 'acronym' => name, 'value' => helpers.link_last_part(id) }
     end
 
-    @formats = [[t("submissions.filter.all_formats"), ''], 'OBO', 'OWL', 'SKOS', 'UMLS']
+    @formats = [[t("submissions.filter.all_formats"), ''], 'OBO', 'OWL', 'SKOS', 'UMLS', 'XLSX']
     @sorts_options = [
       [t("submissions.filter.sort"), ''],
       [t("submissions.filter.sort_by_name"), 'ontology_name'],
