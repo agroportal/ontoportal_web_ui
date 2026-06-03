@@ -1,8 +1,8 @@
 .summary-card
   .fair-section-head
-    .d-flex.align-items-center.gap-3
-      .fair-section-actions
-        = image_tag "logos/foopsLogo.png", height: "25", class: "me-2", style: "vertical-align: middle;"
+    .d-flex.align-items-center
+      .fair-section-actions.mr-3
+        = image_tag "logos/foopsLogo.png", height: "25", class: "mr-2", style: "vertical-align: middle;"
         = info_tooltip(content_tag(:div, t("fair_score.foops_description"), style: "width: 320px"), interactive: false)
         = render IconWithTooltipComponent.new(icon: 'json.svg', link: "/ajax/fair_score/foops_json?ontologies=#{acronym}", target: '_blank', title: t('fair_score.go_to_api'), size: 'small', style: 'vertical-align: middle;')
     .btn.btn-primary.rounded-pill.right-button
