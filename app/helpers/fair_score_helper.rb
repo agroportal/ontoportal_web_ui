@@ -58,7 +58,7 @@ module FairScoreHelper
       begin
         time = Benchmark.realtime do
           conn = Faraday.new do |f|
-            f.options.timeout = 300
+            f.options.timeout = 30
             f.options.open_timeout = 10
             f.headers['Content-Type'] = 'application/json;charset=utf-8'
           end
