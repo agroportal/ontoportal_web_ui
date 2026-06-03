@@ -35,6 +35,7 @@ class FairScoreController < ApplicationController
 
       elsif params[:foops] == 'true'
         # FOOPS! path — raw checks in FairScore component format
+        @is_foops = true
         ontology = LinkedData::Client::Models::Ontology.find_by_acronym(@ontologies).first
         @rest_uri = "#{REST_URI}/ontologies/#{@ontologies}/latest_submission?display=all"
         @fair_scores_data = create_foops_raw_scores_data(get_foops_score(ontology))

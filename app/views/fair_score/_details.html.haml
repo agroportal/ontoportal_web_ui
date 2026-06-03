@@ -25,7 +25,7 @@
                 - @fair_scores_data[:criteria][:questions][index].each do |question|
                   = link_to question[0], "#"+get_name_with_out_dot(question[0]), data: {turbo: false}, class: "nav-link my-1 ml-3 text-dark"
         %div.col-9#fair-details-content{style:"overflow: scroll;height: 70vh"}
-          - unless params[:foops] == 'true'
+          - unless @is_foops
             %div.alert.alert-light
               - mod_link =link_to t("fair_score.mod_link"), "https://github.com/sifrproject/MOD-Ontology"
               - submission_link =link_to t("fair_score.see_the_used_properties"),@rest_uri, target: "_blank"
