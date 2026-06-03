@@ -35,7 +35,6 @@ module FairScoreHelper
         Rails.logger.warn t('fair_score.fairness_unreachable_warning')
       end
     end
-    MultiJson.use :oj
     MultiJson.load(out) rescue {}
   end
 
@@ -75,7 +74,6 @@ module FairScoreHelper
         Rails.logger.warn "FOOPS unreachable: #{e.message}"
       end
     end
-    MultiJson.use :oj
     MultiJson.load(out)
   rescue StandardError => e
     Rails.logger.warn "FOOPS JSON parse error: #{e.message}"
