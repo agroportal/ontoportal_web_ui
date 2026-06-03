@@ -62,7 +62,7 @@ module FairScoreHelper
             f.options.open_timeout = 10
             f.headers['Content-Type'] = 'application/json;charset=utf-8'
           end
-          response = conn.post("https://foops.linkeddata.es/assessOntology", { ontologyUri: ontology_uri }.to_json)
+          response = conn.post($FOOPS_URL, { ontologyUri: ontology_uri }.to_json)
           if response.status.eql?(200)
             out = response.body.force_encoding('UTF-8')
             unless out.empty? || out.strip.eql?('{}')
