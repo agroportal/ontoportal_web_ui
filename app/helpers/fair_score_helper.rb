@@ -49,6 +49,9 @@ module FairScoreHelper
   def get_foops_score(ontology)
     ontology_uri = "#{$UI_URL}/ontologies/#{ontology.acronym}"
     cache_key = "foops-v2-#{ontology.acronym}"
+    fail_cache_key = "#{cache_key}-fail"
+
+    return {} if Rails.cache.exist?(fail_cache_key)
 
     if Rails.cache.exist?(cache_key)
       out = read_large_data(cache_key)
@@ -65,13 +68,16 @@ module FairScoreHelper
           if response.status.eql?(200)
             out = response.body.force_encoding('UTF-8')
             unless out.empty? || out.strip.eql?('{}')
-              cache_large_data(cache_key, out)
+              cache_large_data(cache_key, out, expires_in: 24.hours)
+              Rails.cache.delete(fail_cache_key)
             end
           end
         end
         Rails.logger.info "Call FOOPS service for: #{ontology.acronym} (#{time}s)"
       rescue StandardError => e
         Rails.logger.warn "FOOPS unreachable: #{e.message}"
+        Rails.cache.write(fail_cache_key, true, expires_in: 10.minutes)
+        return {}
       end
     end
     MultiJson.load(out)
@@ -283,12 +289,11 @@ module FairScoreHelper
   private
   require 'zlib'
 
-  def cache_large_data(key, data, chunk_size = 1.megabyte)
+  def cache_large_data(key, data, chunk_size = 1.megabyte, expires_in: 24.hours)
     compressed_data = Zlib::Deflate.deflate(data)
     total_size = compressed_data.bytesize
     Rails.logger.info "Total compressed data size: #{total_size} bytes"
 
-    # Determine the number of chunks
     chunk_count = (total_size.to_f / chunk_size).ceil
 
     chunk_count.times do |index|
@@ -297,16 +302,15 @@ module FairScoreHelper
       end_byte = start_byte + chunk_size - 1
       chunk = compressed_data.byteslice(start_byte..end_byte)
 
-      unless Rails.cache.write(chunk_key, chunk, expires_in: 24.hours)
+      unless Rails.cache.write(chunk_key, chunk, expires_in: expires_in)
         Rails.logger.error "Failed to write chunk #{index} for key: #{key}"
         return false
       end
     end
 
-    # Store metadata about the chunks
     metadata = { chunk_count: chunk_count }
-    Rails.cache.write("#{key}_metadata", metadata, expires_in: 24.hours)
-    Rails.cache.write(key, true, expires_in: 24.hours)
+    Rails.cache.write("#{key}_metadata", metadata, expires_in: expires_in)
+    Rails.cache.write(key, true, expires_in: expires_in)
   end
 
   def read_large_data(key)

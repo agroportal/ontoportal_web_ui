@@ -8,6 +8,6 @@
       .btn.btn-primary.rounded-pill.right-button
         .span{ style: 'cursor: default;' }= t("ontologies.sections.metadata.total_score", score: @fair_scores_data[:score], normalized_score: @fair_scores_data[:normalizedScore])
     %section#fair-summary
-      %div#fair-score-charts-container
+      %div#fair-score-charts-container{data: { error_message: t('fair_score.fairness_unreachable_warning') }}
         = render partial: "fairs_score"
       .account-page-card-sub-container

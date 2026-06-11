@@ -508,6 +508,7 @@ en:
     send_feedback_button: Send a feedback
   fair_score:
     fairness_unreachable_warning: FAIRness assessment service unreachable
+    foops_unreachable_warning: FOOPS! assessment service unreachable
     foops_description: 'FOOPS! (Ontology Pitfall Scanner for FAIR) assesses ontology
       FAIRness by running checks against each FAIR principle (Findable, Accessible,
       Interoperable, Reusable). Each check scores the ratio of passed vs total tests.
