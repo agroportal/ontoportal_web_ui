@@ -48,7 +48,7 @@ module FairScoreHelper
 
   def get_foops_score(ontology)
     ontology_uri = "#{$UI_URL}/ontologies/#{ontology.acronym}"
-    cache_key = "foops-v2-#{ontology.acronym}"
+    cache_key = "foops-#{ontology.acronym}"
     fail_cache_key = "#{cache_key}-fail"
 
     return {} if Rails.cache.exist?(fail_cache_key)
