@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'ostruct'
 require 'json'
 require 'action_view'
+require 'active_support/all'
 require_relative '../../app/helpers/metadata_tags_helper'
 
 RSpec.describe MetadataTagsHelper do
@@ -21,6 +22,15 @@ RSpec.describe MetadataTagsHelper do
 
       def request
         nil
+      end
+
+      # Stand-in for ActionView's TranslationHelper, with site interpolation.
+      def t(key, **opts)
+        case key.to_s
+        when 'home.catalog.description' then "#{opts[:site]} is a repository."
+        when 'home.catalog.keywords' then ['agriculture', 'ontology', 'semantic web']
+        else opts[:default]
+        end
       end
     end.new
   end
@@ -89,6 +99,33 @@ RSpec.describe MetadataTagsHelper do
       expect(json.dig('distribution', 0, 'contentUrl')).to eq('https://agroportal.example.org/data/AGRO.ttl')
     end
 
+    it 'maps the extended AgroPortal metadata into schema.org keys' do
+      submission = OpenStruct.new(
+        homepage: 'https://agro.example.org',
+        alternative: ['Agro Ontology', 'AGRO'],
+        useGuidelines: 'https://agro.example.org/guidelines',
+        award: ['Best Ontology 2024'],
+        coverage: ['Europe'],
+        audience: ['Researchers'],
+        curatedBy: [OpenStruct.new(name: 'Jane Curator')],
+        translator: [OpenStruct.new(name: 'Tom Translator')],
+        fundedBy: [OpenStruct.new(agentType: 'organization', name: 'EU')],
+        copyrightHolder: 'https://ror.org/00x0z1234'
+      )
+
+      json = extract_json(helper.ontology_json_ld(ontology, submission))
+      expect(json['sameAs']).to eq(['https://agro.example.org'])
+      expect(json['alternateName']).to contain_exactly('AGRO', 'Agro Ontology')
+      expect(json['usageInfo']).to eq('https://agro.example.org/guidelines')
+      expect(json['award']).to eq(['Best Ontology 2024'])
+      expect(json['audience']).to eq([{ '@type' => 'Audience', 'audienceType' => 'Researchers' }])
+      expect(json['spatialCoverage']).to eq([{ '@type' => 'Place', 'name' => 'Europe' }])
+      expect(json['editor']).to eq([{ '@type' => 'Person', 'name' => 'Jane Curator' }])
+      expect(json['translator']).to eq([{ '@type' => 'Person', 'name' => 'Tom Translator' }])
+      expect(json['funder']).to eq([{ '@type' => 'Organization', 'name' => 'EU' }])
+      expect(json['copyrightHolder']).to eq([{ '@id' => 'https://ror.org/00x0z1234' }])
+    end
+
     it 'falls back to the acronym for the name and omits blank fields' do
       json = extract_json(helper.ontology_json_ld(OpenStruct.new(acronym: 'XYZ'), nil))
       expect(json['name']).to eq('XYZ')
@@ -101,6 +138,32 @@ RSpec.describe MetadataTagsHelper do
       html = helper.ontology_json_ld(ontology, submission).to_s
       expect(html).not_to include('</script><img')
       expect(html).to include('</script')
+    end
+  end
+
+  describe '#home_catalog_json_ld' do
+    before do
+      $SITE = 'AgroPortal'
+      $ORG = 'INRAE'
+      $ORG_URL = 'https://www.inrae.fr'
+    end
+
+    it 'renders a schema.org DataCatalog describing the portal' do
+      json = extract_json(helper.home_catalog_json_ld)
+      expect(json['@type']).to eq('DataCatalog')
+      expect(json['name']).to eq('AgroPortal')
+      expect(json['url']).to eq('https://agroportal.example.org')
+      expect(json['description']).to eq('AgroPortal is a repository.')
+      expect(json['keywords']).to eq(%w[agriculture ontology] + ['semantic web'])
+      expect(json['isAccessibleForFree']).to be(true)
+      expect(json['publisher']).to eq('@type' => 'Organization', 'name' => 'INRAE',
+                                      'url' => 'https://www.inrae.fr')
+    end
+
+    it 'returns nil when the portal has no name or no UI URL' do
+      $SITE = nil
+      $ORG_SITE = nil
+      expect(helper.home_catalog_json_ld).to be_nil
     end
   end
 

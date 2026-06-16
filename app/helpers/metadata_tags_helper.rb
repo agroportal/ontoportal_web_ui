@@ -64,7 +64,48 @@ module MetadataTagsHelper
     content_tag(:script, raw(safe_ld_json(data)), type: 'application/ld+json')
   end
 
+  # schema.org DataCatalog JSON-LD describing the portal itself, for the
+  # homepage <head>. Descriptive text comes from the locale files; identity from
+  # the $SITE / $UI_URL / $ORG globals. Returns nil if the portal is unnamed or
+  # has no UI URL, so it is safe to call unconditionally.
+  def home_catalog_json_ld
+    data = home_catalog_graph
+    return if data.blank?
+
+    content_tag(:script, raw(safe_ld_json(data)), type: 'application/ld+json')
+  end
+
   private
+
+  def home_catalog_graph
+    name = $SITE.presence || $ORG_SITE.presence
+    url  = $UI_URL.presence
+    return if name.blank? || url.blank?
+
+    {
+      '@context' => 'https://schema.org',
+      '@type' => 'DataCatalog',
+      '@id' => url,
+      'name' => name,
+      'url' => url,
+      'description' => clean_text(t('home.catalog.description', site: name, default: '')),
+      'keywords' => home_catalog_keywords,
+      'isAccessibleForFree' => true,
+      'publisher' => home_catalog_publisher,
+    }.compact
+  end
+
+  def home_catalog_keywords
+    Array(t('home.catalog.keywords', default: [])).flat_map { |k| k.to_s.split(',') }
+                                                  .filter_map { |k| clean_text(k) }.uniq.presence
+  end
+
+  def home_catalog_publisher
+    name = clean_text($ORG.presence)
+    return if name.blank?
+
+    { '@type' => 'Organization', 'name' => name, 'url' => $ORG_URL.presence }.compact
+  end
 
   def ontology_dataset_graph(ontology, submission)
     url = ontology_metadata_url(ontology)
@@ -74,18 +115,27 @@ module MetadataTagsHelper
       '@id' => url,
       'dct:conformsTo' => { '@type' => 'CreativeWork', '@id' => BIOSCHEMAS_DATASET_PROFILE },
       'url' => url,
+      'sameAs' => ld_urls(submission&.homepage),
       'name' => ontology_metadata_title(ontology),
       'identifier' => ontology.acronym,
-      'alternateName' => ontology.acronym,
+      'alternateName' => ld_alternate_names(ontology, submission),
       'description' => ontology_metadata_description(submission, limit: nil),
       'keywords' => ontology_metadata_keywords(submission),
       'version' => clean_text(submission&.version),
       'license' => first_present(submission&.hasLicense),
+      'usageInfo' => first_present(submission&.useGuidelines),
       'inLanguage' => Array(submission&.naturalLanguage).filter_map { |l| clean_text(l) }.presence,
       'image' => ontology_metadata_image(submission),
       'creator' => ld_agents(submission&.hasCreator),
       'publisher' => ld_agents(submission&.publisher),
       'contributor' => ld_agents(submission&.hasContributor),
+      'editor' => ld_agents(submission&.curatedBy),
+      'translator' => ld_agents(submission&.translator),
+      'funder' => ld_agents(submission&.fundedBy),
+      'copyrightHolder' => ld_agents(submission&.copyrightHolder),
+      'award' => ld_texts(submission&.award),
+      'audience' => ld_nodes(submission&.audience, 'Audience', 'audienceType'),
+      'spatialCoverage' => ld_nodes(submission&.coverage, 'Place'),
       'datePublished' => clean_text(submission&.released),
       'dateCreated' => clean_text(submission&.creationDate),
       'dateModified' => clean_text(submission&.modificationDate),
@@ -108,6 +158,29 @@ module MetadataTagsHelper
 
   def ld_agents(value)
     Array(value).filter_map { |agent| ld_agent(agent) }.presence
+  end
+
+  # The acronym plus any dcterms:alternative titles, deduped. Returns a bare
+  # string when only the acronym is present so the common case stays compact.
+  def ld_alternate_names(ontology, submission)
+    names = ([ontology.try(:acronym)] + Array(submission&.alternative)).filter_map { |n| clean_text(n) }.uniq
+    names.size > 1 ? names : names.first
+  end
+
+  # Cleaned, deduped plain-text values (e.g. schema:award).
+  def ld_texts(value)
+    Array(value).filter_map { |v| clean_text(v) }.uniq.presence
+  end
+
+  # Keep only the values that are absolute http(s) URLs (e.g. foaf:homepage).
+  def ld_urls(value)
+    Array(value).filter_map { |v| url = v.to_s.strip; url if url.present? && link?(url) }.uniq.presence
+  end
+
+  # Wrap each non-blank value in a typed node, e.g. a Place for dct:coverage or
+  # an Audience for dct:audience, so the JSON-LD stays schema.org-valid.
+  def ld_nodes(value, type, key = 'name')
+    Array(value).filter_map { |v| text = clean_text(v); { '@type' => type, key => text } if text }.presence
   end
 
   def ld_agent(agent)

@@ -1,5 +1,8 @@
 - @title = t("home.index.title", site: $SITE)
 
+- content_for :head do
+  = home_catalog_json_ld
+
 - unless $FRONT_NOTICE.nil? || $FRONT_NOTICE.empty? || cookies[:front_page_notice_closed].eql?("true")
   :javascript
     function close_message(){

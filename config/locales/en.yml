@@ -548,6 +548,19 @@ en:
     benefit5: Precisely describe your ontology with relevant metadata and get a FAIR
       score for your ontology.
     bug: Bug
+    catalog:
+      description: "%{site} is an open, community-oriented repository of ontologies
+        and semantic artefacts for agriculture, food, plant, and environmental sciences.
+        Built on the OntoPortal technology, it provides services for storing, sharing,
+        browsing, and reusing semantic artefacts. %{site} supports search, ontology
+        alignment, semantic annotation, and metrics, fostering interoperability and
+        FAIR data practices across agri-food. It is widely adopted by scientific
+        communities and data infrastructures to make agricultural knowledge
+        machine-actionable and reusable."
+      keywords:
+        - agriculture
+        - ontology
+        - semantic web
     classes: Classes
     discover_ontologies_button: Discover ontologies
     fair_details: See details
