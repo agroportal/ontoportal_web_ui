@@ -628,26 +628,75 @@ module OntologiesHelper
 
   def ontology_icon_links(links, submission_latest)
     links.map do |icon, attr, label|
-      value = submission_latest.nil? ? nil : submission_latest.send(attr)
-      link = Array(value).first || ''
+      raw_value = submission_latest&.send(attr)
+      values = Array(raw_value).compact.reject(&:blank?)
 
-      link_options = {
-        style: "text-decoration: none; width: 30px; height: 30px"
-      }
-
-      if link.blank?
-        link_options[:class] = 'disabled-icon'
-        link_options[:disabled] = 'disabled'
-        title = label
+      if values.empty?
+        ontology_icon_button(icon, "javascript:void(0);", label, class: 'disabled-icon', disabled: 'disabled')
+      elsif values.size == 1
+        link = values.first
+        url, target = api_button_link_and_target(link, true)
+        title = label + '<br>' + link_to(link, link, target: '_blank')
+        ontology_icon_button(icon, url, title, interactive: false, target: target)
       else
-        title = label + '<br>' + link_to(link, target: '_blank')
-      end
-
-      url, target_attr = api_button_link_and_target(link || '', allow_annonymous = true)
-      content_tag(:span, data: {controller: "tooltip" }, title: title) do
-        link_to(inline_svg("#{icon}.svg", width: "32", height: '32'), url, link_options.merge(target: target_attr))
+        ontology_render_icon_dropdown(icon, attr, label, values)
       end
     end.join.html_safe
+  end
+
+  def ontology_sparql_endpoint_link(submission_latest)
+    icon = 'summary/sparql'
+    attr = 'endpoint'
+    label = attr_label(attr, attr_metadata: attr_metadata(attr), show_tooltip: false)
+    
+    raw_value = submission_latest&.send(attr)
+    values = Array(raw_value).compact.reject(&:blank?)
+
+    if values.empty?
+      ontology_icon_button(icon, "javascript:void(0);", label, class: 'disabled-icon', disabled: 'disabled')
+    elsif values.size == 1
+      link = values.first
+      url, target = api_button_link_and_target(link, true)
+      title = label + '<br>' + link_to(link, link, target: '_blank')
+      ontology_icon_button(icon, url, title, interactive: true, target: target)
+    else
+      title = "<b>#{label}</b>" + values.map { |v| "<br>" + link_to(v, v, target: '_blank') }.join
+      ontology_icon_button(icon, "javascript:void(0);", title, interactive: true)
+    end
+  end
+
+  def ontology_icon_button(icon, url, title, interactive: false, **options)
+    data = { controller: 'tooltip' }
+    data['tooltip-interactive-value'] = 'true' if interactive
+    
+    options[:style] ||= "text-decoration: none; width: 30px; height: 30px"
+    
+    content_tag(:span, data: data, title: title) do
+      link_to(inline_svg("#{icon}.svg", width: "32", height: '32'), url, options)
+    end
+  end
+
+  def ontology_render_icon_dropdown(icon, attr, label, values)
+    content_tag(:span, data: { controller: 'tooltip' }, title: label) do
+      content_tag(:div, class: 'dropdown d-inline-block') do
+        trigger = link_to(inline_svg("#{icon}.svg", width: '32', height: '32'), '#',
+                          class: 'text-decoration-none', id: "dropdown_icon_#{attr}",
+                          data: { toggle: 'dropdown', bs_toggle: 'dropdown' },
+                          aria: { haspopup: 'true', expanded: 'false' },
+                          style: 'width: 30px; height: 30px;')
+
+        menu = content_tag(:div, class: 'dropdown-menu shadow border-0 rounded p-2',
+                           aria: { labelledby: "dropdown_icon_#{attr}" },
+                           style: 'left: 50%; transform: translateX(-50%); min-width: max-content;') do
+          values.map do |v|
+            content_tag(:div, class: 'p-1') do
+              render LinkFieldComponent.new(value: v, raw: true, enable_copy: true)
+            end
+          end.join.html_safe
+        end
+        trigger + menu
+      end
+    end
   end
 
   def ontology_depiction_card
