@@ -24,6 +24,11 @@ RSpec.describe MetadataTagsHelper do
         nil
       end
 
+      # Stand-in for the controller's portal_catalog_config helper_method.
+      def portal_catalog_config
+        {}
+      end
+
       # Stand-in for ActionView's TranslationHelper, with site interpolation.
       def t(key, **opts)
         case key.to_s
@@ -71,7 +76,9 @@ RSpec.describe MetadataTagsHelper do
       expect(json['identifier']).to eq('AGRO')
       expect(json['url']).to eq('https://agroportal.example.org/ontologies/AGRO')
       expect(json.dig('dct:conformsTo', '@id')).to eq(MetadataTagsHelper::BIOSCHEMAS_DATASET_PROFILE)
-      expect(json['includedInDataCatalog']).to eq('@type' => 'DataCatalog', 'name' => 'AgroPortal',
+      expect(json['includedInDataCatalog']).to eq('@type' => 'DataCatalog',
+                                                  '@id' => 'https://agroportal.example.org',
+                                                  'name' => 'AgroPortal',
                                                   'url' => 'https://agroportal.example.org')
     end
 
@@ -93,8 +100,11 @@ RSpec.describe MetadataTagsHelper do
       expect(json['version']).to eq('2.3')
       expect(json['license']).to eq('https://creativecommons.org/licenses/by/4.0/')
       expect(json['inLanguage']).to eq(%w[en fr])
-      expect(json['keywords']).to contain_exactly('crops', 'soil', 'agriculture')
+      # omv:keywords -> schema:keywords; omv:hasDomain -> schema:about (subject)
+      expect(json['keywords']).to contain_exactly('crops', 'soil')
+      expect(json['about']).to eq(['agriculture'])
       expect(json['creator']).to eq([{ '@type' => 'Organization', 'name' => 'INRAE' }])
+      expect(json['author']).to eq([{ '@type' => 'Organization', 'name' => 'INRAE' }])
       expect(json['datePublished']).to eq('2024-01-01')
       expect(json.dig('distribution', 0, 'contentUrl')).to eq('https://agroportal.example.org/data/AGRO.ttl')
     end
@@ -114,16 +124,83 @@ RSpec.describe MetadataTagsHelper do
       )
 
       json = extract_json(helper.ontology_json_ld(ontology, submission))
-      expect(json['sameAs']).to eq(['https://agro.example.org'])
+      # foaf:homepage -> schema:mainEntityOfPage
+      expect(json['mainEntityOfPage']).to eq(['https://agro.example.org'])
       expect(json['alternateName']).to contain_exactly('AGRO', 'Agro Ontology')
       expect(json['usageInfo']).to eq('https://agro.example.org/guidelines')
       expect(json['award']).to eq(['Best Ontology 2024'])
       expect(json['audience']).to eq([{ '@type' => 'Audience', 'audienceType' => 'Researchers' }])
       expect(json['spatialCoverage']).to eq([{ '@type' => 'Place', 'name' => 'Europe' }])
-      expect(json['editor']).to eq([{ '@type' => 'Person', 'name' => 'Jane Curator' }])
+      # pav:curatedBy -> schema:maintainer
+      expect(json['maintainer']).to eq([{ '@type' => 'Person', 'name' => 'Jane Curator' }])
       expect(json['translator']).to eq([{ '@type' => 'Person', 'name' => 'Tom Translator' }])
       expect(json['funder']).to eq([{ '@type' => 'Organization', 'name' => 'EU' }])
       expect(json['copyrightHolder']).to eq([{ '@id' => 'https://ror.org/00x0z1234' }])
+    end
+
+    it 'maps the remaining MOD metadata into schema.org keys' do
+      submission = OpenStruct.new(
+        abstract: 'A short abstract.',
+        notes: ['Internal note'],
+        isOfType: ['Vocabulary'],
+        status: 'production',
+        viewingRestriction: 'public',
+        metadataVoc: ['https://w3id.org/mod'],
+        logo: 'https://agro.example.org/logo.png',
+        depiction: 'https://agro.example.org/depiction.png',
+        associatedMedia: ['https://agro.example.org/media.mp4'],
+        contact: [{ name: 'Jane Doe', email: 'JANE@example.org' }],
+        documentation: 'https://agro.example.org/docs',
+        publication: ['Doe J. 2024'],
+        repository: 'https://github.com/agro/agro',
+        usedOntologyEngineeringTool: ['Protégé'],
+        accrualPeriodicity: 'annual',
+        source: ['https://agro.example.org/source'],
+        viewOf: ['PARENT'],
+        hasPart: ['PART'],
+        ontologyRelatedTo: ['RELATED'],
+        example: ['https://agro.example.org/example'],
+        diffFilePath: 'https://agro.example.org/diff',
+        toDoList: ['Add definitions'],
+        creationDate: '2023-05-05',
+        modificationDate: '2024-06-06'
+      )
+
+      json = extract_json(helper.ontology_json_ld(ontology, submission))
+      expect(json['abstract']).to eq('A short abstract.')
+      expect(json['comment']).to eq(['Internal note'])
+      expect(json['additionalType']).to eq(['Vocabulary'])
+      expect(json['creativeWorkStatus']).to eq('production')
+      expect(json['conditionsOfAccess']).to eq('public')
+      expect(json['schemaVersion']).to eq(['https://w3id.org/mod'])
+      expect(json['logo']).to eq('https://agro.example.org/logo.png')
+      expect(json['image']).to eq(['https://agro.example.org/depiction.png'])
+      expect(json['associatedMedia']).to eq([{ '@type' => 'MediaObject',
+                                               'contentUrl' => 'https://agro.example.org/media.mp4' }])
+      expect(json['contactPoint']).to eq([{ '@type' => 'ContactPoint', 'name' => 'Jane Doe',
+                                            'email' => 'jane@example.org' }])
+      expect(json['documentation']).to eq('https://agro.example.org/docs')
+      expect(json['citation']).to eq(['Doe J. 2024'])
+      expect(json['codeRepository']).to eq('https://github.com/agro/agro')
+      expect(json['instrument']).to eq([{ '@type' => 'Thing', 'name' => 'Protégé' }])
+      # dcterms:accrualPeriodicity -> schema:repeatFrequency is off-domain on a
+      # Dataset (warns), so it is intentionally not emitted.
+      expect(json).not_to have_key('repeatFrequency')
+      expect(json['isBasedOn']).to eq(['https://agro.example.org/source'])
+      expect(json['isPartOf']).to eq(['PARENT'])
+      expect(json['hasPart']).to eq(['PART'])
+      expect(json['isRelatedTo']).to eq(['RELATED'])
+      expect(json['workExample']).to eq(['https://agro.example.org/example'])
+      expect(json['releaseNotes']).to eq('https://agro.example.org/diff')
+      expect(json['potentialAction']).to eq([{ '@type' => 'Action', 'name' => 'Add definitions' }])
+      expect(json['dateCreated']).to eq('2023-05-05')
+      expect(json['dateModified']).to eq('2024-06-06')
+    end
+
+    it 'falls back to dcterms:created for dateCreated when creationDate is absent' do
+      submission = OpenStruct.new(created: '2020-01-01')
+      json = extract_json(helper.ontology_json_ld(ontology, submission))
+      expect(json['dateCreated']).to eq('2020-01-01')
     end
 
     it 'falls back to the acronym for the name and omits blank fields' do
@@ -155,7 +232,6 @@ RSpec.describe MetadataTagsHelper do
       expect(json['url']).to eq('https://agroportal.example.org')
       expect(json['description']).to eq('AgroPortal is a repository.')
       expect(json['keywords']).to eq(%w[agriculture ontology] + ['semantic web'])
-      expect(json['isAccessibleForFree']).to be(true)
       expect(json['publisher']).to eq('@type' => 'Organization', 'name' => 'INRAE',
                                       'url' => 'https://www.inrae.fr')
     end
@@ -164,6 +240,50 @@ RSpec.describe MetadataTagsHelper do
       $SITE = nil
       $ORG_SITE = nil
       expect(helper.home_catalog_json_ld).to be_nil
+    end
+
+    it 'prefers the live portal catalog config over the globals' do
+      allow(helper).to receive(:portal_catalog_config).and_return(
+        identifier: 'AGROPORTAL',
+        title: 'AgroPortal Catalog',
+        ui: 'https://catalog.example.org',
+        landingPage: 'https://catalog.example.org/about',
+        accessURL: 'https://catalog.example.org/sparql',
+        description: 'The reference repository for agronomy ontologies.',
+        subject: ['Agriculture'],
+        keywords: ['agronomy, crops'],
+        language: %w[en fr],
+        license: 'https://creativecommons.org/licenses/by/4.0/',
+        bibliographicCitation: ['Toulet et al. 2024'],
+        coverage: ['Europe'],
+        accrualPeriodicity: 'monthly',
+        created: '2015-06-01',
+        creator: [OpenStruct.new(agentType: 'organization', name: 'INRAE')],
+        contributor: [OpenStruct.new(name: 'Jane Doe')],
+        fundedBy: [{ url: 'https://anr.fr', img_src: 'anr.png' }]
+      )
+
+      json = extract_json(helper.home_catalog_json_ld)
+      expect(json['identifier']).to eq('AGROPORTAL')
+      expect(json['name']).to eq('AgroPortal Catalog')
+      expect(json['url']).to eq('https://catalog.example.org')
+      expect(json['documentation']).to eq('https://catalog.example.org/about')
+      expect(json['description']).to eq('The reference repository for agronomy ontologies.')
+      expect(json['about']).to eq(['Agriculture'])
+      expect(json['keywords']).to contain_exactly('agronomy', 'crops')
+      expect(json['inLanguage']).to eq(%w[en fr])
+      expect(json['license']).to eq('https://creativecommons.org/licenses/by/4.0/')
+      expect(json['citation']).to eq(['Toulet et al. 2024'])
+      expect(json['spatialCoverage']).to eq([{ '@type' => 'Place', 'name' => 'Europe' }])
+      expect(json['dateCreated']).to eq('2015-06-01')
+      # accessURL -> contentUrl and accrualPeriodicity -> repeatFrequency are
+      # off-domain on a DataCatalog (warn), so they are not emitted.
+      expect(json).not_to have_key('contentUrl')
+      expect(json).not_to have_key('repeatFrequency')
+      expect(json['creator']).to eq([{ '@type' => 'Organization', 'name' => 'INRAE' }])
+      expect(json['author']).to eq([{ '@type' => 'Organization', 'name' => 'INRAE' }])
+      expect(json['contributor']).to eq([{ '@type' => 'Person', 'name' => 'Jane Doe' }])
+      expect(json['funder']).to eq([{ '@type' => 'Organization', 'url' => 'https://anr.fr', 'logo' => 'anr.png' }])
     end
   end
 

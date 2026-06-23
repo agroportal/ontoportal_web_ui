@@ -12,6 +12,11 @@ module InternationalisationHelper
       key, options = args
       options ||= {}
       original_translation = I18n.t(key, **options)
+      # Resource-term substitution only applies to plain string translations.
+      # List- or hash-valued locale keys (e.g. home.catalog.keywords) are
+      # returned untouched so they don't blow up on String#downcase.
+      return original_translation unless original_translation.is_a?(String)
+
       downcase_translation = original_translation.downcase
     rescue StandardError => e
       return e.message
