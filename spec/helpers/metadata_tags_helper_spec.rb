@@ -260,7 +260,9 @@ RSpec.describe MetadataTagsHelper do
         created: '2015-06-01',
         creator: [OpenStruct.new(agentType: 'organization', name: 'INRAE')],
         contributor: [OpenStruct.new(name: 'Jane Doe')],
-        fundedBy: [{ url: 'https://anr.fr', img_src: 'anr.png' }]
+        fundedBy: [{ url: 'https://anr.fr', img_src: 'anr.png' }],
+        contactPoint: [{ name: 'Support Team', email: 'SUPPORT@example.org',
+                         agentType: 'person', '@id' => 'https://data.example.org/Agents/x' }]
       )
 
       json = extract_json(helper.home_catalog_json_ld)
@@ -284,6 +286,8 @@ RSpec.describe MetadataTagsHelper do
       expect(json['author']).to eq([{ '@type' => 'Organization', 'name' => 'INRAE' }])
       expect(json['contributor']).to eq([{ '@type' => 'Person', 'name' => 'Jane Doe' }])
       expect(json['funder']).to eq([{ '@type' => 'Organization', 'url' => 'https://anr.fr', 'logo' => 'anr.png' }])
+      expect(json['contactPoint']).to eq([{ '@type' => 'ContactPoint', 'name' => 'Support Team',
+                                            'email' => 'support@example.org' }])
     end
   end
 

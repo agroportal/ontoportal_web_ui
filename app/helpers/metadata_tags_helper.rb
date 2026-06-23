@@ -103,6 +103,7 @@ module MetadataTagsHelper
       'author' => ld_agents(config[:creator]),                   # dcterms:creator
       'contributor' => ld_agents(config[:contributor]),          # dcterms:contributor
       'funder' => ld_agents(config[:fundedBy]),                  # foaf:fundedBy
+      'contactPoint' => ld_contact_points(config[:contactPoint]), # dcat:contactPoint (Agent w/ email)
       'publisher' => home_catalog_publisher,                     # dcterms:publisher
     }.compact
   end
@@ -122,9 +123,8 @@ module MetadataTagsHelper
   end
 
   # Maps the AgroPortal / MOD submission metadata onto schema.org Dataset
-  # properties, following the agreed MOD 3.0 <-> schema.org crosswalk (see
-  # agroportal_schema_org_mapping.csv). Every value is null-guarded and blank
-  # entries are dropped by the final #compact.
+  # properties, following the agreed MOD 3.0 <-> schema.org crosswalk. Every
+  # value is null-guarded and blank entries are dropped by the final #compact.
   def ontology_dataset_graph(ontology, submission)
     url = ontology_metadata_url(ontology)
     {
