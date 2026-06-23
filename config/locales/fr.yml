@@ -1620,6 +1620,7 @@ fr:
 
       '
     ontology_umls_language_link: par l'outil UMLS2RDF.
+    ontology_xlsx_language_help: 'Template Crop Ontology (XLSX). Le fichier doit contenir une feuille nommée "Template for submission" avec les colonnes Variable, Trait, Method et Scale. Le fichier XLSX sera automatiquement converti en OWL par %{portal_name}.'
     ontology_view_of_another_ontology: Cette ontologie est-elle une vue d'une autre
       ontologie ?
     validators: Validateurs
