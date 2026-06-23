@@ -561,21 +561,6 @@ fr:
     benefit5: Décrire précisément votre ontologie avec des métadonnées pertinentes
       et obtenir son score FAIR.
     bug: Bug
-    catalog:
-      description: "%{site} est un dépôt ouvert et orienté communauté d'ontologies
-        et d'artefacts sémantiques pour l'agriculture, l'alimentation, les plantes et
-        les sciences de l'environnement. Construit sur la technologie OntoPortal, il
-        offre des services pour stocker, partager, parcourir et réutiliser des
-        artefacts sémantiques. %{site} prend en charge la recherche, l'alignement
-        d'ontologies, l'annotation sémantique et les métriques, favorisant
-        l'interopérabilité et les pratiques de données FAIR dans le secteur
-        agroalimentaire. Il est largement adopté par les communautés scientifiques et
-        les infrastructures de données pour rendre les connaissances agricoles
-        exploitables par les machines et réutilisables."
-      keywords:
-        - agriculture
-        - ontologie
-        - web sémantique
     classes: Classes
     discover_ontologies_button: Découvrir des ontologies
     fair_details: Voir les détails

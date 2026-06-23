@@ -65,9 +65,9 @@ module MetadataTagsHelper
   end
 
   # schema.org DataCatalog JSON-LD describing the portal itself, for the
-  # homepage <head>. Descriptive text comes from the locale files; identity from
-  # the $SITE / $UI_URL / $ORG globals. Returns nil if the portal is unnamed or
-  # has no UI URL, so it is safe to call unconditionally.
+  # homepage <head>. Values come from the live portal catalog (portal_catalog_config),
+  # falling back to the $SITE / $UI_URL / $ORG globals for identity. Returns nil
+  # if the portal is unnamed or has no UI URL, so it is safe to call unconditionally.
   def home_catalog_json_ld
     data = home_catalog_graph
     return if data.blank?
@@ -91,9 +91,9 @@ module MetadataTagsHelper
       'name' => name,                                            # dcterms:title
       'url' => url,                                              # foaf:homepage / portal UI
       'documentation' => first_present(config[:landingPage]),    # dcat:landingPage
-      'description' => clean_text(config[:description]) || clean_text(t('home.catalog.description', site: name, default: '')), # dcterms:description
+      'description' => clean_text(config[:description]),         # dcterms:description
       'about' => ld_texts(config[:subject]),                     # dcterms:subject
-      'keywords' => home_catalog_keywords(config),               # dcat:keyword
+      'keywords' => home_catalog_keywords(config),               # dcat:keyword (from catalog)
       'inLanguage' => ld_texts(config[:language]),               # dcterms:language
       'license' => first_present(config[:license]),              # dcterms:license
       'citation' => ld_texts(config[:bibliographicCitation]),    # dcterms:bibliographicCitation
@@ -108,11 +108,11 @@ module MetadataTagsHelper
     }.compact
   end
 
-  # Catalog keywords from the live portal config when present, otherwise the
-  # locale-provided fallback list.
+  # Catalog keywords (dcat:keyword) from the live portal config, comma-split and
+  # deduped.
   def home_catalog_keywords(config = {})
-    raw = Array(config[:keywords]).presence || Array(t('home.catalog.keywords', default: []))
-    raw.flat_map { |k| k.to_s.split(',') }.filter_map { |k| clean_text(k) }.uniq.presence
+    Array(config[:keyword]).flat_map { |k| k.to_s.split(',') }
+                           .filter_map { |k| clean_text(k) }.uniq.presence
   end
 
   def home_catalog_publisher

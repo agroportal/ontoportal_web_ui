@@ -230,8 +230,9 @@ RSpec.describe MetadataTagsHelper do
       expect(json['@type']).to eq('DataCatalog')
       expect(json['name']).to eq('AgroPortal')
       expect(json['url']).to eq('https://agroportal.example.org')
-      expect(json['description']).to eq('AgroPortal is a repository.')
-      expect(json['keywords']).to eq(%w[agriculture ontology] + ['semantic web'])
+      # description and keywords come only from the live catalog, not the locale files
+      expect(json).not_to have_key('description')
+      expect(json).not_to have_key('keywords')
       expect(json['publisher']).to eq('@type' => 'Organization', 'name' => 'INRAE',
                                       'url' => 'https://www.inrae.fr')
     end
@@ -251,7 +252,7 @@ RSpec.describe MetadataTagsHelper do
         accessURL: 'https://catalog.example.org/sparql',
         description: 'The reference repository for agronomy ontologies.',
         subject: ['Agriculture'],
-        keywords: ['agronomy, crops'],
+        keyword: ['agronomy, crops'],
         language: %w[en fr],
         license: 'https://creativecommons.org/licenses/by/4.0/',
         bibliographicCitation: ['Toulet et al. 2024'],
