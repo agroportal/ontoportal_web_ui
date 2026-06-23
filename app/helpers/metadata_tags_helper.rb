@@ -211,10 +211,11 @@ module MetadataTagsHelper
     Array(value).filter_map { |agent| ld_agent(agent) }.presence
   end
 
-  # The acronym plus any dcterms:alternative titles, deduped. Returns a bare
-  # string when only the acronym is present so the common case stays compact.
+  # The dcterms:alternative titles, deduped. Returns a bare string when there is
+  # only one so the common case stays compact (the acronym is already in
+  # schema:identifier).
   def ld_alternate_names(ontology, submission)
-    names = ([ontology.try(:acronym)] + Array(submission&.alternative)).filter_map { |n| clean_text(n) }.uniq
+    names = Array(submission&.alternative).filter_map { |n| clean_text(n) }.uniq
     names.size > 1 ? names : names.first
   end
 
