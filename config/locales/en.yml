@@ -1596,6 +1596,7 @@ en:
 
       '
     ontology_umls_language_link: by the UMLS2RDF tool.
+    ontology_xlsx_language_help: 'Crop Ontology Template (XLSX). The file must contain a sheet named "Template for submission" with Variable, Trait, Method, and Scale columns. The uploaded XLSX will be automatically converted to OWL by %{portal_name}.'
     ontology_view_of_another_ontology: Is this ontology a view of another ontology?
     validators: Validators
     version_help: For more information on how to encode versioning information in
