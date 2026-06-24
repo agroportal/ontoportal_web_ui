@@ -7,6 +7,9 @@
 
     %title= @title.nil? ? "#{$ORG_SITE}" : "#{@title} | #{$ORG_SITE}"
 
+    = ontology_head_metadata(@ontology, @submission_latest)
+    = yield :head
+
     = csrf_meta_tag
 
     <link rel="shortcut icon" href="/fav.ico" type="image/x-icon" />
