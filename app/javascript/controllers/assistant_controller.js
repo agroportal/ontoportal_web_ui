@@ -65,68 +65,144 @@ export default class extends Controller {
 
     this.inputTarget.value = ""
     this.autoGrow()
-    this.pushMessage("user", text)
+    this.appendUserMessage(text)
     this.setBusy(true)
+
+    // Per-turn streaming state.
+    const turn = { bubble: null, acc: "", toolEl: null, toolNames: [], finished: false, pending: false }
 
     try {
       const response = await fetch(this.urlValue, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
+          "Accept": "text/event-stream",
           "X-CSRF-Token": this.csrfToken,
           "X-Requested-With": "XMLHttpRequest",
         },
         body: JSON.stringify({ messages: this.messages }),
       })
 
-      const data = await response.json().catch(() => ({}))
-
-      if (!response.ok) {
-        this.showError(data.error || this.errorValue)
+      if (!response.ok || !response.body) {
+        this.showError(this.errorValue)
         return
       }
 
-      this.renderToolTrace(data.tool_calls)
-
-      const reply = (data.reply || "").trim()
-      if (reply) {
-        this.pushMessage("assistant", reply)
-      } else {
-        this.showError(this.errorValue)
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buf = ""
+      for (;;) {
+        const { value, done } = await reader.read()
+        if (done) break
+        buf += decoder.decode(value, { stream: true })
+        let sep
+        while ((sep = buf.indexOf("\n\n")) >= 0) {
+          this.handleSse(buf.slice(0, sep), turn)
+          buf = buf.slice(sep + 2)
+        }
       }
+
+      // Stream ended without a `done` event (e.g. dropped connection): keep partial text.
+      if (!turn.finished && turn.acc.trim()) {
+        this.messages.push({ role: "assistant", content: turn.acc.trim() })
+        turn.finished = true
+      }
+      if (!turn.finished && !turn.bubble) this.showError(this.errorValue)
     } catch (_e) {
-      this.showError(this.errorValue)
+      if (!turn.finished) this.showError(this.errorValue)
     } finally {
       this.setBusy(false)
     }
   }
 
-  // --- rendering helpers ---
+  // --- streaming + rendering helpers ---
 
-  pushMessage(role, content) {
-    this.messages.push({ role, content })
-    const bubble = document.createElement("div")
-    bubble.className = `assistant-msg assistant-msg--${role}`
-    if (role === "assistant") {
-      bubble.innerHTML = DOMPurify.sanitize(marked.parse(content))
-    } else {
-      bubble.textContent = content
+  handleSse(rawEvent, turn) {
+    let event = "message"
+    let dataStr = ""
+    for (const line of rawEvent.split("\n")) {
+      if (line.startsWith("event:")) event = line.slice(6).trim()
+      else if (line.startsWith("data:")) dataStr += line.slice(5).trim()
     }
-    this.logTarget.appendChild(bubble)
+    if (!dataStr) return
+
+    let data
+    try { data = JSON.parse(dataStr) } catch (_e) { return }
+
+    switch (event) {
+      case "tool":
+        // Whatever streamed during this round was a preamble to a tool call, not the
+        // answer — drop the partial bubble so only the final (no-tool) round remains.
+        if (turn.bubble) { turn.bubble.remove(); turn.bubble = null }
+        turn.acc = ""
+        this.setBusy(true) // back to "thinking" between rounds
+        this.addToolName(turn, data.name)
+        break
+      case "token":
+        if (!turn.bubble) {
+          this.setBusy(false) // first answer token: drop the "thinking" indicator
+          turn.bubble = this.createBubble("assistant")
+        }
+        turn.acc += data.text || ""
+        this.scheduleRender(turn)
+        break
+      case "done": {
+        turn.finished = true
+        const reply = ((data.reply || turn.acc) || "").trim()
+        if (reply) {
+          this.messages.push({ role: "assistant", content: reply })
+          if (!turn.bubble) turn.bubble = this.createBubble("assistant")
+          turn.bubble.innerHTML = DOMPurify.sanitize(marked.parse(reply))
+        } else if (!turn.bubble) {
+          this.showError(this.errorValue)
+        }
+        this.scrollToBottom()
+        break
+      }
+      case "error":
+        turn.finished = true
+        this.showError(data.message || this.errorValue)
+        break
+    }
+  }
+
+  // Re-render the streaming bubble at most once per animation frame (markdown is re-parsed
+  // from the full accumulated text each time).
+  scheduleRender(turn) {
+    if (turn.pending) return
+    turn.pending = true
+    requestAnimationFrame(() => {
+      turn.pending = false
+      if (turn.bubble) {
+        turn.bubble.innerHTML = DOMPurify.sanitize(marked.parse(turn.acc))
+        this.scrollToBottom()
+      }
+    })
+  }
+
+  addToolName(turn, name) {
+    if (!name || turn.toolNames.includes(name)) return
+    turn.toolNames.push(name)
+    if (!turn.toolEl) {
+      turn.toolEl = document.createElement("div")
+      turn.toolEl.className = "assistant-tooltrace"
+      this.logTarget.appendChild(turn.toolEl)
+    }
+    turn.toolEl.textContent = `${this.toolsLabelValue} ${turn.toolNames.join(", ")}`
     this.scrollToBottom()
   }
 
-  renderToolTrace(calls) {
-    if (!Array.isArray(calls) || calls.length === 0) return
-    const names = [...new Set(calls.map((c) => c && c.name).filter(Boolean))]
-    if (names.length === 0) return
-
-    const trace = document.createElement("div")
-    trace.className = "assistant-tooltrace"
-    trace.textContent = `${this.toolsLabelValue} ${names.join(", ")}`
-    this.logTarget.appendChild(trace)
+  appendUserMessage(text) {
+    this.messages.push({ role: "user", content: text })
+    this.createBubble("user").textContent = text
     this.scrollToBottom()
+  }
+
+  createBubble(role) {
+    const bubble = document.createElement("div")
+    bubble.className = `assistant-msg assistant-msg--${role}`
+    this.logTarget.appendChild(bubble)
+    return bubble
   }
 
   showError(message) {

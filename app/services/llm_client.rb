@@ -41,6 +41,56 @@ class LlmClient
     message
   end
 
+  # Streams a completion. Yields each `delta.content` piece as it arrives and returns the
+  # full accumulated content. `delta.reasoning_content` (emitted by reasoning models) is
+  # ignored — only the user-facing answer is yielded.
+  def stream_chat(messages:, stop: nil)
+    body = { model: @model, messages: messages, stream: true }
+    body[:stop] = stop if stop && !stop.empty?
+
+    uri = URI.parse(completions_uri)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = (uri.scheme == 'https')
+    http.open_timeout = @timeout
+    http.read_timeout = @timeout
+
+    req = Net::HTTP::Post.new(uri.request_uri)
+    req['Content-Type'] = 'application/json'
+    req['Accept'] = 'text/event-stream'
+    req['Authorization'] = "Bearer #{@api_key}" unless @api_key.to_s.empty?
+    req.body = body.to_json
+
+    full = +''
+    buffer = +''
+    http.request(req) do |response|
+      unless response.is_a?(Net::HTTPSuccess)
+        raise Error, "LLM endpoint returned #{response.code}: #{response.read_body.to_s[0, 300]}"
+      end
+
+      response.read_body do |chunk|
+        buffer << chunk
+        while (nl = buffer.index("\n"))
+          line = buffer.slice!(0..nl).chomp
+          next unless line.start_with?('data:')
+
+          data = line.sub(/\Adata:\s*/, '')
+          next if data.empty? || data == '[DONE]'
+
+          piece = (JSON.parse(data) rescue nil)&.dig('choices', 0, 'delta', 'content')
+          next if piece.nil? || piece.empty?
+
+          full << piece
+          yield piece if block_given?
+        end
+      end
+    end
+    full
+  rescue Net::OpenTimeout, Net::ReadTimeout
+    raise Error, "LLM endpoint timed out after #{@timeout}s"
+  rescue SocketError, SystemCallError => e
+    raise Error, "LLM endpoint unreachable: #{e.message}"
+  end
+
   private
 
   # Accept either a base URL (e.g. ".../v1") or a full ".../chat/completions" URL.

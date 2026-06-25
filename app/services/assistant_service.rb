@@ -27,7 +27,11 @@ class AssistantService
     Never invent ontology acronyms, class URIs, definitions, or metrics. Use the tools
     below to look up real data, and cite acronyms and/or URIs from the tool results. If
     the tools return nothing relevant, say so plainly. Keep answers concise and well
-    structured (short Markdown lists are fine). Answer in the user's language.
+    structured (short Markdown lists are fine).
+
+    LANGUAGE: Always write your reply in the SAME language as the user's latest message —
+    answer in English when the user writes in English, in French when they write in French.
+    Never default to French on your own and never switch languages mid-conversation.
   PROMPT
 
   def initialize(user_apikey:, llm: nil, mcp: nil)
@@ -67,7 +71,82 @@ class AssistantService
     { reply: present(@llm.chat(messages: messages)['content'].to_s), tool_calls: trace }
   end
 
+  # Streaming variant of #run. Yields events to the given block as work progresses:
+  #   yield(:tool, name)   — a tool is being invoked (internal tool-call tokens are hidden)
+  #   yield(:token, text)  — a piece of the final answer, as it streams from the LLM
+  #   yield(:done, reply)  — once, with the complete answer text
+  def run_stream(conversation)
+    tools = @mcp.tools_for_openai
+    @tool_names = tools.map { |t| t[:function][:name] }
+    messages = [{ role: 'system', content: system_prompt(tools) }] + sanitize(conversation)
+
+    (MAX_ROUNDS - 1).times do
+      state = stream_state
+      full = @llm.stream_chat(messages: messages, stop: [END_MARKER]) do |piece|
+        forward_piece(state, piece) { |text| yield(:token, text) }
+      end
+
+      call = extract_tool_call(full)
+      if call.nil?
+        yield(:done, present(full))
+        return
+      end
+
+      yield(:tool, call['tool'])
+      result = execute_tool(call['tool'], call['arguments'])
+      messages << { role: 'assistant', content: "#{full.strip}#{END_MARKER}" }
+      messages << { role: 'user', content: tool_result_message(call['tool'], result) }
+    end
+
+    # Tool budget exhausted: force a final plain answer (streamed, no tools).
+    messages << { role: 'user', content: 'Stop calling tools and give your final answer to the user now, in plain text.' }
+    state = stream_state
+    full = @llm.stream_chat(messages: messages) do |piece|
+      forward_piece(state, piece) { |text| yield(:token, text) }
+    end
+    yield(:done, present(full))
+  end
+
   private
+
+  def stream_state
+    { decision: nil, buffer: +'', emitted: 0 }
+  end
+
+  # Forwards streaming tokens to the user, but only the prose of the FINAL answer. The model
+  # may emit a preamble ("Let me look up …") before a tool call, and the tool call itself is
+  # wrapped in TOOL_MARKER. We keep scanning the whole round: the moment TOOL_MARKER appears
+  # anywhere, this round is a tool call — we stop forwarding and mark it :tool, and the
+  # already-forwarded preamble is discarded client-side (the trailing :tool event tells the
+  # frontend to drop the partial bubble). Until the marker appears we forward everything except
+  # a tail that could be the start of TOOL_MARKER (so a partial "[[TO" never leaks).
+  def forward_piece(state, piece)
+    return if state[:decision] == :tool
+
+    state[:buffer] << piece
+    if state[:buffer].include?(TOOL_MARKER)
+      state[:decision] = :tool
+      return
+    end
+
+    safe_end = state[:buffer].length - partial_marker_tail(state[:buffer])
+    return if safe_end <= state[:emitted]
+
+    chunk = state[:buffer][state[:emitted]...safe_end]
+    state[:emitted] = safe_end
+    state[:decision] = :answer
+    yield chunk
+  end
+
+  # Length of the longest suffix of `buffer` that is a (proper) prefix of TOOL_MARKER, e.g.
+  # "...[[TO" -> 4. That tail is held back in case the marker is still being streamed.
+  def partial_marker_tail(buffer)
+    max = [TOOL_MARKER.length - 1, buffer.length].min
+    max.downto(1) do |n|
+      return n if TOOL_MARKER.start_with?(buffer[-n, n])
+    end
+    0
+  end
 
   def system_prompt(tools)
     docs = tools.map do |tool|
