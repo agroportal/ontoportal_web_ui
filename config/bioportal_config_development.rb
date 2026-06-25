@@ -56,6 +56,14 @@ $FAIRNESS_URL = ENV['FAIRNESS_URL']
 # FOOPS! FAIR assessment endpoint.
 $FOOPS_URL = ENV['FOOPS_URL'] || 'https://foops.linkeddata.es/assessOntology'
 
+# Smart assistant pop-up: OpenAI-compatible LLM + AgroPortal MCP server.
+# Enabled only when ASSISTANT_ENABLED is true and the LLM endpoint/model are configured.
+$ASSISTANT_ENABLED = ENV['ASSISTANT_ENABLED'].to_s.strip.downcase == 'true'
+$ASSISTANT_LLM_API_URL = ENV['ASSISTANT_LLM_API_URL'] # e.g. https://api.openai.com/v1
+$ASSISTANT_LLM_API_KEY = ENV['ASSISTANT_LLM_API_KEY']
+$ASSISTANT_LLM_MODEL = ENV['ASSISTANT_LLM_MODEL']     # e.g. gpt-4o-mini
+$ASSISTANT_MCP_URL = ENV['ASSISTANT_MCP_URL'] || 'https://mcp.agroportal.eu/'
+
 # Used to define other bioportal that can be mapped to
 # Example to map to ncbo bioportal : {"ncbo" => {"api" => "http://data.bioontology.org", "ui" => "http://bioportal.bioontology.org", "apikey" => ""}
 # Then create the mapping using the following class in JSON : "http://purl.bioontology.org/ontology/MESH/C585345": "ncbo:MESH"

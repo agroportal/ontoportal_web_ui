@@ -1,5 +1,17 @@
 ---
 fr:
+  assistant:
+    title: Assistant AgroPortal
+    greeting: "Bonjour ! Posez-moi vos questions sur les ontologies hébergées dans AgroPortal."
+    placeholder: "Posez une question sur les ontologies, les classes, les métriques…"
+    send: Envoyer
+    close: Fermer
+    expand: Basculer en plein écran
+    thinking: "Réflexion…"
+    error: "Désolé, une erreur s'est produite. Veuillez réessayer."
+    signed_out: "Veuillez vous connecter pour utiliser l'assistant."
+    tools_used: "Consulté :"
+    too_many_steps: "Je n'ai pas pu traiter cette demande — trop d'étapes étaient nécessaires."
   activerecord:
     errors:
       models:

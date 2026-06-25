@@ -122,3 +122,6 @@ import PasswordToggleController from "./password_toggle_controller.js"
 application.register("password-toggle", PasswordToggleController)
 import RorSearchController from "./ror_search_controller.js"
 application.register("ror-search", RorSearchController)
+
+import AssistantController from "./assistant_controller.js"
+application.register("assistant", AssistantController)

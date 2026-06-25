@@ -10,6 +10,7 @@
 <body class="<%= controller_name %> <%= action_name %>">
 <%= modal_frame_container %>
 <%= yield %>
+<%= render "layouts/assistant" if assistant_enabled? && !session[:user].nil? %>
 
 </body>
 </html>

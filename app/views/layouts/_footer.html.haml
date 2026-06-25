@@ -29,4 +29,6 @@
 
 
 
+= render "layouts/assistant" if assistant_enabled? && !session[:user].nil?
+
 = javascript_include_tag "application"

@@ -1,0 +1,41 @@
+-# Smart assistant pop-up. Rendered from _footer.html.haml and application.html.erb;
+-# the guard below keeps it to a single instance per page. Icons are inline SVG so the
+-# widget does not depend on any icon font being loaded.
+- return if @assistant_rendered
+- @assistant_rendered = true
+
+.assistant{data: { controller: "assistant", "assistant-url-value": "/assistant/chat", "assistant-error-value": t("assistant.error"), "assistant-tools-label-value": t("assistant.tools_used") }}
+  %button.assistant-launcher{type: "button", title: t("assistant.title"), "aria-label": t("assistant.title"), data: { action: "assistant#toggle" }}
+    %svg.assistant-icon{viewBox: "0 0 24 24", "aria-hidden": "true", xmlns: "http://www.w3.org/2000/svg"}
+      %path{d: "M12 3C6.48 3 2 6.94 2 11.5c0 2.3 1.16 4.37 3.03 5.86L4 21l4.3-2.06c1.13.36 2.38.56 3.7.56 5.52 0 10-3.94 10-8.5S17.52 3 12 3z", fill: "currentColor"}
+
+  .assistant-backdrop{data: { action: "assistant#collapseModal" }}
+
+  .assistant-panel{role: "dialog", "aria-label": t("assistant.title"), data: { "assistant-target": "panel" }}
+    .assistant-header
+      %span.assistant-title= t("assistant.title")
+      .assistant-actions
+        %button.assistant-action{type: "button", title: t("assistant.expand"), "aria-label": t("assistant.expand"), data: { action: "assistant#toggleModal" }}
+          %svg.assistant-icon.assistant-icon-expand{viewBox: "0 0 24 24", "aria-hidden": "true", xmlns: "http://www.w3.org/2000/svg"}
+            %path{d: "M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z", fill: "currentColor"}
+          %svg.assistant-icon.assistant-icon-compress{viewBox: "0 0 24 24", "aria-hidden": "true", xmlns: "http://www.w3.org/2000/svg"}
+            %path{d: "M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z", fill: "currentColor"}
+        %button.assistant-action.assistant-close{type: "button", "aria-label": t("assistant.close"), data: { action: "assistant#toggle" }}
+          %svg.assistant-icon{viewBox: "0 0 24 24", "aria-hidden": "true", xmlns: "http://www.w3.org/2000/svg"}
+            %path{d: "M18.3 5.71 12 12.01l-6.29-6.3-1.42 1.42L10.59 13.4l-6.3 6.29 1.42 1.42 6.29-6.3 6.3 6.29 1.41-1.41-6.29-6.3 6.3-6.29z", fill: "currentColor"}
+
+    .assistant-log{data: { "assistant-target": "log" }}
+      .assistant-msg.assistant-msg--assistant= t("assistant.greeting")
+
+    .assistant-status.d-none{data: { "assistant-target": "status" }}
+      %span.assistant-typing
+        %span
+        %span
+        %span
+      %span.assistant-status-text= t("assistant.thinking")
+
+    %form.assistant-input-bar{data: { action: "submit->assistant#submit" }}
+      %textarea.assistant-input{rows: 1, placeholder: t("assistant.placeholder"), "aria-label": t("assistant.placeholder"), data: { "assistant-target": "input", action: "keydown->assistant#keydown input->assistant#autoGrow" }}
+      %button.assistant-send{type: "submit", "aria-label": t("assistant.send"), data: { "assistant-target": "send" }}
+        %svg.assistant-icon{viewBox: "0 0 24 24", "aria-hidden": "true", xmlns: "http://www.w3.org/2000/svg"}
+          %path{d: "M2 21l21-9L2 3v7l15 2-15 2z", fill: "currentColor"}

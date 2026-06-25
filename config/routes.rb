@@ -10,6 +10,9 @@ Rails.application.routes.draw do
   get 'metadata_export/index'
   get '/config', to: 'home#portal_config'
 
+  # Smart assistant pop-up (LLM + MCP tool-calling proxy)
+  post '/assistant/chat', to: 'assistant#chat'
+
   get '/notes/new_comment', to: 'notes#new_comment'
   get '/notes/new_proposal', to: 'notes#new_proposal'
   get '/notes/new_reply', to: 'notes#new_reply'

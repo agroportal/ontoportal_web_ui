@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
 
 
   helper :all # include all helpers, all the time
-  helper_method :bp_config_json, :current_license, :using_captcha?
+  helper_method :bp_config_json, :current_license, :using_captcha?, :assistant_enabled?
 
   if !Rails.env.development? && !Rails.env.test?
     rescue_from ActiveRecord::RecordNotFound, with: :not_found_record
@@ -273,6 +273,15 @@ class ApplicationController < ActionController::Base
 
   def current_login_as_admin?
     session[:admin_user]&.admin?
+  end
+
+  # True when the smart assistant feature is enabled and fully configured.
+  # Sign-in gating is applied separately (layout + AssistantController).
+  def assistant_enabled?
+    $ASSISTANT_ENABLED &&
+      $ASSISTANT_LLM_API_URL.present? &&
+      $ASSISTANT_LLM_API_KEY.present? &&
+      $ASSISTANT_LLM_MODEL.present?
   end
 
   def ontology_restricted?(acronym)
