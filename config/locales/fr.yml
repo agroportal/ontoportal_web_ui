@@ -521,6 +521,13 @@ fr:
   fair_score:
     fairness_unreachable_warning: Problème d'accès au service d'évaluation du niveau
       de FAIRness
+    foops_unreachable_warning: Problème d'accès au service d'évaluation FOOPS!
+    foops_description: 'Score d''évaluation FAIR calculé avec l''outil FOOPS! (Ontology
+      Pitfall Scanner for FAIR) à partir du fichier déposé dans le portail. Plus de détails
+      ici : https://foops.linkeddata.es/'
+    description: 'Le score FAIR évalue dans quelle mesure cette ontologie respecte
+      les principes FAIR (Findable, Accessible, Interoperable, Reusable). Deux évaluations
+      complémentaires sont disponibles : O''FAIRe et FOOPS!'
     go_to_api: Aller à l'API
     metadata_properties: Les propriétés de métadonnées listées ci-dessous sont extraites
       de %{mod_link}.
@@ -532,9 +539,9 @@ fr:
     see_metadata_used_properties: Voir les propriétés de métadonnées utilisées
     see_possible_credits: Voir les crédits possibles
     see_the_used_properties: voir les propriétés utilisées
-    view_fair_scores_definitions: 'Vous voyez le score d''évaluation de l''adéquation
-      avec les principes FAIR pour cette ontologie dans AgroPortal. Les scores FAIR
-      sont calculés avec la méthodologie O''FAIRe. Plus de détails ici : https://github.com/agroportal/fairness'
+    view_fair_scores_definitions: 'Score d''évaluation FAIR calculé avec la méthodologie
+      O''FAIRe (Ontology FAIRness Evaluator) à partir de l''enregistrement de métadonnées
+      local. Plus de détails ici : https://github.com/agroportal/fairness'
   federation:
     check_status: Vérification de la disponibilité de %{portal}
     not_responding: ne répond pas.
@@ -1069,7 +1076,8 @@ fr:
     exploring_and_searching: |-
       dans notre liste d'ontologies mais ils ne peuvent pas l'explorer ou la rechercher. Pour permettre l'exploration et la recherche,
       veuillez télécharger une version complète de votre ontologie.
-    fairness_assessment_questions: Questions d'évaluation du nveau de FAIRness O'FAIRe
+    fairness_assessment_questions_ofaire: Questions d'évaluation du niveau de FAIRness O'FAIRe
+    fairness_assessment_questions_foops: Questions d'évaluation du niveau de FAIRness FOOPS!
     filters: Filtres
     formality_levels: Niveaux de formalité
     general_information: Informations générales
@@ -1578,6 +1586,7 @@ fr:
     date: Date
     description: "Évolution des ressources de %{portal} en chiffres (dernières %{last_years} années)."
     lead: "(dernières %{last_years} années)"
+    menu: Statistiques
     ontologies: Ontologies
     ontology_visits: Visites de l'ontologie
     projects: Projets
@@ -1591,7 +1600,7 @@ fr:
     accounts_allowed: Ajouter ou supprimer des comptes autorisés à voir cette ontologie
       dans %{portal_name}.
     administrators: Administrateurs
-    contact: Contact
+    contact: contact
     contact_email: Email de %{name}
     contact_name: Nom du %{name}
     deprecated_help: Une ontologie avec le statut retired (retirée) doit nécessairement être également deprecated (dépréciée), mais pas l'inverse.
@@ -1678,6 +1687,7 @@ fr:
     modified: Modifié
     no_submissions_for_ontology: 'Aucune soumission pour l''ontologie : %{ontology}'
     save_button: Sauvegarder
+    submission: Soumission
     submission_updated_successfully: Soumission mise à jour
     submitted: Soumis
     toggle_dropdown: Basculer le menu déroulant

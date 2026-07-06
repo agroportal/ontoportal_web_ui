@@ -508,6 +508,13 @@ en:
     send_feedback_button: Send a feedback
   fair_score:
     fairness_unreachable_warning: FAIRness assessment service unreachable
+    foops_unreachable_warning: FOOPS! assessment service unreachable
+    foops_description: 'FAIRness assessment score computed with the FOOPS! tool (Ontology
+      Pitfall Scanner for FAIR) based on the file loaded in the portal. More details
+      here: https://foops.linkeddata.es/'
+    description: 'The FAIR score evaluates how well this ontology follows the FAIR
+      principles (Findable, Accessible, Interoperable, Reusable). Two complementary
+      assessments are available: O''FAIRe and FOOPS!'
     go_to_api: Go to API
     metadata_properties: Metadata properties listed in the following are picked from
       %{mod_link}.
@@ -519,8 +526,8 @@ en:
     see_metadata_used_properties: See metadata used properties
     see_possible_credits: See possible credits
     see_the_used_properties: see the used properties
-    view_fair_scores_definitions: 'You are seeing the FAIRness assessment score for
-      this ontology in AgroPortal. FAIR scores are computed with the O''FAIRe methodology.
+    view_fair_scores_definitions: 'FAIRness assessment score computed with the O''FAIRe
+      methodology (Ontology FAIRness Evaluator) based on the local metadata record.
       More details here: https://github.com/agroportal/fairness'
   federation:
     check_status: Checking %{portal} availability
@@ -1038,7 +1045,8 @@ en:
       ontology.
 
       '
-    fairness_assessment_questions: O'FAIRe FAIRness assessment questions
+    fairness_assessment_questions_ofaire: O'FAIRe FAIRness assessment questions
+    fairness_assessment_questions_foops: FOOPS! FAIRness assessment questions
     filters: Filters
     formality_levels: Formality levels
     general_information: General information
@@ -1528,6 +1536,7 @@ en:
     date: Date
     description: "Evolution of resources in %{portal} through numbers (last %{last_years} years)."
     lead: "(last %{last_years} years)"
+    menu: Statistics
     ontologies: Ontologies
     ontology_visits: Ontology visits
     projects: Projects
@@ -1542,8 +1551,8 @@ en:
       in %{portal_name}.
     administrators: Administrators
     contact: Contact
-    contact_email: "%{name} Email"
-    contact_name: "%{name} Name"
+    contact_email: "%{name} email"
+    contact_name: "%{name} name"
     deprecated_help: An ontology with status retired shall necessarily be also deprecated, but not the opposite.
     edit_metadata_instruction: Edit the metadata of your ontology here. Some of these
       values are used by %{portal_name} functionalities, including for FAIRness assessment.
@@ -1628,6 +1637,7 @@ en:
     modified: Modified
     no_submissions_for_ontology: 'No submissions for ontology: %{ontology}'
     save_button: Save
+    submission: Submission
     submission_updated_successfully: Submission updated successfully
     submitted: Submitted
     toggle_dropdown: Toggle dropdown
