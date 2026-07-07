@@ -47,6 +47,82 @@ module FairScoreHelper
     get_fairness_json(ontologies_acronyms, apikey)['ontologies']
   end
 
+  def federated_fairness_service_url(portal_key)
+    config = (LinkedData::Client.settings.federated_portals || {})[portal_key.to_s.downcase.to_sym]
+    return nil if config.nil?
+
+    service_url = config[:fairness_url]
+    if service_url.blank?
+      # Federated portals share the same O'FAIRe deployment layout: https://services.<portal domain>/ofaire/
+      domain = config[:api].to_s.sub(%r{https?://}, '').split('/').first.to_s.sub(/\Adata\./, '')
+      return nil if domain.blank?
+
+      service_url = "https://services.#{domain}/ofaire/"
+    end
+
+    apikey = config[:apikey]
+    "#{service_url}?portal=#{portal_key.to_s.downcase}#{apikey.blank? ? '' : "&apikey=#{apikey}"}"
+  end
+
+  def get_federated_fairness_json(portal_key, ontologies_acronyms)
+    service_url = federated_fairness_service_url(portal_key)
+    return {} if service_url.nil?
+
+    cache_key = "fairness-#{portal_key.to_s.downcase}-#{ontologies_acronyms.gsub(',', '-')}"
+    fail_cache_key = "#{cache_key}-fail"
+
+    return {} if Rails.cache.exist?(fail_cache_key)
+
+    if Rails.cache.exist?(cache_key)
+      out = read_large_data(cache_key)
+    else
+      out = '{}'
+      begin
+        time = Benchmark.realtime do
+          conn = Faraday.new do |f|
+            f.options.timeout = 15
+            f.options.open_timeout = 10
+          end
+          response = conn.get(service_url + "&ontologies=#{ontologies_acronyms}&combined")
+          out = response.body.force_encoding('ISO-8859-1').encode('UTF-8') if response.status.eql?(200)
+        end
+        if out.empty? || out.strip.eql?('{}')
+          Rails.cache.write(fail_cache_key, true, expires_in: 10.minutes)
+        else
+          cache_large_data(cache_key, out)
+        end
+        Rails.logger.info "Call #{portal_key} fairness service for: #{ontologies_acronyms} (#{time}s)"
+      rescue StandardError => e
+        Rails.logger.warn "#{portal_key} fairness service unreachable: #{e.message}"
+        Rails.cache.write(fail_cache_key, true, expires_in: 10.minutes)
+        return {}
+      end
+    end
+    MultiJson.load(out) rescue {}
+  end
+
+  def get_federated_fair_score(portal_key, ontologies_acronyms)
+    get_federated_fairness_json(portal_key, ontologies_acronyms)['ontologies']
+  end
+
+  def get_fair_score_with_federation(ontologies_acronyms, apikey = user_apikey)
+    selected_portals = RequestStore.store[:federated_portals] || []
+    return get_fair_score(ontologies_acronyms, apikey) if selected_portals.empty?
+
+    threads = selected_portals.map do |portal_key|
+      Thread.new do
+        Rails.application.executor.wrap { get_federated_fair_score(portal_key, ontologies_acronyms) }
+      end
+    end
+    local_scores = get_fair_score(ontologies_acronyms, apikey)
+    federated_scores = threads.map { |t| t.value rescue nil }.compact.reduce({}, :merge)
+
+    return local_scores if federated_scores.empty?
+
+    # Local portal scores win on acronym collision, matching canonical_ontology which prefers internal ontologies
+    federated_scores.merge(local_scores || {})
+  end
+
   def get_fair_combined_score(ontologies_acronyms, apikey = user_apikey)
     get_fairness_json(ontologies_acronyms, apikey)['combinedScores']
   end
