@@ -254,6 +254,7 @@ $PORTALS_INSTANCES = [
     ui: 'https://ecoportal.lifewatch.eu/',
     api: 'https://data.ecoportal.lifewatch.eu/',
     apikey: "43a437ba-a437-4bf0-affd-ab520e584719",
+    fairness_url: 'http://ecoportal.lifewatch.eu:8082/fairness-assessment/',
     color: '#2076C9',
     'light-color': '#E9F2FA',
   },
@@ -279,6 +280,7 @@ $PORTALS_INSTANCES = [
     name: 'EarthPortal',
     ui: 'https://earthportal.eu/',
     api: 'https://data.earthportal.eu/',
+    fairness_url: 'https://services.earthportal.eu/fairness-assessment/',
     apikey: "c9147279-954f-41bd-b068-da9b0c441288",
     color: '#404696',
     'light-color': '#F0F5F6'
