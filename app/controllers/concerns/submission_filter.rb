@@ -31,8 +31,8 @@ module SubmissionFilter
 
     @ontologies, @errors = @ontologies.partition { |x| !x.errors }
 
-    # get fair scores of all ontologies
-    @fair_scores = fairness_service_enabled? ? get_fair_score('all') : nil
+    # get fair scores of all ontologies, including from the selected federated portals
+    @fair_scores = fairness_service_enabled? ? get_fair_score_with_federation('all') : nil
 
     @total_ontologies = @ontologies.size
 
