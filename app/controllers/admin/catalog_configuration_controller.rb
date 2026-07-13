@@ -17,6 +17,8 @@ class Admin::CatalogConfigurationController < ApplicationController
     response = update_remote_config(config)
     if response.status == 200
       flash.now[:notice] = t('admin.catalog_configuration.configuration_updated_successfully')
+      # Invalidate federated portals cache if federated_portals were updated
+      invalidate_federated_portals_cache if config['federated_portals'].present?
     else
       flash.now[:alert] = t('admin.catalog_configuration.configuration_update_error', error: response.body)
     end
@@ -25,7 +27,7 @@ class Admin::CatalogConfigurationController < ApplicationController
     session[:catalog_data] = @catalog_data
     @catalog_metadata = session[:catalog_metadata] || load_catalog_metadata
     @catalog_groups = attributes_groups
-    
+
     respond_to do |format|
       format.turbo_stream do
         render turbo_stream: turbo_stream.replace(
@@ -51,9 +53,11 @@ class Admin::CatalogConfigurationController < ApplicationController
     if @key == :federated_portals
       portals_from_source = fetch_federated_portals_from_source
       @value_attrs = merge_federated_portals(@value_attrs, portals_from_source)
+      # For federated_portals, explicitly set all field names
+      @field_names = %w[name ui api color apikey]
+    else
+      @field_names = extract_field_names_for_key(@key)
     end
-
-    @field_names = extract_field_names_for_key(@key)
 
     render partial: 'edit_nested_form_modal', layout: false
   end
@@ -165,7 +169,12 @@ class Admin::CatalogConfigurationController < ApplicationController
     config = params.require(:config).permit!.to_h
 
     list_included_attributes.each do |key|
-      config[key] = sanitize_attribute_value(config[key.to_s])
+      # Special handling for federated_portals
+      if key == 'federated_portals'
+        config[key] = sanitize_federated_portals(config[key.to_s])
+      else
+        config[key] = sanitize_attribute_value(config[key.to_s])
+      end
     end
 
     config['rightsHolder'] = config['rightsHolder']&.first&.presence || '' if config['rightsHolder']
@@ -187,6 +196,46 @@ class Admin::CatalogConfigurationController < ApplicationController
     else
       raw_value
     end
+  end
+
+  def sanitize_federated_portals(raw_value)
+    return nil if raw_value.nil?
+
+    portals = []
+    case raw_value
+    when Hash
+      # raw_value is a hash with numeric keys and portal data as values
+      raw_value.each do |_, portal_data|
+        next unless portal_data.is_a?(Hash)
+
+        portal = {}
+        portal[:name] = portal_data['name'] if portal_data['name'].present?
+        portal[:ui] = portal_data['ui'] if portal_data['ui'].present?
+        portal[:api] = portal_data['api'] if portal_data['api'].present?
+        portal[:color] = portal_data['color'] if portal_data['color'].present?
+        portal[:apikey] = portal_data['apikey'] if portal_data['apikey'].present?
+
+        # Include portal if it has at least one field with data
+        portals << portal if portal.keys.any?
+      end
+    when Array
+      # raw_value is already an array of portal objects
+      raw_value.each do |portal_data|
+        next unless portal_data.is_a?(Hash)
+
+        portal = {}
+        portal[:name] = portal_data['name'] if portal_data['name'].present?
+        portal[:ui] = portal_data['ui'] if portal_data['ui'].present?
+        portal[:api] = portal_data['api'] if portal_data['api'].present?
+        portal[:color] = portal_data['color'] if portal_data['color'].present?
+        portal[:apikey] = portal_data['apikey'] if portal_data['apikey'].present?
+
+        # Include portal if it has at least one field with data
+        portals << portal if portal.keys.any?
+      end
+    end
+
+    portals.presence
   end
 
   def extract_field_names_for_key(key)
@@ -266,6 +315,11 @@ class Admin::CatalogConfigurationController < ApplicationController
     uri.host&.downcase || url.to_s.downcase
   rescue StandardError
     url.to_s.downcase
+  end
+
+  def invalidate_federated_portals_cache
+    Rails.cache.delete('federated_portals')
+    Rails.logger.info("Invalidated federated_portals cache")
   end
 
 
