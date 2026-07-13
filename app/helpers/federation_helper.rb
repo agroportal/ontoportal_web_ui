@@ -3,7 +3,10 @@ module FederationHelper
 
   def federated_portals
     Rails.cache.fetch('federated_portals', expires_in: 1.hour) do
-      fetch_federated_portals_from_catalog
+      portals = fetch_federated_portals_from_catalog
+      # In test environment, fall back to $PORTALS_INSTANCES if catalog is empty
+      portals = LinkedData::Client.settings.federated_portals if portals.empty? && Rails.env.test?
+      portals
     end
   end
 
@@ -270,9 +273,12 @@ module FederationHelper
       counts[current_portal.downcase] += 1 if id.include?(current_portal.to_s.downcase)
 
       federation_portals.each do |portal|
-        portal_api = federated_portals[portal.downcase.to_sym][:api].sub(/^https?:\/\//, '')
-        portal_ui = federated_portals[portal.downcase.to_sym][:ui].sub(/^https?:\/\//, '')
-        counts[portal.downcase] += 1 if (id.include?(portal_api) || id.include?(portal_ui))
+        portal_config = federated_portals[portal.downcase.to_sym]
+        next unless portal_config&.dig(:api) || portal_config&.dig(:ui)
+
+        portal_api = portal_config[:api]&.sub(/^https?:\/\//, '')
+        portal_ui = portal_config[:ui]&.sub(/^https?:\/\//, '')
+        counts[portal.downcase] += 1 if (portal_api && id.include?(portal_api)) || (portal_ui && id.include?(portal_ui))
       end
     end
 
