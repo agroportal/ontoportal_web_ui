@@ -2,12 +2,36 @@ module FederationHelper
   include ApplicationHelper
 
   def federated_portals
-    $FEDERATED_PORTALS ||= LinkedData::Client.settings.federated_portals
-    $FEDERATED_PORTALS.each do |key, portal|
-      portal[:ui] += "/" unless portal[:ui].end_with?("/")
-      portal[:api] += "/" unless portal[:api].end_with?("/")
+    Rails.cache.fetch('federated_portals', expires_in: 1.hour) do
+      portals = fetch_federated_portals_from_catalog
+      # In test environment, fall back to $PORTALS_INSTANCES if catalog is empty
+      portals = LinkedData::Client.settings.federated_portals if portals.empty? && Rails.env.test?
+      portals
     end
-    $FEDERATED_PORTALS
+  end
+
+  def fetch_federated_portals_from_catalog
+    # Fetch federated portals from the catalog metadata
+    catalog_data = LinkedData::Client::HTTP.get("#{LinkedData::Client.settings.rest_url}/", display: 'federated_portals')
+
+    federated = {}
+    if catalog_data&.federated_portals.present?
+      Array(catalog_data.federated_portals).each do |portal|
+        # Only include portals that have an apikey configured
+        next unless portal[:apikey].present?
+
+        portal_key = portal[:name].downcase.to_sym
+        # Ensure URLs end with /
+        portal[:ui] = "#{portal[:ui]}/" unless portal[:ui].end_with?("/")
+        portal[:api] = "#{portal[:api]}/" unless portal[:api].end_with?("/")
+
+        federated[portal_key] = portal
+      end
+    end
+    federated
+  rescue StandardError => e
+    Rails.logger.error("Error fetching federated portals from catalog: #{e.message}")
+    {}
   end
 
   def internal_portal_config(id)
@@ -164,7 +188,13 @@ module FederationHelper
 
   def federation_portal_status(portal_name: nil)
     Rails.cache.fetch("federation_portal_up_#{portal_name}", expires_in: 10.minutes) do
-      portal_api = federated_portals&.dig(portal_name.to_sym,:api)
+      # Check if it's the local portal (compare with $SITE)
+      if portal_name&.to_s&.downcase == $SITE.downcase
+        portal_api = rest_url
+      else
+        portal_api = federated_portals&.dig(portal_name.to_sym,:api)
+      end
+
       return false unless portal_api
       portal_up = false
       begin
@@ -243,9 +273,12 @@ module FederationHelper
       counts[current_portal.downcase] += 1 if id.include?(current_portal.to_s.downcase)
 
       federation_portals.each do |portal|
-        portal_api = federated_portals[portal.downcase.to_sym][:api].sub(/^https?:\/\//, '')
-        portal_ui = federated_portals[portal.downcase.to_sym][:ui].sub(/^https?:\/\//, '')
-        counts[portal.downcase] += 1 if (id.include?(portal_api) || id.include?(portal_ui))
+        portal_config = federated_portals[portal.downcase.to_sym]
+        next unless portal_config&.dig(:api) || portal_config&.dig(:ui)
+
+        portal_api = portal_config[:api]&.sub(/^https?:\/\//, '')
+        portal_ui = portal_config[:ui]&.sub(/^https?:\/\//, '')
+        counts[portal.downcase] += 1 if (portal_api && id.include?(portal_api)) || (portal_ui && id.include?(portal_ui))
       end
     end
 

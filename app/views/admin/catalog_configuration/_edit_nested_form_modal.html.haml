@@ -1,7 +1,7 @@
 = render_in_modal do
   = form_with url: admin_catalog_configuration_path, method: :patch, local: false, turbo: true do |f|
     = hidden_field_tag "config[#{@key}][]", "", id: "empty_config_#{@key}"
-    = render NestedFormInputsComponent.new(object_name: "portal") do |c|
+    = render NestedFormInputsComponent.new(object_name: "portal", show_add_button: @key.to_s != "federated_portals") do |c|
       - c.header do
         - header_content = @field_names.map { |field_name| content_tag(:div, field_name.to_s.humanize, class: 'w-50 mx-1') }.join.html_safe
         = header_content
@@ -10,16 +10,18 @@
         - c.row do
           = content_tag(:div, class: 'd-flex my-1') do
             - @field_names.map do |field_name|
+              - is_readonly_field = %w[name ui color].include?(field_name.to_s)
               - content_tag(:div, class: 'w-50 mx-1') do
-                = text_input(label: '', name: "config[#{@key}][][#{field_name}]", value: row_data.send(field_name), error_message: '')
+                = text_input(label: '', name: "config[#{@key}][][#{field_name}]", value: row_data.send(field_name), error_message: '', readonly: is_readonly_field)
             - end.join.html_safe
 
-      - c.template do
-        = content_tag(:div, class: 'd-flex my-1') do
-          - @field_names.map do |field_name|
-            - content_tag(:div, class: 'w-50 mx-1') do
-              = text_input(label: '', name: "config[#{@key}][][#{field_name}]", value: "", placeholder: "#{field_name.to_s.humanize}")
-          - end.join.html_safe
+      - if @key.to_s != "federated_portals"
+        - c.template do
+          = content_tag(:div, class: 'd-flex my-1') do
+            - @field_names.map do |field_name|
+              - content_tag(:div, class: 'w-50 mx-1') do
+                = text_input(label: '', name: "config[#{@key}][][#{field_name}]", value: "", placeholder: "#{field_name.to_s.humanize}")
+            - end.join.html_safe
 
 
 
