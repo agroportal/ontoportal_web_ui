@@ -19,6 +19,9 @@
     <% else %><%= "#{@title} | #{$ORG_SITE}" %>
     <% end %></title>
 
+  <%= ontology_head_metadata(@ontology, @submission_latest) %>
+  <%= yield :head %>
+
   <link rel="shortcut icon" href="/fav.ico" type="image/x-icon"/>
   <!-- Fonts -->
   <link href='//fonts.googleapis.com/css?family=Droid+Sans:400' rel='stylesheet' type='text/css'>

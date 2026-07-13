@@ -179,6 +179,25 @@ class ApplicationController < ActionController::Base
     helpers.rest_url
   end
 
+  # Portal-level catalog metadata (the MOD SemanticArtefactCatalog) for the
+  # current portal, used to populate the schema.org DataCatalog JSON-LD. Cached
+  # and null-safe: returns {} on any error so callers fall back to the $SITE /
+  # $ORG / $UI_URL globals.
+  def portal_catalog_config
+    @portal_catalog_config ||= Rails.cache.fetch('portal_catalog_config', expires_in: 1.hour, skip_nil: true) do
+      fetch_portal_catalog(rest_url).presence
+    end || {}
+  end
+  helper_method :portal_catalog_config
+
+  # Fetches and normalises a portal's top-level catalog metadata to a Hash.
+  def fetch_portal_catalog(api)
+    catalog = LinkedData::Client::Models::Ontology.top_level_links(api)
+    catalog.respond_to?(:to_hash) ? catalog.to_hash : catalog.to_h
+  rescue StandardError
+    {}
+  end
+
   def request_portals
     helpers.request_portals
   end

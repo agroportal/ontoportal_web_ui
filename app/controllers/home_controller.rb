@@ -201,12 +201,6 @@ class HomeController < ApplicationController
   end
 
   def get_portal_config
-    portal_config = LinkedData::Client::Models::Ontology.top_level_links(@config[:api])
-    if portal_config.is_a?(LinkedData::Client::Models::SemanticArtefactCatalog)
-      portal_config = portal_config.to_hash
-    else
-      portal_config = portal_config.to_h
-    end
-    portal_config
+    fetch_portal_catalog(@config[:api])
   end
 end

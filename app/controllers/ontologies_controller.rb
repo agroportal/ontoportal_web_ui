@@ -296,6 +296,9 @@ class OntologiesController < ApplicationController
     # Is the ontology downloadable?
     @ont_restricted = ontology_restricted?(@ontology.acronym)
 
+    # Use the ontology name as the page title (drives <title>, og:title, JSON-LD name)
+    @title ||= @ontology.name.presence || @ontology.acronym
+
     # Fix parameters to only use known pages
     params[:p] = nil unless KNOWN_PAGES.include?(params[:p])
 
