@@ -572,10 +572,23 @@ i.fa.fa-caret-square-o-down {
   
 }
 .home-logo-instances{
-  padding: 23px;
+  width: 81px;
+  height: 72px;
   margin: 7px 12px !important;
   border-radius: 50%;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-portal-name{
+  margin-top: 10px;
+  margin-bottom: 20px;
+  width: 100px;
+  word-wrap: break-word;
+  white-space: normal;
+  font-size: 14px;
+  line-height: 1.3;
 }
 .home-support-items > div, .home-support-items > a {
   margin-right: 40px;

@@ -16,6 +16,7 @@ class HomeController < ApplicationController
         @anal_ont_numbers << count
       end
     end
+    @portals_instances = fetch_portals_instances
   end
 
   # Add a new action for the metrics frame
@@ -186,6 +187,60 @@ class HomeController < ApplicationController
   end
 
   private
+
+  def fetch_portals_instances
+    require 'net/http'
+    require 'json'
+
+    Rails.cache.fetch('portals_instances', expires_in: 24.hours) do
+      uri = URI('https://ontoportal.org/portals.json')
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      response = http.request(request)
+
+      if response.is_a?(Net::HTTPSuccess)
+        data = JSON.parse(response.body)
+        # Transform the data to match the expected format
+        transform_portals_data(data)
+      else
+        # Fallback to the configuration-based instances
+        $PORTALS_INSTANCES || []
+      end
+    rescue StandardError => e
+      Rails.logger.error("Error fetching portals from ontoportal.org: #{e.message}")
+      $PORTALS_INSTANCES || []
+    end
+  end
+
+  def transform_portals_data(data)
+    # Transform the JSON-LD data to match the expected format
+    portals = []
+
+    # Handle JSON-LD format with @graph array
+    if data.is_a?(Hash) && data['@graph'].is_a?(Array)
+      portals = data['@graph'].map { |portal| transform_portal_entry(portal) }
+    elsif data.is_a?(Array)
+      portals = data.map { |portal| transform_portal_entry(portal) }
+    end
+
+    portals.compact.select { |p| p[:name].present? && p[:ui].present? }
+  end
+
+  def transform_portal_entry(portal)
+    return nil unless portal.is_a?(Hash)
+
+    # Map JSON-LD fields to expected format
+    {
+      name: portal['acronym'] || portal['name'] || portal[:acronym] || portal[:name],
+      ui: portal['@id'] || portal['ui'] || portal[:'@id'] || portal[:ui],
+      api: portal['api'] || portal[:api],
+      color: portal['color'] || portal[:color] || '#000000',
+      apikey: portal['apikey'] || portal[:apikey],
+      'light-color': portal['light-color'] || portal[:'light-color']
+    }
+  end
 
   # Dr. Musen wants 5 specific groups to appear first, sorted by order of importance.
   # Ordering is documented in GitHub: https://github.com/ncbo/bioportal_web_ui/issues/15.
