@@ -44,10 +44,17 @@ class Admin::CatalogConfigurationController < ApplicationController
 
     @catalog_data = session[:catalog_data] || load_catalog_data
     @catalog_metadata = session[:catalog_metadata] || load_catalog_metadata
-    
+
     @value_attrs = @catalog_data&.dig(@key) || []
+
+    # Merge federated_portals from ontoportal.org with existing ones
+    if @key == :federated_portals
+      portals_from_source = fetch_federated_portals_from_source
+      @value_attrs = merge_federated_portals(@value_attrs, portals_from_source)
+    end
+
     @field_names = extract_field_names_for_key(@key)
-    
+
     render partial: 'edit_nested_form_modal', layout: false
   end
 
@@ -185,10 +192,80 @@ class Admin::CatalogConfigurationController < ApplicationController
   def extract_field_names_for_key(key)
     metadata = @catalog_metadata[key.to_s]
     return [] unless metadata&.enforcedValues
-    
+
     metadata.enforcedValues.flat_map do |field|
       field.to_h.keys - [:links, :context]
     end
+  end
+
+  def fetch_federated_portals_from_source
+    require 'net/http'
+    require 'json'
+
+    uri = URI('https://ontoportal.org/portals.json')
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+
+    request = Net::HTTP::Get.new(uri.request_uri)
+    response = http.request(request)
+
+    if response.is_a?(Net::HTTPSuccess)
+      data = JSON.parse(response.body)
+      portals = []
+
+      # Handle JSON-LD format with @graph array
+      if data.is_a?(Hash) && data['@graph'].is_a?(Array)
+        portals = data['@graph'].select { |portal| portal['federation'] == true }
+      end
+
+      # Transform to OpenStruct objects with name, ui, and color fields
+      portals.map do |portal|
+        OpenStruct.new(
+          name: portal['acronym'],
+          ui: portal['@id'],
+          color: portal['color']
+        )
+      end
+    else
+      []
+    end
+  rescue StandardError => e
+    Rails.logger.error("Error fetching federated portals: #{e.message}")
+    []
+  end
+
+  def merge_federated_portals(existing_portals, source_portals)
+    # Create a map of existing portals by normalized UI domain
+    existing_by_domain = {}
+    existing_portals.each do |portal|
+      ui = portal.respond_to?(:ui) ? portal.ui : portal['ui']
+      next if ui.blank?
+
+      domain = normalize_domain(ui)
+      existing_by_domain[domain] = portal
+    end
+
+    # Add portals from source, avoiding duplicates by domain
+    source_portals.each do |portal|
+      next if portal.ui.blank?
+
+      domain = normalize_domain(portal.ui)
+      existing_by_domain[domain] ||= portal
+    end
+
+    # Return merged list
+    existing_by_domain.values
+  end
+
+  def normalize_domain(url)
+    # Extract and normalize the domain from a full URL
+    # e.g., "https://agroportal.lirmm.fr/" -> "agroportal.lirmm.fr"
+    return url.to_s.downcase if url.blank?
+
+    uri = URI.parse(url)
+    uri.host&.downcase || url.to_s.downcase
+  rescue StandardError
+    url.to_s.downcase
   end
 
 

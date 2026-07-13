@@ -28,7 +28,8 @@
           = inline_svg 'icons/delete.svg'
 
   %div{'data-nested-form-target': "target"}
-  %div.add-another-object{data: {action:"click->nested-form#add"}}
-    = inline_svg 'icons/plus.svg', width: "14px", height: "14px"
-    %div
-      Add another #{@object_name}
+  - if @show_add_button
+    %div.add-another-object{data: {action:"click->nested-form#add"}}
+      = inline_svg 'icons/plus.svg', width: "14px", height: "14px"
+      %div
+        Add another #{@object_name}
