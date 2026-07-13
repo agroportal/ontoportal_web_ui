@@ -123,7 +123,12 @@ module SubmissionUpdater
       attributes << m_attr
     end
     p = params.permit(attributes.uniq)
-    p['pullLocation'] = '' if p['isRemote']&.eql?('3')
+    # the location radio buttons only hide the other inputs, their values are still submitted:
+    # keep only the value matching the selected location type ('0' local file, '1' pull URL, '3' metadata only)
+    unless p['isRemote'].nil?
+      p['pullLocation'] = '' unless p['isRemote'].eql?('1')
+      p.delete('filePath') unless p['isRemote'].eql?('0')
+    end
     p = p.to_h.transform_values do |value|
       if value.is_a?(Hash)
         value.values.map { |v| normalize(v) }.reject { |v| v.respond_to?(:empty?) && v.empty? }
