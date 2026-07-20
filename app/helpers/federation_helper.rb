@@ -2,9 +2,12 @@ module FederationHelper
   include ApplicationHelper
 
   def federated_portals
-    Rails.cache.fetch('federated_portals', expires_in: 1.hour) do
-      fetch_federated_portals_from_catalog
-    end
+    cached = Rails.cache.read('federated_portals')
+    return cached if cached.present?
+
+    portals = fetch_federated_portals_from_catalog
+    Rails.cache.write('federated_portals', portals, expires_in: 1.hour) if portals.present?
+    portals
   end
 
   # The API client opens one connection per federated portal when it boots, but the
