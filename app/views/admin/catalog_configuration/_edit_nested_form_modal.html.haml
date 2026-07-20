@@ -1,33 +1,41 @@
 = render_in_modal do
-  = form_with url: admin_catalog_configuration_path, method: :patch, local: false, turbo: true do |f|
-    = hidden_field_tag "config[#{@key}][]", "", id: "empty_config_#{@key}"
-    = render NestedFormInputsComponent.new(object_name: "portal", show_add_button: @key.to_s != "federated_portals") do |c|
-      - c.header do
-        - header_content = @field_names.map { |field_name| content_tag(:div, field_name.to_s.humanize, class: 'w-50 mx-1') }.join.html_safe
-        = header_content
-      
-      - @value_attrs.each_with_index do |row_data, i|
-        - c.row do
-          = content_tag(:div, class: 'd-flex my-1') do
-            - @field_names.map do |field_name|
-              - is_readonly_field = %w[name ui color].include?(field_name.to_s)
-              - content_tag(:div, class: 'w-50 mx-1') do
-                = text_input(label: '', name: "config[#{@key}][][#{field_name}]", value: row_data.send(field_name), error_message: '', readonly: is_readonly_field)
-            - end.join.html_safe
+  - is_federated = @key.to_s == "federated_portals"
 
-      - if @key.to_s != "federated_portals"
-        - c.template do
-          = content_tag(:div, class: 'd-flex my-1') do
-            - @field_names.map do |field_name|
-              - content_tag(:div, class: 'w-50 mx-1') do
-                = text_input(label: '', name: "config[#{@key}][][#{field_name}]", value: "", placeholder: "#{field_name.to_s.humanize}")
-            - end.join.html_safe
-
-
-
+  - if is_federated && !@federation_allowed
+    = render Display::AlertComponent.new(type: 'warning', closable: false, message: t('admin.catalog_configuration.federation_not_allowed'))
     %div.mt-2{style: 'display: flex; justify-content: flex-end;'}
       %button.btn.btn-secondary{ type: "button", "data-action": "turbo-modal#hide" }
-        = "Cancel"
-      .mx-2
-        = form_save_button
+        = "Close"
+  - else
+    - if is_federated
+      = render Display::AlertComponent.new(type: 'info', closable: false, message: t('admin.catalog_configuration.federation_provide_apikey'))
 
+    = form_with url: admin_catalog_configuration_path, method: :patch, local: false, turbo: true do |f|
+      = hidden_field_tag "config[#{@key}][]", "", id: "empty_config_#{@key}"
+      = render NestedFormInputsComponent.new(object_name: "portal", show_add_button: !is_federated) do |c|
+        - c.header do
+          - header_content = @field_names.map { |field_name| content_tag(:div, field_name.to_s.humanize, class: 'w-50 mx-1') }.join.html_safe
+          = header_content
+
+        - @value_attrs.each_with_index do |row_data, i|
+          - c.row do
+            = content_tag(:div, class: 'd-flex my-1') do
+              - @field_names.map do |field_name|
+                - is_readonly_field = %w[name ui color].include?(field_name.to_s)
+                - content_tag(:div, class: 'w-50 mx-1') do
+                  = text_input(label: '', name: "config[#{@key}][][#{field_name}]", value: row_data.send(field_name), error_message: '', readonly: is_readonly_field)
+              - end.join.html_safe
+
+        - unless is_federated
+          - c.template do
+            = content_tag(:div, class: 'd-flex my-1') do
+              - @field_names.map do |field_name|
+                - content_tag(:div, class: 'w-50 mx-1') do
+                  = text_input(label: '', name: "config[#{@key}][][#{field_name}]", value: "", placeholder: "#{field_name.to_s.humanize}")
+              - end.join.html_safe
+
+      %div.mt-2{style: 'display: flex; justify-content: flex-end;'}
+        %button.btn.btn-secondary{ type: "button", "data-action": "turbo-modal#hide" }
+          = "Cancel"
+        .mx-2
+          = form_save_button
