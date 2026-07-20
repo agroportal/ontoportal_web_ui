@@ -57,6 +57,13 @@ class Admin::CatalogConfigurationController < ApplicationController
       @value_attrs = merge_federated_portals(@value_attrs, portals_from_source)
       # For federated_portals, explicitly set all field names
       @field_names = %w[name ui api color apikey]
+
+      # A portal may only activate federation if it is itself registered as a
+      # federated portal on ontoportal.org.
+      current_acronym = current_portal_acronym
+      @federation_allowed = federation_allowed?(current_acronym)
+      # Never let a portal federate with itself.
+      @value_attrs = reject_current_portal(@value_attrs, current_acronym)
     else
       @field_names = extract_field_names_for_key(@key)
     end
@@ -255,6 +262,33 @@ class Admin::CatalogConfigurationController < ApplicationController
   rescue StandardError => e
     Rails.logger.error("Error fetching federated portals: #{e.message}")
     []
+  end
+
+  # The acronym of the current portal as recorded in the catalog metadata.
+  def current_portal_acronym
+    acronym = @catalog_data&.dig(:acronym)
+    acronym.is_a?(Array) ? acronym.first : acronym
+  end
+
+  # A portal is allowed to activate federation only when it is listed as a
+  # federated portal on ontoportal.org (matched by its catalog acronym).
+  def federation_allowed?(acronym)
+    return false if acronym.blank?
+
+    federated_ontoportal_instances.any? do |portal|
+      portal[:name].to_s.casecmp?(acronym.to_s)
+    end
+  end
+
+  # Remove the current portal from the list so it is not offered to federate
+  # with itself.
+  def reject_current_portal(portals, acronym)
+    return portals if acronym.blank?
+
+    portals.reject do |portal|
+      name = portal.respond_to?(:name) ? portal.name : portal['name']
+      name.to_s.casecmp?(acronym.to_s)
+    end
   end
 
   def merge_federated_portals(existing_portals, source_portals)
