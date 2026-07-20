@@ -203,38 +203,30 @@ class Admin::CatalogConfigurationController < ApplicationController
   def sanitize_federated_portals(raw_value)
     return nil if raw_value.nil?
 
-    portals = []
-    case raw_value
-    when Hash
-      # raw_value is a hash with numeric keys and portal data as values
-      raw_value.each do |_, portal_data|
-        next unless portal_data.is_a?(Hash)
+    portals_data = case raw_value
+                   when Hash
+                     # raw_value is a hash with numeric keys and portal data as values
+                     raw_value.values
+                   when Array
+                     # raw_value is already an array of portal objects
+                     raw_value
+                   else
+                     []
+                   end
 
-        portal = {}
-        portal[:name] = portal_data['name'] if portal_data['name'].present?
-        portal[:ui] = portal_data['ui'] if portal_data['ui'].present?
-        portal[:api] = portal_data['api'] if portal_data['api'].present?
-        portal[:color] = portal_data['color'] if portal_data['color'].present?
-        portal[:apikey] = portal_data['apikey'] if portal_data['apikey'].present?
+    portals = portals_data.filter_map do |portal_data|
+      next unless portal_data.is_a?(Hash)
+      # The apikey is required: skip portals without one so they are not
+      # added to the catalog.
+      next if portal_data['apikey'].blank?
 
-        # Include portal if it has at least one field with data
-        portals << portal if portal.keys.any?
-      end
-    when Array
-      # raw_value is already an array of portal objects
-      raw_value.each do |portal_data|
-        next unless portal_data.is_a?(Hash)
-
-        portal = {}
-        portal[:name] = portal_data['name'] if portal_data['name'].present?
-        portal[:ui] = portal_data['ui'] if portal_data['ui'].present?
-        portal[:api] = portal_data['api'] if portal_data['api'].present?
-        portal[:color] = portal_data['color'] if portal_data['color'].present?
-        portal[:apikey] = portal_data['apikey'] if portal_data['apikey'].present?
-
-        # Include portal if it has at least one field with data
-        portals << portal if portal.keys.any?
-      end
+      portal = {}
+      portal[:name] = portal_data['name'] if portal_data['name'].present?
+      portal[:ui] = portal_data['ui'] if portal_data['ui'].present?
+      portal[:api] = portal_data['api'] if portal_data['api'].present?
+      portal[:color] = portal_data['color'] if portal_data['color'].present?
+      portal[:apikey] = portal_data['apikey']
+      portal
     end
 
     portals.presence
