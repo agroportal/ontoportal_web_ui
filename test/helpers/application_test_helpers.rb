@@ -147,4 +147,34 @@ module ApplicationTestHelpers
       Array(agents).each { |g| g.delete }
     end
   end
+
+  module Federation
+    AGROPORTAL = {
+      name: 'AgroPortal',
+      ui: 'https://agroportal.eu/',
+      api: 'https://data.agroportal.eu/',
+      apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
+      color: '#3CB371',
+      'light-color': '#F1F6FA'
+    }.freeze
+
+    PORTAL_DOWN = {
+      name: 'testportal-down',
+      ui: 'https://down.testportal.lirmm.fr/',
+      api: 'https://down.testportal.lirmm.fr/',
+      apikey: '47a57aa3-7b54-4f34-b695-dbb5f5b7363e'
+    }.freeze
+
+    # Fill the catalog with the portals this one federates with. They are read from the
+    # catalog metadata of a running API, which the tests must not write to, so answer
+    # the lookup itself and drop what a previous test left in the cache.
+    def federate_with(*portals)
+      catalog = portals.index_by { |portal| portal[:name].downcase.to_sym }
+
+      FederationHelper.send(:define_method, :fetch_federated_portals_from_catalog) { catalog }
+      Rails.cache.delete('federated_portals')
+      catalog.each_key { |name| Rails.cache.delete("federation_portal_up_#{name}") }
+      catalog
+    end
+  end
 end

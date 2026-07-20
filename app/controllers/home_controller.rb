@@ -204,9 +204,7 @@ class HomeController < ApplicationController
 
   def portal_instance_config(portal_key)
     portal_key = portal_key.to_s.downcase
-    portal = (ontoportal_instances + Array($PORTALS_INSTANCES)).find do |instance|
-      instance[:name].to_s.downcase.eql?(portal_key)
-    end
+    portal = ontoportal_instances.find { |instance| instance[:name].to_s.downcase.eql?(portal_key) }
     return portal unless portal && portal_key.eql?(helpers.portal_name.to_s.downcase)
 
     # Describe this portal from its own API rather than from the publicly advertised one

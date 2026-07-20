@@ -63,7 +63,6 @@ $FAIRNESS_DISABLED = false
 $ENABLE_SLICES = false
 $ONTOLOGY_SLICES = {}
 
-
 $NOT_DOWNLOADABLE = {}
 # Enable client request caching
 $CLIENT_REQUEST_CACHING = true
@@ -102,81 +101,6 @@ $SITE_NOTICE = {}
 
 # Full string for site, EX: "NCBO BioPortal"
 $ORG_SITE = $ORG.nil? || $ORG.empty? ? $SITE : "#{$ORG} #{$SITE}"
-
-$PORTALS_INSTANCES = [
-   {
-    name: 'AgroPortal',
-    api: 'https://data.agroportal.eu',
-    ui: 'https://agroportal.eu/',
-    color: '#3CB371',
-    apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
-    'light-color': '#F1F6FA',
-  },
-  {
-    name: 'BioPortal',
-    ui: 'https://bioportal.bioontology.org/',
-    api: 'https://data.bioontology.org/',
-    apikey: '8b5b7825-538d-40e0-9e9e-5ab9274a9aeb',
-    color: '#234979',
-    'light-color': '#E9F2FA',
-  },
-  {
-    name: 'SIFR BioPortal',
-    ui: 'https://bioportal.lirmm.fr/',
-    api: 'https://data.bioportal.lirmm.fr/',
-    apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
-    color: '#74a9cb',
-    'light-color': '#E9F2FA',
-  },
-  {
-    name: 'EcoPortal',
-    ui: 'https://ecoportal.lifewatch.eu/',
-    api: 'https://data.ecoportal.lifewatch.eu/',
-    apikey: "43a437ba-a437-4bf0-affd-ab520e584719",
-    color: '#2076C9',
-    'light-color': '#E9F2FA',
-  },
-  {
-    name: 'MedPortal',
-    ui: 'http://medportal.bmicc.cn/',
-    color: '#234979',
-  },
-  {
-    name: 'MatPortal',
-    ui: 'https://matportal.org/',
-    color: '#009574',
-  },
-  {
-    name: 'IndustryPortal',
-    ui: 'http://industryportal.enit.fr',
-    api: 'https://data.industryportal.enit.fr/',
-    apikey: '019adb70-1d64-41b7-8f6e-8f7e5eb54942',
-    color: '#1c0f5d',
-    'light-color': '#F0F5F6',
-  },
-  {
-    name: 'EarthPortal',
-    ui: 'https://earthportal.eu/',
-    api: 'https://data.earthportal.eu/',
-    apikey: "c9147279-954f-41bd-b068-da9b0c441288",
-    color: '#404696',
-    'light-color': '#F0F5F6'
-  },
-  {
-    name: 'BiodivPortal',
-    ui: 'https://biodivportal.gfbio.org/',
-    api: 'https://data.biodivportal.gfbio.org/',
-    apikey: "47a57aa3-7b54-4f34-b695-dbb5f5b7363e",
-    color: '#349696',
-    'light-color': '#EBF5F5',
-  },
-  {
-    name: 'testportal-down',
-    ui: 'https://down.testportal.lirmm.fr/',
-    api: 'https://down.testportal.lirmm.fr/',
-    apikey: "47a57aa3-7b54-4f34-b695-dbb5f5b7363e",
-  }
-]
 
 $FOOTER_LINKS = {
   social: [

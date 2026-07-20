@@ -37,7 +37,6 @@ $API_KEY = ENV['API_KEY']
 # BioPortal API service address
 $REST_URL = ENV['API_URL']
 
-
 $SPARQL_ENDPOINT_URL = ENV['SPARQL_ENDPOINT_URL'] || nil
 
 $SIDEKIQ_UI_URL = ENV['SIDEKIQ_UI_URL'] || $REST_URL + "sidekiq"
@@ -138,8 +137,6 @@ $SUPPORT_EMAIL = ENV['SUPPORT_EMAIL']
 # Email used to send notifications
 $NOTIFICATION_EMAIL = ENV['SUPPORT_EMAIL']
 
-
-
 # reCAPTCHA
 # In order to use reCAPTCHA on the account creation and feedback submission pages:
 #    1. Obtain a reCAPTCHA v2 key from: https://www.google.com/recaptcha/admin
@@ -224,85 +221,6 @@ $HOME_PAGE_LOGOS = [
     }
 ]
 
-$PORTALS_INSTANCES = [
-  {
-    name: 'AgroPortal',
-    api: 'https://data.agroportal.lirmm.fr',
-    ui: 'https://agroportal.lirmm.fr/',
-    color: '#3CB371',
-    apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
-    'light-color': '#F1F6FA',
-  },
-  {
-    name: 'BioPortal',
-    ui: 'https://bioportal.bioontology.org/',
-    api: 'https://data.bioontology.org/',
-    apikey: '8b5b7825-538d-40e0-9e9e-5ab9274a9aeb',
-    color: '#234979',
-    'light-color': '#E9F2FA',
-  },
-  {
-    name: 'SIFR BioPortal',
-    ui: 'https://bioportal.lirmm.fr/',
-    api: 'https://data.bioportal.lirmm.fr/',
-    apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
-    color: '#74a9cb',
-    'light-color': '#E9F2FA',
-  },
-  {
-    name: 'EcoPortal',
-    ui: 'https://ecoportal.lifewatch.eu/',
-    api: 'https://data.ecoportal.lifewatch.eu/',
-    apikey: "43a437ba-a437-4bf0-affd-ab520e584719",
-    fairness_url: 'http://ecoportal.lifewatch.eu:8082/fairness-assessment/',
-    color: '#2076C9',
-    'light-color': '#E9F2FA',
-  },
-  {
-    name: 'MedPortal',
-    ui: 'http://medportal.bmicc.cn/',
-    color: '#234979',
-  },
-  {
-    name: 'MatPortal',
-    ui: 'https://matportal.org/',
-    color: '#009574',
-  },
-  {
-    name: 'IndustryPortal',
-    ui: 'http://industryportal.enit.fr',
-    api: 'https://data.industryportal.enit.fr/',
-    apikey: '019adb70-1d64-41b7-8f6e-8f7e5eb54942',
-    color: '#1c0f5d',
-    'light-color': '#F0F5F6',
-  },
-  {
-    name: 'EarthPortal',
-    ui: 'https://earthportal.eu/',
-    api: 'https://data.earthportal.eu/',
-    fairness_url: 'https://services.earthportal.eu/fairness-assessment/',
-    apikey: "c9147279-954f-41bd-b068-da9b0c441288",
-    color: '#404696',
-    'light-color': '#F0F5F6'
-  },
-  {
-    name: 'TestPortal',
-    ui: 'https://testportal.lirmm.fr/',
-    api: 'https://data.testportal.lirmm.fr/',
-    color: '#74a9cb',
-    apikey: '1de0a270-29c5-4dda-b043-7c3580628cd5',
-  },
-  {
-    name: 'BiodivPortal',
-    ui: 'https://biodivportal.gfbio.org/',
-    api: 'https://data.biodivportal.gfbio.org/',
-    apikey: "47a57aa3-7b54-4f34-b695-dbb5f5b7363e",
-    color: '#349696',
-    'light-color': '#EBF5F5',
-  }
-]
-
-
 $ONTOPORTAL_WEBSITE_LINK = "https://ontoportal.org/"
 $ONTOPORTAL_GITHUB_REPO = "https://github.com/ontoportal"
 
@@ -343,8 +261,6 @@ $FOOTER_LINKS = {
     }
   }
 }
-
-
 
 # Monitoring
 $SENTERY_DSN = ENV['SENTRY_DSN'] # if you want to use sentery.io
