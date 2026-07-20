@@ -33,13 +33,12 @@ module OntoportalInstances
     http.use_ssl = true
 
     response = http.request(Net::HTTP::Get.new(uri.request_uri))
-    # Fallback to the configuration-based instances
-    return $PORTALS_INSTANCES || [] unless response.is_a?(Net::HTTPSuccess)
+    return [] unless response.is_a?(Net::HTTPSuccess)
 
     with_portals_api_endpoints(transform_portals_data(JSON.parse(response.body)))
   rescue StandardError => e
     Rails.logger.error("Error fetching portals from ontoportal.org: #{e.message}")
-    $PORTALS_INSTANCES || []
+    []
   end
 
   def transform_portals_data(data)
@@ -80,12 +79,16 @@ module OntoportalInstances
     end.map(&:value)
   end
 
-  def portal_site_config(ui)
+  def portal_site_config(ui, redirects: 3)
     uri = URI.join(ui, '/site_config')
     response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https',
                                                    open_timeout: SITE_CONFIG_TIMEOUT,
                                                    read_timeout: SITE_CONFIG_TIMEOUT) do |http|
       http.request(Net::HTTP::Get.new(uri.request_uri))
+    end
+    # Portals listed with an http url usually redirect to their https one
+    if response.is_a?(Net::HTTPRedirection) && redirects.positive?
+      return portal_site_config(response['location'], redirects: redirects - 1)
     end
     return {} unless response.is_a?(Net::HTTPSuccess)
 
@@ -113,7 +116,7 @@ module OntoportalInstances
   end
 
   # Portals shielded from automated requests never answer /site_config, so complete
-  # the list with the endpoints this portal already knows about.
+  # the list with the endpoints of the portals we are already federated with.
   def resolve_missing_portals_api(portals)
     return portals if portals.all? { |portal| portal[:api].present? }
 
@@ -127,7 +130,7 @@ module OntoportalInstances
   end
 
   def known_portals_by_domain
-    (helpers.federated_portals.values + Array($PORTALS_INSTANCES)).each_with_object({}) do |portal, by_domain|
+    helpers.federated_portals.values.each_with_object({}) do |portal, by_domain|
       domain = portal_domain(portal[:ui])
       next if domain.blank? || portal[:api].blank?
 

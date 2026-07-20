@@ -3,11 +3,21 @@ module FederationHelper
 
   def federated_portals
     Rails.cache.fetch('federated_portals', expires_in: 1.hour) do
-      portals = fetch_federated_portals_from_catalog
-      # In test environment, fall back to $PORTALS_INSTANCES if catalog is empty
-      portals = LinkedData::Client.settings.federated_portals if portals.empty? && Rails.env.test?
-      portals
+      fetch_federated_portals_from_catalog
     end
+  end
+
+  # The API client opens one connection per federated portal when it boots, but the
+  # portals we federate with are administered at runtime through the catalog.
+  def sync_federated_connections
+    portals = federated_portals
+    settings = LinkedData::Client.settings
+    return if settings.federated_conn && settings.federated_portals == portals
+
+    settings.federated_portals = portals
+    # config_connection only ever runs once, let it open the new connections
+    LinkedData::Client.instance_variable_set(:@settings_run_connection, false)
+    LinkedData::Client.config_connection(cache_store: Rails.cache)
   end
 
   def fetch_federated_portals_from_catalog
@@ -17,8 +27,8 @@ module FederationHelper
     federated = {}
     if catalog_data&.federated_portals.present?
       Array(catalog_data.federated_portals).each do |portal|
-        # Only include portals that have an apikey configured
-        next unless portal[:apikey].present? && portal[:name].present?
+        # A portal can only be queried once an administrator has filled in its apikey
+        next unless portal[:apikey].present? && portal[:name].present? && portal[:api].present?
 
         portal_key = portal[:name].downcase.to_sym
         # Ensure URLs end with /

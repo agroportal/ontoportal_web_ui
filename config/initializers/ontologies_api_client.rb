@@ -7,5 +7,7 @@ LinkedData::Client.config do |config|
   config.debug_client = $DEBUG_RUBY_CLIENT || false
   config.debug_client_keys = $DEBUG_RUBY_CLIENT_KEYS || []
   config.apikey = $API_KEY
-  config.federated_portals = $PORTALS_INSTANCES ? $PORTALS_INSTANCES.map{|x| x[:api] && x[:apikey] ? [x[:name].downcase.to_sym, x] : nil }.compact.to_h : {}
+  # Federated portals are administered at runtime through the catalog, the connections
+  # are opened from there: see FederationHelper#sync_federated_connections
+  config.federated_portals = {}
 end

@@ -444,6 +444,7 @@ class ApplicationController < ActionController::Base
 
   def set_federated_portals
     RequestStore.store[:federated_portals] =  params[:portals]&.split(',')
+    helpers.sync_federated_connections
   end
 
   private
