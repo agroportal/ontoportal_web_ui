@@ -128,6 +128,7 @@ en:
       configuration_update_error: 'Problem updating the configuration: %{error}'
       federation_provide_apikey: Please provide an APIKEY for the federation user corresponding to each portal in order to enable the federation.
       federation_not_allowed: This portal isn't allowed to activate federation features.
+      federation_invalid_apikeys: 'The following portals were not added because their API key is invalid: %{portals}'
     licenses:
       create:
         success: License renewed successfully

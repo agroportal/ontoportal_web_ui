@@ -19,11 +19,22 @@
 
         - @value_attrs.each_with_index do |row_data, i|
           - c.row do
-            = content_tag(:div, class: 'd-flex my-1') do
+            - row_options = { class: 'd-flex my-1 align-items-center' }
+            - row_options[:data] = { controller: 'apikey-validator', 'apikey-validator-url-value': admin_validate_apikey_catalog_configuration_path } if is_federated
+            = content_tag(:div, row_options) do
               - @field_names.map do |field_name|
                 - is_readonly_field = %w[name ui color].include?(field_name.to_s)
-                - content_tag(:div, class: 'w-50 mx-1') do
-                  = text_input(label: '', name: "config[#{@key}][][#{field_name}]", value: row_data.send(field_name), error_message: '', readonly: is_readonly_field)
+                - field_data = is_federated && field_name.to_s == 'api' ? { 'apikey-validator-target': 'api' } : (is_federated && field_name.to_s == 'apikey' ? { 'apikey-validator-target': 'apikey', action: 'input->apikey-validator#validate' } : nil)
+                - content_tag(:div, class: 'w-50 mx-1 d-flex align-items-center') do
+                  = text_input(label: '', name: "config[#{@key}][][#{field_name}]", value: row_data.send(field_name), error_message: '', readonly: is_readonly_field, data: field_data)
+                  - if is_federated && field_name.to_s == 'apikey'
+                    %span.apikey-validation-status.ml-1{style: 'display: inline-flex; align-items: center;'}
+                      %span{data: { 'apikey-validator-target': 'checkingIcon' }, style: 'display: none;'}
+                        = render LoaderComponent.new(small: true)
+                      %span{data: { 'apikey-validator-target': 'validIcon' }, title: 'Valid API key', style: 'display: none;'}
+                        = inline_svg_tag 'icons/success-icon.svg', width: '20', height: '20'
+                      %span{data: { 'apikey-validator-target': 'invalidIcon' }, title: 'Invalid API key', style: 'display: none;'}
+                        = inline_svg_tag 'icons/error-icon.svg', width: '20', height: '20'
               - end.join.html_safe
 
         - unless is_federated

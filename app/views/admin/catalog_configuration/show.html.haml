@@ -5,6 +5,9 @@
   - if flash[:alert]
     .mb-2
       = render Display::AlertComponent.new(message: flash[:alert], closable: true, type: "danger")
+  - if flash[:warning]
+    .mb-2
+      = render Display::AlertComponent.new(message: flash[:warning], closable: true, type: "warning")
 
   %div.mb-3
     %div.catalog-configuration-page-description

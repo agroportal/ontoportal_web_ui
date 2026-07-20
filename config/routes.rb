@@ -100,6 +100,7 @@ Rails.application.routes.draw do
     resources :agents, only: [:index]
     resource :catalog_configuration, only: [:show, :update], controller: 'catalog_configuration'
     get 'catalog_configuration/edit_nested_form/:key', to: 'catalog_configuration#edit_nested_form', as: 'edit_nested_form_catalog_configuration'
+    get 'catalog_configuration/validate_apikey', to: 'catalog_configuration#validate_apikey', as: 'validate_apikey_catalog_configuration'
     scope :search do
       get '/', to: 'search#index'
       post 'index_batch', to: 'search#index_batch'

@@ -25,6 +25,11 @@ class Admin::CatalogConfigurationController < ApplicationController
       flash.now[:alert] = t('admin.catalog_configuration.configuration_update_error', error: response.body)
     end
 
+    if @rejected_federated_portals.present?
+      flash.now[:warning] = t('admin.catalog_configuration.federation_invalid_apikeys',
+                              portals: @rejected_federated_portals.join(', '))
+    end
+
     @catalog_data = load_catalog_data
     session[:catalog_data] = @catalog_data
     @catalog_metadata = session[:catalog_metadata] || load_catalog_metadata
@@ -69,6 +74,18 @@ class Admin::CatalogConfigurationController < ApplicationController
     end
 
     render partial: 'edit_nested_form_modal', layout: false
+  end
+
+  # Live check used by the federated portals form to give immediate feedback
+  # before saving: is this apikey a valid, working federation key?
+  def validate_apikey
+    apikey = params[:apikey].to_s
+    api = params[:api].to_s
+
+    render json: {
+      uuid: valid_uuid?(apikey),
+      valid: valid_federation_apikey?(api, apikey)
+    }
   end
 
   private
@@ -221,6 +238,8 @@ class Admin::CatalogConfigurationController < ApplicationController
                      []
                    end
 
+    @rejected_federated_portals ||= []
+
     portals = portals_data.filter_map do |portal_data|
       next unless portal_data.is_a?(Hash)
       # The apikey is required: skip portals without one so they are not
@@ -233,10 +252,48 @@ class Admin::CatalogConfigurationController < ApplicationController
       portal[:api] = portal_data['api'] if portal_data['api'].present?
       portal[:color] = portal_data['color'] if portal_data['color'].present?
       portal[:apikey] = portal_data['apikey']
+
+      # Only keep portals whose apikey is a valid, working federation key.
+      unless valid_federation_apikey?(portal[:api], portal[:apikey])
+        @rejected_federated_portals << (portal[:name].presence || portal[:ui].presence || portal[:api].presence)
+        next
+      end
+
       portal
     end
 
     portals.presence
+  end
+
+  UUID_REGEX = /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i
+
+  def valid_uuid?(value)
+    value.to_s.match?(UUID_REGEX)
+  end
+
+  # A federation apikey must be a valid UUID and must be accepted by the target
+  # portal. We probe its API and only reject the key when the portal answers
+  # with 401 Unauthorized. Any other outcome (including a network error we
+  # cannot draw a conclusion from) leaves the key in place.
+  def valid_federation_apikey?(api, apikey)
+    return false unless valid_uuid?(apikey)
+    return true if api.blank?
+
+    uri = URI.parse("#{api.to_s.chomp('/')}/agents")
+    uri.query = URI.encode_www_form(
+      page: 1, pagesize: 1, include: 'test',
+      display_links: false, display_context: false, apikey: apikey
+    )
+
+    response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https',
+                                                   open_timeout: 5, read_timeout: 5) do |http|
+      http.request(Net::HTTP::Get.new(uri.request_uri))
+    end
+
+    response.code.to_i != 401
+  rescue StandardError => e
+    Rails.logger.warn("Could not verify federation apikey for #{api}: #{e.message}")
+    true
   end
 
   def extract_field_names_for_key(key)
