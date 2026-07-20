@@ -18,12 +18,12 @@ module FederationHelper
     if catalog_data&.federated_portals.present?
       Array(catalog_data.federated_portals).each do |portal|
         # Only include portals that have an apikey configured
-        next unless portal[:apikey].present?
+        next unless portal[:apikey].present? && portal[:name].present?
 
         portal_key = portal[:name].downcase.to_sym
         # Ensure URLs end with /
-        portal[:ui] = "#{portal[:ui]}/" unless portal[:ui].end_with?("/")
-        portal[:api] = "#{portal[:api]}/" unless portal[:api].end_with?("/")
+        portal[:ui] = "#{portal[:ui]}/" if portal[:ui].present? && !portal[:ui].end_with?("/")
+        portal[:api] = "#{portal[:api]}/" if portal[:api].present? && !portal[:api].end_with?("/")
 
         federated[portal_key] = portal
       end
@@ -186,16 +186,11 @@ module FederationHelper
     end
   end
 
-  def federation_portal_status(portal_name: nil)
+  def federation_portal_status(portal_name: nil, api: nil)
     Rails.cache.fetch("federation_portal_up_#{portal_name}", expires_in: 10.minutes) do
-      # Check if it's the local portal (compare with $SITE)
-      if portal_name&.to_s&.downcase == $SITE.downcase
-        portal_api = rest_url
-      else
-        portal_api = federated_portals&.dig(portal_name.to_sym,:api)
-      end
+      portal_api = api.presence || portal_status_api(portal_name)
 
-      return false unless portal_api
+      return false if portal_api.blank?
       portal_up = false
       begin
         response = Faraday.new(url: portal_api) do |f|
@@ -210,6 +205,13 @@ module FederationHelper
       end
       portal_up
     end
+  end
+
+  def portal_status_api(portal_name)
+    return rest_url if portal_name.to_s.downcase == $SITE.to_s.downcase
+    return nil if portal_name.blank?
+
+    federated_portals&.dig(portal_name.to_sym, :api)
   end
 
   def federation_chip_component(key, name, acronym, checked, portal_up)

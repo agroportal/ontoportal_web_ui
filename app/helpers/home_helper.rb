@@ -27,10 +27,11 @@ module HomeHelper
   def portal_config_tooltip(portal, &block)
     return capture(&block) if portal.blank?
 
-    portal_id = portal&.downcase
+    portal = { name: portal } if portal.is_a?(String)
+    portal_id = portal[:name].to_s.downcase
     return capture(&block) if portal_id.blank?
 
-    title = if (federation_portal_status(portal_name: portal_id.to_sym) || portal_id.eql?(portal_name&.downcase))
+    title = if portal_config_readable?(portal_id, portal[:api])
       render(
         TurboFrameComponent.new(
           id: "portal_config_tooltip_#{portal_id}",
@@ -42,6 +43,14 @@ module HomeHelper
     render Display::InfoTooltipComponent.new(text: title, interactive: true) do
       capture(&block)
     end
+  end
+
+  # Only offer the details popup for portals we can actually describe: this one, or a
+  # portal exposing a reachable API.
+  def portal_config_readable?(portal_id, api)
+    return true if portal_id.eql?(portal_name&.downcase)
+
+    api.present? && federation_portal_status(portal_name: portal_id.to_sym, api: api)
   end
 
   def discover_ontologies_button
