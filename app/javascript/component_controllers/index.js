@@ -26,6 +26,7 @@ import clipboard_component_controller from '../../components/clipboard_component
 import range_slider_component_controller from '../../components/input/range_slider_component/range_slider_component_controller'
 import RDFHighlighter from '../../components/display/rdf_highlighter_component/rdf_highlighter_component_controller'
 import FederationController from "../../components/federated_portal_button_component/federated_portal_button_component_controller"
+import Synonyms_component_controller from '../../components/synonyms_component/synonyms_component_controller'
 
 application.register("rdf-highlighter", RDFHighlighter)
 application.register('turbo-modal', TurboModalController)
@@ -45,3 +46,4 @@ application.register('clipboard', clipboard_component_controller)
 
 application.register('range-slider', range_slider_component_controller)
 application.register("federation-portals-colors", FederationController)
+application.register('synonyms', Synonyms_component_controller)

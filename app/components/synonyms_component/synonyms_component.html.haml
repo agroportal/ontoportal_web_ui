@@ -1,0 +1,19 @@
+.synonyms-component{data: { controller: ('synonyms' if overflow?) }}
+  %ul.synonyms-list{role: 'list'}
+    - visible_chips.each do |chip|
+      %li= chip_tag(chip)
+    - if overflow?
+      %li
+        %button.synonym-chip.synonym-chip--more{type: 'button', title: t('ontology_details.concept.show_all_synonyms'), aria: { haspopup: 'dialog', controls: modal_id }, data: { action: 'synonyms#open' }}
+          = "+#{hidden_count}"
+
+  - if overflow?
+    %dialog.synonyms-modal{id: modal_id, aria: { labelledby: title_id }, data: { synonyms_target: 'dialog', action: 'click->synonyms#backdropClose' }}
+      .synonyms-modal__panel
+        .synonyms-modal__header
+          %h2.synonyms-modal__title{id: title_id}= t('ontology_details.concept.synonyms')
+          %button.synonyms-modal__close{type: 'button', aria: { label: t('components.close') }, data: { action: 'synonyms#close' }}
+            %span{aria: { hidden: 'true' }} &times;
+        %ul.synonyms-list.synonyms-list--modal{role: 'list'}
+          - chips.each do |chip|
+            %li= chip_tag(chip)
