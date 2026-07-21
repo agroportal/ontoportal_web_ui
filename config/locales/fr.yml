@@ -132,6 +132,9 @@ fr:
       edit_button: Éditer
       configuration_updated_successfully: Configuration de l'API mise à jour avec succès
       configuration_update_error: 'Problème lors de la mise à jour de la configuration: %{error}'
+      federation_provide_apikey: Veuillez fournir une clé API pour l'utilisateur de fédération correspondant à chaque portail afin d'activer la fédération.
+      federation_not_allowed: Ce portail n'est pas autorisé à activer les fonctionnalités de fédération.
+      federation_invalid_apikeys: "Les portails suivants n'ont pas été ajoutés car leur clé API est invalide : %{portals}"
     licenses:
       create:
         success: Licence renouvelée

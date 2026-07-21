@@ -8,6 +8,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   include ApplicationTestHelpers::Categories
   include ApplicationTestHelpers::Groups
   include ApplicationTestHelpers::Agents
+  include ApplicationTestHelpers::Federation
 
   driven_by :selenium, using: ENV['CI'].present? ? :headless_chrome : :chrome, screen_size: [1400, 1400], options: {
     browser: :remote,

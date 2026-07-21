@@ -91,6 +91,9 @@ application.register("sample-text", SampleTextController)
 import AnnotatorController from "./annotator_controller"
 application.register('annotator', AnnotatorController)
 
+import ApikeyValidatorController from "./apikey_validator_controller"
+application.register('apikey-validator', ApikeyValidatorController)
+
 import FormUrlController from "./form_url_controller"
 application.register('form-url', FormUrlController)
 

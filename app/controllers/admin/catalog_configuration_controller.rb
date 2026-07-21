@@ -1,4 +1,6 @@
 class Admin::CatalogConfigurationController < ApplicationController
+  include OntoportalInstances
+
   before_action :authorize_admin
   before_action :load_catalog_metadata, only: [:show]
   before_action :load_catalog_data, only: [:show]
@@ -21,6 +23,11 @@ class Admin::CatalogConfigurationController < ApplicationController
       invalidate_federated_portals_cache if config['federated_portals'].present?
     else
       flash.now[:alert] = t('admin.catalog_configuration.configuration_update_error', error: response.body)
+    end
+
+    if @rejected_federated_portals.present?
+      flash.now[:warning] = t('admin.catalog_configuration.federation_invalid_apikeys',
+                              portals: @rejected_federated_portals.join(', '))
     end
 
     @catalog_data = load_catalog_data
@@ -55,11 +62,30 @@ class Admin::CatalogConfigurationController < ApplicationController
       @value_attrs = merge_federated_portals(@value_attrs, portals_from_source)
       # For federated_portals, explicitly set all field names
       @field_names = %w[name ui api color apikey]
+
+      # A portal may only activate federation if it is itself registered as a
+      # federated portal on ontoportal.org (matched by the request host).
+      domain = current_portal_domain
+      @federation_allowed = federation_allowed?(domain)
+      # Never let a portal federate with itself.
+      @value_attrs = reject_current_portal(@value_attrs, domain)
     else
       @field_names = extract_field_names_for_key(@key)
     end
 
     render partial: 'edit_nested_form_modal', layout: false
+  end
+
+  # Live check used by the federated portals form to give immediate feedback
+  # before saving: is this apikey a valid, working federation key?
+  def validate_apikey
+    apikey = params[:apikey].to_s
+    api = params[:api].to_s
+
+    render json: {
+      uuid: valid_uuid?(apikey),
+      valid: valid_federation_apikey?(api, apikey)
+    }
   end
 
   private
@@ -201,41 +227,73 @@ class Admin::CatalogConfigurationController < ApplicationController
   def sanitize_federated_portals(raw_value)
     return nil if raw_value.nil?
 
-    portals = []
-    case raw_value
-    when Hash
-      # raw_value is a hash with numeric keys and portal data as values
-      raw_value.each do |_, portal_data|
-        next unless portal_data.is_a?(Hash)
+    portals_data = case raw_value
+                   when Hash
+                     # raw_value is a hash with numeric keys and portal data as values
+                     raw_value.values
+                   when Array
+                     # raw_value is already an array of portal objects
+                     raw_value
+                   else
+                     []
+                   end
 
-        portal = {}
-        portal[:name] = portal_data['name'] if portal_data['name'].present?
-        portal[:ui] = portal_data['ui'] if portal_data['ui'].present?
-        portal[:api] = portal_data['api'] if portal_data['api'].present?
-        portal[:color] = portal_data['color'] if portal_data['color'].present?
-        portal[:apikey] = portal_data['apikey'] if portal_data['apikey'].present?
+    @rejected_federated_portals ||= []
 
-        # Include portal if it has at least one field with data
-        portals << portal if portal.keys.any?
+    portals = portals_data.filter_map do |portal_data|
+      next unless portal_data.is_a?(Hash)
+      # The apikey is required: skip portals without one so they are not
+      # added to the catalog.
+      next if portal_data['apikey'].blank?
+
+      portal = {}
+      portal[:name] = portal_data['name'] if portal_data['name'].present?
+      portal[:ui] = portal_data['ui'] if portal_data['ui'].present?
+      portal[:api] = portal_data['api'] if portal_data['api'].present?
+      portal[:color] = portal_data['color'] if portal_data['color'].present?
+      portal[:apikey] = portal_data['apikey']
+
+      # Only keep portals whose apikey is a valid, working federation key.
+      unless valid_federation_apikey?(portal[:api], portal[:apikey])
+        @rejected_federated_portals << (portal[:name].presence || portal[:ui].presence || portal[:api].presence)
+        next
       end
-    when Array
-      # raw_value is already an array of portal objects
-      raw_value.each do |portal_data|
-        next unless portal_data.is_a?(Hash)
 
-        portal = {}
-        portal[:name] = portal_data['name'] if portal_data['name'].present?
-        portal[:ui] = portal_data['ui'] if portal_data['ui'].present?
-        portal[:api] = portal_data['api'] if portal_data['api'].present?
-        portal[:color] = portal_data['color'] if portal_data['color'].present?
-        portal[:apikey] = portal_data['apikey'] if portal_data['apikey'].present?
-
-        # Include portal if it has at least one field with data
-        portals << portal if portal.keys.any?
-      end
+      portal
     end
 
     portals.presence
+  end
+
+  UUID_REGEX = /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i
+
+  def valid_uuid?(value)
+    value.to_s.match?(UUID_REGEX)
+  end
+
+  # A federation apikey must be a valid UUID and must be accepted by the target
+  # portal. We probe its API and only reject the key when the portal answers
+  # with 401 Unauthorized. Any other outcome (including a network error we
+  # cannot draw a conclusion from) leaves the key in place.
+  def valid_federation_apikey?(api, apikey)
+    return false unless valid_uuid?(apikey)
+    return true if api.blank?
+
+    uri = URI.parse("#{api.to_s.chomp('/')}/agents")
+    uri.query = URI.encode_www_form(
+      page: 1, pagesize: 1, include: 'test',
+      display_links: false, display_context: false, apikey: apikey
+    )
+
+    response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https',
+                                                   open_timeout: 5, read_timeout: 5) do |http|
+      http.request(Net::HTTP::Get.new(uri.request_uri))
+    end
+
+    response.code.to_i != 401
+  rescue StandardError => e
+    Rails.logger.warn("Could not verify federation apikey for #{api}: #{e.message}")
+    true
   end
 
   def extract_field_names_for_key(key)
@@ -247,40 +305,53 @@ class Admin::CatalogConfigurationController < ApplicationController
     end
   end
 
+  # The apikey is deliberately left out: it is what the administrator has to fill in
+  # to actually federate with a portal.
   def fetch_federated_portals_from_source
-    require 'net/http'
-    require 'json'
-
-    uri = URI('https://ontoportal.org/portals.json')
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-
-    request = Net::HTTP::Get.new(uri.request_uri)
-    response = http.request(request)
-
-    if response.is_a?(Net::HTTPSuccess)
-      data = JSON.parse(response.body)
-      portals = []
-
-      # Handle JSON-LD format with @graph array
-      if data.is_a?(Hash) && data['@graph'].is_a?(Array)
-        portals = data['@graph'].select { |portal| portal['federation'] == true }
-      end
-
-      # Transform to OpenStruct objects with name, ui, and color fields
-      portals.map do |portal|
-        OpenStruct.new(
-          name: portal['acronym'],
-          ui: portal['@id'],
-          color: portal['color']
-        )
-      end
-    else
-      []
+    federated_ontoportal_instances.map do |portal|
+      OpenStruct.new(
+        name: portal[:name],
+        ui: portal[:ui],
+        api: portal[:api],
+        color: portal[:color]
+      )
     end
   rescue StandardError => e
     Rails.logger.error("Error fetching federated portals: #{e.message}")
     []
+  end
+
+  # The domain that identifies the current portal, taken from the incoming
+  # request host rather than a configurable setting the admin controls.
+  def current_portal_domain
+    portal_domain(request.host)
+  end
+
+  # A portal is allowed to activate federation only when it is listed as a
+  # federated portal on ontoportal.org (matched by its domain).
+  def federation_allowed?(domain)
+    return false if domain.blank?
+
+    federated_ontoportal_instances.any? do |portal|
+      federated_portal_domains(portal).include?(domain)
+    end
+  end
+
+  # Remove the current portal from the list so it is not offered to federate
+  # with itself.
+  def reject_current_portal(portals, domain)
+    return portals if domain.blank?
+
+    portals.reject do |portal|
+      ui = portal.respond_to?(:ui) ? portal.ui : portal['ui']
+      api = portal.respond_to?(:api) ? portal.api : portal['api']
+      [portal_domain(ui), portal_domain(api)].compact.include?(domain)
+    end
+  end
+
+  # The domains a federated instance can be recognised by (its UI and API).
+  def federated_portal_domains(portal)
+    [portal_domain(portal[:ui]), portal_domain(portal[:api])].compact
   end
 
   def merge_federated_portals(existing_portals, source_portals)
@@ -290,7 +361,7 @@ class Admin::CatalogConfigurationController < ApplicationController
       ui = portal.respond_to?(:ui) ? portal.ui : portal['ui']
       next if ui.blank?
 
-      domain = normalize_domain(ui)
+      domain = portal_domain(ui)
       existing_by_domain[domain] = portal
     end
 
@@ -298,23 +369,12 @@ class Admin::CatalogConfigurationController < ApplicationController
     source_portals.each do |portal|
       next if portal.ui.blank?
 
-      domain = normalize_domain(portal.ui)
+      domain = portal_domain(portal.ui)
       existing_by_domain[domain] ||= portal
     end
 
     # Return merged list
     existing_by_domain.values
-  end
-
-  def normalize_domain(url)
-    # Extract and normalize the domain from a full URL
-    # e.g., "https://agroportal.lirmm.fr/" -> "agroportal.lirmm.fr"
-    return url.to_s.downcase if url.blank?
-
-    uri = URI.parse(url)
-    uri.host&.downcase || url.to_s.downcase
-  rescue StandardError
-    url.to_s.downcase
   end
 
   def invalidate_federated_portals_cache

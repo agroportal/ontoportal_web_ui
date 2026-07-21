@@ -2,12 +2,25 @@ module FederationHelper
   include ApplicationHelper
 
   def federated_portals
-    Rails.cache.fetch('federated_portals', expires_in: 1.hour) do
-      portals = fetch_federated_portals_from_catalog
-      # In test environment, fall back to $PORTALS_INSTANCES if catalog is empty
-      portals = LinkedData::Client.settings.federated_portals if portals.empty? && Rails.env.test?
-      portals
-    end
+    cached = Rails.cache.read('federated_portals')
+    return cached if cached.present?
+
+    portals = fetch_federated_portals_from_catalog
+    Rails.cache.write('federated_portals', portals, expires_in: 1.hour) if portals.present?
+    portals
+  end
+
+  # The API client opens one connection per federated portal when it boots, but the
+  # portals we federate with are administered at runtime through the catalog.
+  def sync_federated_connections
+    portals = federated_portals
+    settings = LinkedData::Client.settings
+    return if settings.federated_conn && settings.federated_portals == portals
+
+    settings.federated_portals = portals
+    # config_connection only ever runs once, let it open the new connections
+    LinkedData::Client.instance_variable_set(:@settings_run_connection, false)
+    LinkedData::Client.config_connection(cache_store: Rails.cache)
   end
 
   def fetch_federated_portals_from_catalog
@@ -17,13 +30,13 @@ module FederationHelper
     federated = {}
     if catalog_data&.federated_portals.present?
       Array(catalog_data.federated_portals).each do |portal|
-        # Only include portals that have an apikey configured
-        next unless portal[:apikey].present?
+        # A portal can only be queried once an administrator has filled in its apikey
+        next unless portal[:apikey].present? && portal[:name].present? && portal[:api].present?
 
         portal_key = portal[:name].downcase.to_sym
         # Ensure URLs end with /
-        portal[:ui] = "#{portal[:ui]}/" unless portal[:ui].end_with?("/")
-        portal[:api] = "#{portal[:api]}/" unless portal[:api].end_with?("/")
+        portal[:ui] = "#{portal[:ui]}/" if portal[:ui].present? && !portal[:ui].end_with?("/")
+        portal[:api] = "#{portal[:api]}/" if portal[:api].present? && !portal[:api].end_with?("/")
 
         federated[portal_key] = portal
       end
@@ -186,16 +199,11 @@ module FederationHelper
     end
   end
 
-  def federation_portal_status(portal_name: nil)
+  def federation_portal_status(portal_name: nil, api: nil)
     Rails.cache.fetch("federation_portal_up_#{portal_name}", expires_in: 10.minutes) do
-      # Check if it's the local portal (compare with $SITE)
-      if portal_name&.to_s&.downcase == $SITE.downcase
-        portal_api = rest_url
-      else
-        portal_api = federated_portals&.dig(portal_name.to_sym,:api)
-      end
+      portal_api = api.presence || portal_status_api(portal_name)
 
-      return false unless portal_api
+      return false if portal_api.blank?
       portal_up = false
       begin
         response = Faraday.new(url: portal_api) do |f|
@@ -210,6 +218,13 @@ module FederationHelper
       end
       portal_up
     end
+  end
+
+  def portal_status_api(portal_name)
+    return rest_url if portal_name.to_s.downcase == $SITE.to_s.downcase
+    return nil if portal_name.blank?
+
+    federated_portals&.dig(portal_name.to_sym, :api)
   end
 
   def federation_chip_component(key, name, acronym, checked, portal_up)

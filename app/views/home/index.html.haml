@@ -204,7 +204,7 @@
       .home-support-items
         - @portals_instances&.each do |portal|
           - next unless portal[:name].present? && portal[:ui].present?
-          = portal_config_tooltip(portal[:name]) do
+          = portal_config_tooltip(portal) do
             %div.text-center
               = link_to portal[:ui], target: '_blank', class: 'home-logo-instances', style: "background-color: #{portal[:color]}" do
                 = inline_svg('logo-white.svg', width: "35", height: "26")
