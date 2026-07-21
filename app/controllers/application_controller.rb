@@ -164,13 +164,13 @@ class ApplicationController < ActionController::Base
         userapikey: get_apikey,
         rest_url: LinkedData::Client.settings.rest_url,
         proxy_url: $PROXY_URL,
+        fairness_url: $FAIRNESS_URL,
         biomixer_url: $BIOMIXER_URL,
         annotator_url: $ANNOTATOR_URL,
         ncbo_annotator_url: $NCBO_ANNOTATOR_URL,
         ncbo_apikey: $NCBO_API_KEY,
         interportal_hash: $INTERPORTAL_HASH,
         resolve_namespace: RESOLVE_NAMESPACE,
-        fairness_url: $FAIRNESS_URL
     }
     config[:ncbo_slice] = @subdomain_filter[:acronym] if (@subdomain_filter[:active] && !@subdomain_filter[:acronym].empty?)
     config.to_json
