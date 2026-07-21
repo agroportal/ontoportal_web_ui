@@ -325,6 +325,7 @@ module ApplicationHelper
       userapikey: get_apikey,
       rest_url: LinkedData::Client.settings.rest_url,
       proxy_url: $PROXY_URL,
+      fairness_url: $FAIRNESS_URL,
       biomixer_url: $BIOMIXER_URL,
       annotator_url: $ANNOTATOR_URL,
       ncbo_annotator_url: $NCBO_ANNOTATOR_URL,
