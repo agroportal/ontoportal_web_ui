@@ -27,6 +27,22 @@ module OntoportalInstances
     ontoportal_instances.select { |portal| portal[:federation] }
   end
 
+  # Whether the current portal is registered as a *federated* portal on
+  # ontoportal.org/portals.json (matched by the request host domain). Single source
+  # of truth for both enabling federation in admin and showing the homepage
+  # federation section.
+  def current_portal_federated_on_source?(portals = federated_ontoportal_instances)
+    domain = portal_domain(request.host)
+    return false if domain.blank?
+
+    portals.any? { |portal| federated_portal_domains(portal).include?(domain) }
+  end
+
+  # The domains a federated instance can be recognised by (its UI and API).
+  def federated_portal_domains(portal)
+    [portal_domain(portal[:ui]), portal_domain(portal[:api])].compact
+  end
+
   def fetch_ontoportal_instances
     uri = URI(PORTALS_SOURCE_URL)
     http = Net::HTTP.new(uri.host, uri.port)

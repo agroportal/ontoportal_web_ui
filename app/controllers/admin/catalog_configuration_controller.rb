@@ -66,7 +66,7 @@ class Admin::CatalogConfigurationController < ApplicationController
       # A portal may only activate federation if it is itself registered as a
       # federated portal on ontoportal.org (matched by the request host).
       domain = current_portal_domain
-      @federation_allowed = federation_allowed?(domain)
+      @federation_allowed = current_portal_federated_on_source?
       # Never let a portal federate with itself.
       @value_attrs = reject_current_portal(@value_attrs, domain)
     else
@@ -327,16 +327,6 @@ class Admin::CatalogConfigurationController < ApplicationController
     portal_domain(request.host)
   end
 
-  # A portal is allowed to activate federation only when it is listed as a
-  # federated portal on ontoportal.org (matched by its domain).
-  def federation_allowed?(domain)
-    return false if domain.blank?
-
-    federated_ontoportal_instances.any? do |portal|
-      federated_portal_domains(portal).include?(domain)
-    end
-  end
-
   # Remove the current portal from the list so it is not offered to federate
   # with itself.
   def reject_current_portal(portals, domain)
@@ -347,11 +337,6 @@ class Admin::CatalogConfigurationController < ApplicationController
       api = portal.respond_to?(:api) ? portal.api : portal['api']
       [portal_domain(ui), portal_domain(api)].compact.include?(domain)
     end
-  end
-
-  # The domains a federated instance can be recognised by (its UI and API).
-  def federated_portal_domains(portal)
-    [portal_domain(portal[:ui]), portal_domain(portal[:api])].compact
   end
 
   def merge_federated_portals(existing_portals, source_portals)
