@@ -1,0 +1,32 @@
+%div.definitions-component{id: @id}
+  %ul.definitions-list{role: 'list'}
+    - items.each do |item|
+      %li.definition-item{class: ('definition-item--reified' if item[:reified])}
+        - if !item[:reified]
+          %p.definition-text= item[:text]
+        - elsif item[:text].present?
+          %p.definition-text
+            = item[:text]
+            = language_tag(item)
+            %span.definition-badge{title: t('ontology_details.concept.reified_hint')}= t('ontology_details.concept.reified')
+          - if item[:sources].present? || item[:created].present? || item[:modified].present?
+            %dl.definition-meta
+              - if item[:sources].present?
+                %dt.definition-meta__label= t('ontology_details.concept.definition_source')
+                %dd.definition-meta__value
+                  - item[:sources].each do |source|
+                    %span.definition-meta__source= source
+              - if item[:created].present?
+                %dt.definition-meta__label= t('ontology_details.concept.definition_created')
+                %dd.definition-meta__value
+                  %time{datetime: item[:created].to_s}= human_date(item[:created])
+              - if item[:modified].present?
+                %dt.definition-meta__label= t('ontology_details.concept.definition_modified')
+                %dd.definition-meta__value
+                  %time{datetime: item[:modified].to_s}= human_date(item[:modified])
+        - else
+          / Reified node the API did not resolve - link to the node itself.
+          %span.definition-badge{title: t('ontology_details.concept.reified_hint')}= t('ontology_details.concept.reified')
+          = link_to(item[:uri], target: '_blank', rel: 'noopener noreferrer', class: 'definition-reified-link', aria: { label: t('ontology_details.concept.reified_link_aria', uri: item[:uri]) }) do
+            %span.definition-reified-link__label= reified_label(item[:uri])
+            %span.definition-reified-link__icon{aria: { hidden: 'true' }} ↗

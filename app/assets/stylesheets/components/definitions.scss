@@ -1,0 +1,124 @@
+// Concept definitions.
+// See discussion: https://github.com/ontoportal/ontoportal_web_ui/discussions/67
+//
+// Definitions are rendered as plain, readable text - never italic or
+// portal-coloured - so they are not mistaken for links (consistency +
+// accessibility). A reified definition (a separate RDF node) additionally shows
+// a small "Reified" badge and the provenance the node carries: its source and
+// creation/modification dates. A reified node the API did not resolve falls back
+// to a clearly-marked link to that node.
+
+.definitions-component {
+  min-width: 0;
+}
+
+.definitions-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  > li {
+    margin: 0;
+  }
+
+  > li + li {
+    margin-top: 12px;
+  }
+}
+
+// The definition text: same colour and size as the surrounding content,
+// upright, and never styled like a link.
+.definition-text {
+  margin: 0;
+  color: inherit;
+  font-style: normal;
+  overflow-wrap: anywhere;
+}
+
+// "Reified" provenance badge - muted, uppercase, clearly not a link. Sits
+// inline after the definition text (or before the fallback link).
+.definition-badge {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline: 4px 6px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background-color: var(--light-color);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--gray-color);
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+// Per-definition language tag, shown only when the definitions span more than
+// one language. Reuses the app-wide `badge badge-secondary` look; this only
+// handles its inline placement and size.
+.definition-lang {
+  margin-inline-start: 6px;
+  vertical-align: middle;
+  font-size: 0.72em;
+}
+
+// Provenance for a reified definition: a source/date "definition list" nested
+// under the definition text. Indented behind a subtle left rail so it reads as
+// belonging to the definition; labels align in a column and values wrap beneath
+// themselves rather than under the label.
+.definition-meta {
+  margin: 6px 0 0 2px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(0, 0, 0, 0.12);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 3px 12px;
+  font-size: 0.85em;
+  line-height: 1.45;
+
+  // Aligned field label ("Source", "Created", ...) - muted, not a link.
+  &__label {
+    margin: 0;
+    color: var(--gray-color);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  // Value cell (a citation or a <time>); wraps under itself, not the label.
+  &__value {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  // Stack multiple sources, one per line.
+  &__source {
+    display: block;
+
+    & + & {
+      margin-top: 2px;
+    }
+  }
+}
+
+// The reified node link is a genuine link (used only when the API did not
+// resolve the node), so - unlike the definition text - it is styled as one,
+// with an explicit external-link indicator.
+.definition-reified-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  color: var(--primary-color);
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: none;
+  }
+
+  &__icon {
+    flex: none;
+    font-size: 0.85em;
+  }
+}

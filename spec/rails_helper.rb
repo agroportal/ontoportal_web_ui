@@ -56,6 +56,9 @@ RSpec.configure do |config|
   # https://relishapp.com/rspec/rspec-rails/docs
   config.infer_spec_type_from_file_location!
 
+  # Enable `render_inline` and friends in ViewComponent specs (type: :component).
+  config.include ViewComponent::TestHelpers, type: :component
+
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:

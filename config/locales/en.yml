@@ -1317,6 +1317,9 @@ en:
     unselect_all: Unselect all
   ontology_details:
     concept:
+      definition_created: Created
+      definition_modified: Modified
+      definition_source: Source
       definitions: Definitions
       id: ID
       in_schemes: In schemes
@@ -1324,6 +1327,10 @@ en:
       no_preferred_name_for_selected_language: No preferred name for selected language.
       obsolete: Obsolete
       preferred_name: Preferred name
+      reified: Reified
+      reified_hint: This definition is a separate RDF node that carries extra provenance
+        (such as a source or dates) in the ontology.
+      reified_link_aria: 'Reified definition node %{uri} (opens in a new tab)'
       synonyms: Synonyms
       type: Type
     header:

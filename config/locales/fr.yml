@@ -1365,6 +1365,9 @@ fr:
     unselect_all: Tout désélectionner
   ontology_details:
     concept:
+      definition_created: Créée le
+      definition_modified: Modifiée le
+      definition_source: Source
       definitions: Définitions
       id: ID
       in_schemes: Dans les schémas
@@ -1372,6 +1375,10 @@ fr:
       no_preferred_name_for_selected_language: Pas de nom préféré pour la langue sélectionnée.
       obsolete: Obsolète
       preferred_name: Nom préféré
+      reified: Réifiée
+      reified_hint: Cette définition est un nœud RDF distinct qui porte des informations
+        de provenance supplémentaires (source ou dates, par exemple) dans l'ontologie.
+      reified_link_aria: 'Nœud de définition réifiée %{uri} (ouvre un nouvel onglet)'
       synonyms: Synonymes
       type: Type
     header:

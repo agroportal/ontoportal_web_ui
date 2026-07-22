@@ -26,7 +26,7 @@
 
 
       - unless @concept.definition.nil? || @concept.definition.empty?
-        - t.add_row({th: t('ontology_details.concept.definitions')}, {td: display_in_multiple_languages(@concept.definition)})
+        - t.add_row({th: t('ontology_details.concept.definitions')}, {td: render(DefinitionsComponent.new(definitions: @concept.definition, definition_nodes: (@concept.definitionXl if @concept.respond_to?(:definitionXl)), id: 'concept-definitions'))})
 
       - if @concept.obsolete?
         - t.add_row({th: t('ontology_details.concept.obsolete')}, {td: 'true'})
