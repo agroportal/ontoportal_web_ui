@@ -18,6 +18,8 @@ class HomeController < ApplicationController
       end
     end
     @portals_instances = ontoportal_instances
+    @current_portal_in_source =
+      current_portal_federated_on_source?(@portals_instances.select { |portal| portal[:federation] })
   end
 
   # Add a new action for the metrics frame
