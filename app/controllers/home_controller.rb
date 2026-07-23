@@ -60,15 +60,13 @@ class HomeController < ApplicationController
     render 'cookies', layout: nil
   end
 
+  # A portal that is down, retired or shielded from automated requests still gets a
+  # tooltip: fall back on what the registry says about it.
   def portal_config
-    @config = portal_instance_config(params[:portal] || helpers.portal_name)
-    if @config && @config[:api]
-      @portal_config = get_portal_config
-      @color = @portal_config[:color].present? ? @portal_config[:color] : @config[:color]
-      @name = @portal_config[:title].present? ? @portal_config[:title] : @config[:name]
-    else
-      @portal_config = {}
-    end
+    @config = portal_instance_config(params[:portal] || helpers.portal_name) || {}
+    @portal_config = @config[:api].present? ? get_portal_config : {}
+    @color = @portal_config[:color].presence || @config[:color]
+    @name = @portal_config[:title].presence || @config[:name]
   end
 
   def tools
@@ -219,5 +217,8 @@ class HomeController < ApplicationController
       portal_config = portal_config.to_h
     end
     portal_config
+  rescue StandardError => e
+    Rails.logger.info("Could not read the configuration of #{@config[:name]}: #{e.message}")
+    {}
   end
 end

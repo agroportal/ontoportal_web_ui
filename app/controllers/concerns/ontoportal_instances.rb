@@ -2,16 +2,13 @@
 
 require 'net/http'
 require 'json'
-require 'ipaddr'
 
-# Reads the OntoPortal instances published on https://ontoportal.org/portals.json.
-# That list describes the portals but never says where their APIs live, so every
-# instance is asked directly through its own /site_config endpoint.
+# Reads the OntoPortal instances published on https://ontoportal.org/portals.json,
+# which describes every portal and where its API lives.
 module OntoportalInstances
   extend ActiveSupport::Concern
 
   PORTALS_SOURCE_URL = 'https://ontoportal.org/portals.json'
-  SITE_CONFIG_TIMEOUT = 5
 
   private
 
@@ -51,7 +48,7 @@ module OntoportalInstances
     response = http.request(Net::HTTP::Get.new(uri.request_uri))
     return [] unless response.is_a?(Net::HTTPSuccess)
 
-    with_portals_api_endpoints(transform_portals_data(JSON.parse(response.body)))
+    transform_portals_data(JSON.parse(response.body))
   rescue StandardError => e
     Rails.logger.error("Error fetching portals from ontoportal.org: #{e.message}")
     []
@@ -79,60 +76,25 @@ module OntoportalInstances
     {
       name: portal['acronym'] || portal['name'],
       ui: portal['@id'] || portal['ui'],
-      api: portal['api'],
+      api: portal_api_url(portal),
       color: portal['color'] || '#000000',
+      description: portal['description'],
+      status: portal['status'],
       apikey: portal['apikey'],
       federation: portal['federation'] == true,
       'light-color': portal['light-color']
     }
   end
 
-  # Every OntoPortal UI publishes its own REST url on /site_config, so ask each
-  # portal where its API lives instead of maintaining that list by hand.
-  def with_portals_api_endpoints(portals)
-    portals.map do |portal|
-      Thread.new { portal[:api].present? ? portal : portal.merge(portal_site_config(portal[:ui])) }
-    end.map(&:value)
+  # The registry types the API endpoint as a schema.org/WebAPI node, so the url sits
+  # in its @id rather than on the property itself.
+  def portal_api_url(portal)
+    api_url = portal['api_url'] || portal['api']
+    api_url.is_a?(Hash) ? api_url['@id'] || api_url['url'] : api_url
   end
 
-  def portal_site_config(ui, redirects: 3)
-    uri = URI.join(ui, '/site_config')
-    response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https',
-                                                   open_timeout: SITE_CONFIG_TIMEOUT,
-                                                   read_timeout: SITE_CONFIG_TIMEOUT) do |http|
-      http.request(Net::HTTP::Get.new(uri.request_uri))
-    end
-    # Portals listed with an http url usually redirect to their https one
-    if response.is_a?(Net::HTTPRedirection) && redirects.positive?
-      return portal_site_config(response['location'], redirects: redirects - 1)
-    end
-    return {} unless response.is_a?(Net::HTTPSuccess)
-
-    site_config = JSON.parse(response.body)
-    return {} unless reachable_url?(site_config['rest_url'])
-
-    { api: site_config['rest_url'] }
-  rescue StandardError => e
-    Rails.logger.info("Could not read the site configuration of #{ui}: #{e.message}")
-    {}
-  end
-
-  # An appliance can advertise an address that is only reachable on its own network,
-  # which would make every page render wait for a connection timeout.
-  def reachable_url?(url)
-    host = URI.parse(url.to_s).host
-    return false if host.blank?
-
-    address = IPAddr.new(host)
-    !(address.private? || address.loopback?)
-  rescue IPAddr::InvalidAddressError
-    true # a regular host name, not an IP address
-  rescue StandardError
-    false
-  end
-
-  # Portals shielded from automated requests never answer /site_config, so complete
-  # the list with the endpoints of the portals we are already federated with.
+  # A portal can be published without an API endpoint, so complete the list with the
+  # endpoints of the portals we are already federated with.
   def resolve_missing_portals_api(portals)
     return portals if portals.all? { |portal| portal[:api].present? }
 

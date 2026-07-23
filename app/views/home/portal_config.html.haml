@@ -15,9 +15,10 @@
                 = inline_svg_tag 'icons/ontology.svg'
                 %span
                   = "#{@portal_config[:numberOfArtefacts]} ontologies"
-    - if @portal_config[:description].present?
+    - description = @portal_config[:description].presence || @config[:description]
+    - if description.present?
       .portal-description
-        = @portal_config[:description]
+        = description
     - if @portal_config[:federated_portals].present?
       %div.mb-1
         .home-section-title
