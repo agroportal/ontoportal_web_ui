@@ -18,8 +18,8 @@
       - unless @concept.synonym.nil? || @concept.synonym.empty?
         - t.add_row({th: t('ontology_details.concept.synonyms')}) do |h|
           - h.td do
-            %div.d-flex
-              = display_in_multiple_languages(@concept.synonym, style_as_badge: true, show_max: 5)
+            %div.d-flex.align-items-start
+              = render SynonymsComponent.new(synonyms: @concept.synonym, id: 'concept-synonyms', show_max: 10)
               %div.synonym-change-request
                 = add_synonym_button
                 = remove_synonym_button
