@@ -6,7 +6,11 @@ module FederationHelper
     return cached if cached.present?
 
     portals = fetch_federated_portals_from_catalog
-    Rails.cache.write('federated_portals', portals, expires_in: 1.hour) if portals.present?
+    # The catalog only returns the portals' apikeys to an admin request, so only
+    # let an admin populate the cache — a non-admin fetch gets an apikey-redacted
+    # (and therefore empty) list that would otherwise wipe federation for everyone.
+    # No TTL: the value persists until an admin refreshes it or the config changes.
+    Rails.cache.write('federated_portals', portals) if portals.present? && current_user_admin?
     portals
   end
 

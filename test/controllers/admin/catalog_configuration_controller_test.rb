@@ -26,14 +26,12 @@ class Admin::CatalogConfigurationControllerTest < ActiveSupport::TestCase
 
   test 'allows federation when the request host matches a federated portal' do
     controller = build_controller(host: 'agroportal.eu', instances: [AGROPORTAL])
-    domain = controller.send(:current_portal_domain)
-    assert controller.send(:federation_allowed?, domain)
+    assert controller.send(:current_portal_federated_on_source?)
   end
 
   test 'forbids federation when the request host is not a federated portal' do
     controller = build_controller(host: 'unknown.example.org', instances: [AGROPORTAL])
-    domain = controller.send(:current_portal_domain)
-    assert_not controller.send(:federation_allowed?, domain)
+    assert_not controller.send(:current_portal_federated_on_source?)
   end
 
   test 'excludes the current portal from the federated list' do
