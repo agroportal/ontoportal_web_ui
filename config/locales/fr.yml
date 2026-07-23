@@ -421,6 +421,7 @@ fr:
     cancel_button: Annuler
     check_resolvability: vérification de la résolvabilité...
     classes: classes
+    close: Fermer
     concepts: concepts
     copy_original_uri: Copier l'URI d'origine
     copy_portal_uri: Copier l'URI de %{portal_name}
@@ -1372,6 +1373,7 @@ fr:
       no_preferred_name_for_selected_language: Pas de nom préféré pour la langue sélectionnée.
       obsolete: Obsolète
       preferred_name: Nom préféré
+      show_all_synonyms: Afficher tous les synonymes
       synonyms: Synonymes
       type: Type
     header:
