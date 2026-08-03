@@ -1,0 +1,8 @@
+%section.site-admin-section{id: @id}
+  .site-admin-section-title
+    %h3
+      = @title
+    - if @description.present?
+      = helpers.description_tooltip(@title, @description)
+  .site-admin-section-body
+    = content

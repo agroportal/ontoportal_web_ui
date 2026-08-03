@@ -215,17 +215,28 @@ en:
         type: Type
     site_administration:
       cache_management: Cache management
+      cache_management_description:
+        Flush the caches %{portal_name} relies on to serve pages, or reset the connection to the cache server.
       checking_for_updates: Checking for updates ...
       clear_cache: Flush UI cache
       clear_goo_cache: Flush GOO cache
       clear_http_cache: Flush HTTP cache
-      flipper_description: 
+      edit_federated_portals: Edit federated portals
+      federated_portals: Federated portals
+      federated_portals_description:
+        Choose the OntoPortal instances %{portal_name} federates with, and provide the API key of the federation user of each of them.
+      flipper_description:
         Use Flipper to control the visibility of specific %{portal_name} features within the user interface.
+      flipper_ui: Flipper UI
+      no_federated_portal: No portal federated yet.
       sidekiq_description:
         Use Sidekiq to monitor and manage background job processing, queues, and cron jobs.
+      sidekiq_ui: Sidekiq UI
       reset_cache: Reset UI cache connection
       settings: Settings
       version_management: Version management
+      version_management_description:
+        The OntoPortal version %{portal_name} runs, and the updates available for it.
     submission_deleted_successfully: Submission %{id} for ontology %{ont} was deleted
       successfully
     submission_not_found: Submission %{id} for ontology %{ont} was not found
