@@ -1,0 +1,26 @@
+= turbo_frame_tag 'federated-portals-config' do
+  - if flash[:notice]
+    .mb-2
+      = render Display::AlertComponent.new(message: flash[:notice], closable: true, type: "success")
+  - if flash[:alert]
+    .mb-2
+      = render Display::AlertComponent.new(message: flash[:alert], closable: true, type: "danger")
+  - if flash[:warning]
+    .mb-2
+      = render Display::AlertComponent.new(message: flash[:warning], closable: true, type: "warning")
+
+  - portals = federated_portals.values
+  .site-admin-portal-chips
+    - if portals.empty?
+      %span.site-admin-portal-chips-empty
+        = t('admin.site_administration.no_federated_portal')
+    - portals.each do |portal|
+      %a.site-admin-portal-chip{ href: portal[:ui], target: '_blank', rel: 'noopener' }
+        %span.site-admin-portal-chip-dot{ style: "background-color: #{portal[:color].presence || 'var(--gray-color)'}" }
+        = portal[:name]
+
+  .site-admin-section-actions
+    -# The block form keeps the plain button label: the popup icon link_to_modal
+    -# adds is drawn in the primary color, which is invisible on a primary button.
+    = link_to_modal(nil, admin_edit_nested_form_catalog_configuration_path(:federated_portals), { id: 'edit_nested_form_federated_portals', class: 'btn btn-primary', data: { show_modal_title_value: t('admin.site_administration.federated_portals'), show_modal_size_value: 'modal-xl' } }) do
+      = t('admin.site_administration.edit_federated_portals')
