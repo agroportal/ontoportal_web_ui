@@ -19,8 +19,7 @@ class Admin::CatalogConfigurationController < ApplicationController
     response = update_remote_config(config)
     if response.status == 200
       flash.now[:notice] = t('admin.catalog_configuration.configuration_updated_successfully')
-      # Invalidate federated portals cache if federated_portals were updated
-      invalidate_federated_portals_cache if config['federated_portals'].present?
+      refresh_federated_portals if federated_portals_update?
     else
       flash.now[:alert] = t('admin.catalog_configuration.configuration_update_error', error: response.body)
     end
@@ -37,10 +36,17 @@ class Admin::CatalogConfigurationController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream do
-        render turbo_stream: turbo_stream.replace(
-          'catalog-config',
-          render_to_string('admin/catalog_configuration/show')
-        )
+        if federated_portals_update?
+          render turbo_stream: turbo_stream.replace(
+            'federated-portals-config',
+            partial: 'admin/catalog_configuration/federated_portals'
+          )
+        else
+          render turbo_stream: turbo_stream.replace(
+            'catalog-config',
+            render_to_string('admin/catalog_configuration/show')
+          )
+        end
       end
       format.html { redirect_to admin_api_configuration_index_path }
     end
@@ -63,10 +69,8 @@ class Admin::CatalogConfigurationController < ApplicationController
       # For federated_portals, explicitly set all field names
       @field_names = %w[name ui api color apikey]
 
-      # A portal may only activate federation if it is itself registered as a
-      # federated portal on ontoportal.org (matched by the request host).
       domain = current_portal_domain
-      @federation_allowed = current_portal_federated_on_source?
+      @federation_allowed = federation_allowed?
       # Never let a portal federate with itself.
       @value_attrs = reject_current_portal(@value_attrs, domain)
     else
@@ -90,6 +94,15 @@ class Admin::CatalogConfigurationController < ApplicationController
 
   private
 
+
+  def federated_portals_update?
+    params[:config]&.key?('federated_portals')
+  end
+
+  def federation_allowed?
+    Rails.env.development? || current_portal_federated_on_source?
+  end
+
   def attributes_groups
     {
       general: %w[acronym title identifier versionInfo status],
@@ -110,12 +123,16 @@ class Admin::CatalogConfigurationController < ApplicationController
       usage: %w[knownUsage coverage example themeTaxonomy],
       methodology_and_provenance: %w[accrualMethod accrualPeriodicity accrualPolicy],
       media: %w[associatedMedia depiction logo],
-      other: %w[color federated_portals relation sampleQueries]
+      other: %w[color relation sampleQueries]
     }.freeze
   end
 
+  def standalone_attributes
+    %w[federated_portals].freeze
+  end
+
   def list_included_attributes
-    attributes_groups.values.flatten.freeze
+    (attributes_groups.values.flatten + standalone_attributes).freeze
   end
 
   def agents_list
@@ -362,9 +379,14 @@ class Admin::CatalogConfigurationController < ApplicationController
     existing_by_domain.values
   end
 
-  def invalidate_federated_portals_cache
-    Rails.cache.delete('federated_portals')
-    Rails.logger.info("Invalidated federated_portals cache")
+  def refresh_federated_portals
+    Rails.cache.delete(FederatedPortal::CACHE_KEY)
+    portals = helpers.fetch_federated_portals_from_catalog
+
+    FederatedPortal.sync!(portals)
+    Rails.cache.write(FederatedPortal::CACHE_KEY, portals) if portals.present?
+
+    Rails.logger.info("Refreshed the federated portals cache and database copy (#{portals.size} portals)")
   end
 
 

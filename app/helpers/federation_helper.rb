@@ -2,15 +2,21 @@ module FederationHelper
   include ApplicationHelper
 
   def federated_portals
-    cached = Rails.cache.read('federated_portals')
+    cached = Rails.cache.read(FederatedPortal::CACHE_KEY)
     return cached if cached.present?
 
+    stored = FederatedPortal.as_config
+    return cache_federated_portals(stored) if stored.present?
+
     portals = fetch_federated_portals_from_catalog
-    # The catalog only returns the portals' apikeys to an admin request, so only
-    # let an admin populate the cache — a non-admin fetch gets an apikey-redacted
-    # (and therefore empty) list that would otherwise wipe federation for everyone.
-    # No TTL: the value persists until an admin refreshes it or the config changes.
-    Rails.cache.write('federated_portals', portals) if portals.present? && current_user_admin?
+    return portals unless portals.present? && current_user_admin?
+
+    FederatedPortal.sync!(portals)
+    cache_federated_portals(portals)
+  end
+
+  def cache_federated_portals(portals)
+    Rails.cache.write(FederatedPortal::CACHE_KEY, portals)
     portals
   end
 

@@ -40,7 +40,7 @@ module Admin::CatalogConfigurationHelper
   def description_tooltip_help_text(label, description)
     title = content_tag(:span, "#{label}")
     render SummarySectionComponent.new(title: title, show_card: false) do
-      help_text = ''
+      help_text = ActiveSupport::SafeBuffer.new
       unless description.nil? || description.empty?
         help_text += render(FieldContainerComponent.new(label: t('submission_inputs.help_text'), value: simple_format(description)))
       end
