@@ -19,9 +19,7 @@ class Admin::CatalogConfigurationController < ApplicationController
     response = update_remote_config(config)
     if response.status == 200
       flash.now[:notice] = t('admin.catalog_configuration.configuration_updated_successfully')
-      # Invalidate the federated portals cache on any federation submission, not
-      # only when portals remain: emptying the list has to take effect too.
-      invalidate_federated_portals_cache if federated_portals_update?
+      refresh_federated_portals if federated_portals_update?
     else
       flash.now[:alert] = t('admin.catalog_configuration.configuration_update_error', error: response.body)
     end
@@ -96,17 +94,11 @@ class Admin::CatalogConfigurationController < ApplicationController
 
   private
 
-  # The federated portals form is submitted on its own, from the site
-  # administration section, and so refreshes that section instead of the
-  # site description form.
+
   def federated_portals_update?
     params[:config]&.key?('federated_portals')
   end
 
-  # A portal may only activate federation if it is itself registered as a
-  # federated portal on ontoportal.org (matched by the request host).
-  # Development runs on a host that is never registered there, which would leave
-  # the form permanently locked, so the gate does not apply.
   def federation_allowed?
     Rails.env.development? || current_portal_federated_on_source?
   end
@@ -135,9 +127,6 @@ class Admin::CatalogConfigurationController < ApplicationController
     }.freeze
   end
 
-  # Attributes that are part of the catalog configuration but are not edited
-  # from the site description form: federated portals live in the site
-  # administration section.
   def standalone_attributes
     %w[federated_portals].freeze
   end
@@ -390,9 +379,14 @@ class Admin::CatalogConfigurationController < ApplicationController
     existing_by_domain.values
   end
 
-  def invalidate_federated_portals_cache
-    Rails.cache.delete('federated_portals')
-    Rails.logger.info("Invalidated federated_portals cache")
+  def refresh_federated_portals
+    Rails.cache.delete(FederatedPortal::CACHE_KEY)
+    portals = helpers.fetch_federated_portals_from_catalog
+
+    FederatedPortal.sync!(portals)
+    Rails.cache.write(FederatedPortal::CACHE_KEY, portals) if portals.present?
+
+    Rails.logger.info("Refreshed the federated portals cache and database copy (#{portals.size} portals)")
   end
 
 

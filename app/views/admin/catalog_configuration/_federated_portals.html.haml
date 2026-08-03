@@ -20,7 +20,5 @@
         = portal[:name]
 
   .site-admin-section-actions
-    -# The block form keeps the plain button label: the popup icon link_to_modal
-    -# adds is drawn in the primary color, which is invisible on a primary button.
     = link_to_modal(nil, admin_edit_nested_form_catalog_configuration_path(:federated_portals), { id: 'edit_nested_form_federated_portals', class: 'btn btn-primary', data: { show_modal_title_value: t('admin.site_administration.federated_portals'), show_modal_size_value: 'modal-xl' } }) do
       = t('admin.site_administration.edit_federated_portals')

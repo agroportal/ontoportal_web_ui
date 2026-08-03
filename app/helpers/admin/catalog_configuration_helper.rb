@@ -40,8 +40,6 @@ module Admin::CatalogConfigurationHelper
   def description_tooltip_help_text(label, description)
     title = content_tag(:span, "#{label}")
     render SummarySectionComponent.new(title: title, show_card: false) do
-      # A bare String would be escaped on its way into the component, showing the
-      # markup of the help text instead of rendering it.
       help_text = ActiveSupport::SafeBuffer.new
       unless description.nil? || description.empty?
         help_text += render(FieldContainerComponent.new(label: t('submission_inputs.help_text'), value: simple_format(description)))
