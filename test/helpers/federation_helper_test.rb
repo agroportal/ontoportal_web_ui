@@ -30,7 +30,7 @@ class FederationHelperTest < ActionView::TestCase
   end
 
   def catalog_answers(portals = nil)
-    define_singleton_method(:fetch_federated_portals_from_catalog) do
+    define_singleton_method(:fetch_federated_portals_from_catalog) do |**|
       flunk('the catalog should not have been read') if portals.nil?
       portals
     end

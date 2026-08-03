@@ -381,10 +381,10 @@ class Admin::CatalogConfigurationController < ApplicationController
 
   def refresh_federated_portals
     Rails.cache.delete(FederatedPortal::CACHE_KEY)
-    portals = helpers.fetch_federated_portals_from_catalog
+    portals = helpers.fetch_federated_portals_from_catalog(bust_cache: true)
 
     FederatedPortal.sync!(portals)
-    Rails.cache.write(FederatedPortal::CACHE_KEY, portals) if portals.present?
+    helpers.cache_federated_portals(portals) if portals.present?
 
     Rails.logger.info("Refreshed the federated portals cache and database copy (#{portals.size} portals)")
   end

@@ -16,7 +16,7 @@ module FederationHelper
   end
 
   def cache_federated_portals(portals)
-    Rails.cache.write(FederatedPortal::CACHE_KEY, portals)
+    Rails.cache.write(FederatedPortal::CACHE_KEY, portals, expires_in: FederatedPortal::CACHE_TTL)
     portals
   end
 
@@ -33,9 +33,12 @@ module FederationHelper
     LinkedData::Client.config_connection(cache_store: Rails.cache)
   end
 
-  def fetch_federated_portals_from_catalog
+  def fetch_federated_portals_from_catalog(bust_cache: false)
+    params = { display: 'federated_portals' }
+    params[:_ts] = Time.current.to_i if bust_cache
+
     # Fetch federated portals from the catalog metadata
-    catalog_data = LinkedData::Client::HTTP.get("#{LinkedData::Client.settings.rest_url}/", display: 'federated_portals')
+    catalog_data = LinkedData::Client::HTTP.get("#{LinkedData::Client.settings.rest_url}/", params)
 
     federated = {}
     if catalog_data&.federated_portals.present?
