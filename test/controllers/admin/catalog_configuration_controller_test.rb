@@ -10,12 +10,30 @@ require_relative '../../helpers/application_test_helpers'
 class Admin::CatalogConfigurationControllerTest < ActiveSupport::TestCase
   include ApplicationTestHelpers::Federation
 
+  setup do
+    @original_cache = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    FederatedPortal.delete_all
+  end
+
+  teardown do
+    Rails.cache = @original_cache
+  end
+
   # Build a controller whose request host and federation list are fixed, so the
   # pure gating methods can be exercised without dispatching a real request.
   def build_controller(host:, instances:)
     controller = Admin::CatalogConfigurationController.new
     controller.define_singleton_method(:request) { OpenStruct.new(host: host) }
     controller.define_singleton_method(:federated_ontoportal_instances) { instances }
+    controller
+  end
+
+  def build_controller_reading(portals)
+    controller = Admin::CatalogConfigurationController.new
+    controller.define_singleton_method(:helpers) do
+      OpenStruct.new(fetch_federated_portals_from_catalog: portals)
+    end
     controller
   end
 
@@ -71,9 +89,6 @@ class Admin::CatalogConfigurationControllerTest < ActiveSupport::TestCase
     assert_equal ['https://other.portal.org/'], result.map(&:ui)
   end
 
-  # Federated portals moved out of the site description form to the site
-  # administration section, but they are still part of the catalog config the
-  # controller reads and writes.
   test 'keeps federated portals out of the site description groups' do
     controller = Admin::CatalogConfigurationController.new
     groups = controller.send(:attributes_groups)
@@ -96,5 +111,24 @@ class Admin::CatalogConfigurationControllerTest < ActiveSupport::TestCase
     controller.params = ActionController::Parameters.new(config: { 'title' => 'AgroPortal' })
 
     assert_not controller.send(:federated_portals_update?)
+  end
+
+  test 'stores a saved federation in both the cache and the database' do
+    controller = build_controller_reading(agroportal: AGROPORTAL)
+
+    controller.send(:refresh_federated_portals)
+
+    assert_equal({ agroportal: AGROPORTAL }, Rails.cache.read(FederatedPortal::CACHE_KEY))
+    assert_equal({ agroportal: AGROPORTAL }, FederatedPortal.as_config)
+  end
+
+  test 'clears both copies when the federation is emptied' do
+    FederatedPortal.sync!(agroportal: AGROPORTAL)
+    Rails.cache.write(FederatedPortal::CACHE_KEY, { agroportal: AGROPORTAL })
+
+    build_controller_reading({}).send(:refresh_federated_portals)
+
+    assert_nil Rails.cache.read(FederatedPortal::CACHE_KEY)
+    assert_empty FederatedPortal.as_config
   end
 end

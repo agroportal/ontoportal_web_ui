@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_11_27_134110) do
+ActiveRecord::Schema[7.0].define(version: 2026_08_03_120000) do
   create_table "analytics", id: :integer, charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "segment"
     t.string "action"
@@ -20,6 +20,19 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_27_134110) do
     t.text "params"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
+  end
+
+  create_table "federated_portals", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "portal_key", null: false
+    t.string "name", null: false
+    t.string "ui"
+    t.string "api"
+    t.string "color"
+    t.string "light_color"
+    t.text "encrypted_apikey"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["portal_key"], name: "index_federated_portals_on_portal_key", unique: true
   end
 
   create_table "flipper_features", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
