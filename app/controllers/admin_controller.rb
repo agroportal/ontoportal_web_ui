@@ -103,6 +103,7 @@ class AdminController < ApplicationController
     if @cache.respond_to?(:flush_all)
       begin
         @cache.flush_all
+        FederatedPortal.sync!({})
         response[:success] = t('admin.cache_flush_success')
       rescue Exception => e
         response[:errors] = t('admin.cache_flush_error', class: e.class, message: e.message)

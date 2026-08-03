@@ -30,10 +30,15 @@ class Admin::CatalogConfigurationControllerTest < ActiveSupport::TestCase
   end
 
   def build_controller_reading(portals)
-    controller = Admin::CatalogConfigurationController.new
-    controller.define_singleton_method(:helpers) do
-      OpenStruct.new(fetch_federated_portals_from_catalog: portals)
+    recorded = @catalog_read_options = {}
+    view = Object.new.extend(FederationHelper)
+    view.define_singleton_method(:fetch_federated_portals_from_catalog) do |**options|
+      recorded.merge!(options)
+      portals
     end
+
+    controller = Admin::CatalogConfigurationController.new
+    controller.define_singleton_method(:helpers) { view }
     controller
   end
 
@@ -130,5 +135,20 @@ class Admin::CatalogConfigurationControllerTest < ActiveSupport::TestCase
 
     assert_nil Rails.cache.read(FederatedPortal::CACHE_KEY)
     assert_empty FederatedPortal.as_config
+  end
+
+  test 'reads the catalog back past its http cache after a save' do
+    build_controller_reading(agroportal: AGROPORTAL).send(:refresh_federated_portals)
+
+    assert @catalog_read_options[:bust_cache]
+  end
+
+  test 'gives the cached copy an expiry so it cannot outlive a bad write' do
+    build_controller_reading(agroportal: AGROPORTAL).send(:refresh_federated_portals)
+    assert_not_nil Rails.cache.read(FederatedPortal::CACHE_KEY)
+
+    travel FederatedPortal::CACHE_TTL + 1.minute do
+      assert_nil Rails.cache.read(FederatedPortal::CACHE_KEY)
+    end
   end
 end

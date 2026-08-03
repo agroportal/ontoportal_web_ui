@@ -2,6 +2,7 @@
 
 class FederatedPortal < ApplicationRecord
   CACHE_KEY = 'federated_portals'
+  CACHE_TTL = 12.hours
 
   validates :portal_key, presence: true, uniqueness: true
   validates :name, presence: true

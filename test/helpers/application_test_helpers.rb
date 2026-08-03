@@ -171,7 +171,7 @@ module ApplicationTestHelpers
     def federate_with(*portals)
       catalog = portals.index_by { |portal| portal[:name].downcase.to_sym }
 
-      FederationHelper.send(:define_method, :fetch_federated_portals_from_catalog) { catalog }
+      FederationHelper.send(:define_method, :fetch_federated_portals_from_catalog) { |**| catalog }
       Rails.cache.delete(FederatedPortal::CACHE_KEY)
       FederatedPortal.delete_all
       catalog.each_key { |name| Rails.cache.delete("federation_portal_up_#{name}") }
