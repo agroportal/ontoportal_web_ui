@@ -271,7 +271,10 @@ en:
     index:
       acronym: Acronym
       actions: Actions
+      added: Added
+      added_by: by %{user}
       create_new_agent: Create agent
+      date_unknown: date unknown
       first_name: First name
       no_agents: There are currently no  agents.
       usages: Usages

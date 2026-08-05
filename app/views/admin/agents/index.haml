@@ -10,17 +10,13 @@
           = agents_create_button
 
     = render_alerts_container(AgentsController)
-    = render TableComponent.new(id: 'agents-table', borderless: true, outline: true) do |t|
+    = render TableComponent.new(id: 'agents-table', borderless: true, outline: true, paging: true, searching: true, sort_column: '4', search_placeholder: t('agents.index.search_placeholder')) do |t|
       - t.header do |h|
         - h.th {t("agents.form.name")}
         - h.th {t("agents.form.acronym")}
         - h.th {t("agents.form.affiliations")}
         - h.th {t("agents.index.usages")}
         - if current_user_admin?
+          - h.th {t("agents.index.added")}
           - h.th {t("agents.index.actions")}
       = render partial: 'agents/agent', collection: @agents
-      %tr.empty-state
-        %td.text-center{:colspan => "6"}= t("agents.index.no_agents")
-    :javascript
-      $.fn.dataTable.ext.errMode = 'none';
-      $("#agents-table").dataTable()
