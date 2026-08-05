@@ -1,6 +1,12 @@
 module SearchContent
   extend ActiveSupport::Concern
 
+  AGENTS_AUTOCOMPLETE_QF = 'identifiers_texts^20 acronym_text^15 name_text^10 email_text^10'
+  # Over-fetch so the usage-based promotion in #agents_result_to_json has
+  # something to choose from.
+  AGENTS_AUTOCOMPLETE_FETCH_SIZE = 10
+  AGENTS_AUTOCOMPLETE_DISPLAY_SIZE = 5
+
   def search_ontologies(query: '*', groups: [], categories: [], languages: [], private_only: false, formats: [],
                         is_of_type: [], formality_level: [],
                         show_views: false, status: 'alpha,beta,production',
@@ -95,7 +101,51 @@ module SearchContent
     LinkedData::Client::HTTP.get('search/ontologies/content', params)
   end
 
+  # Agents live in their own Solr core, so their scores are not comparable with
+  # ontology content scores and the two result sets cannot be merged by
+  # relevance. They are fetched separately and tagged so the autocomplete can
+  # show them as their own section.
+  def search_agents_content(query:, page_size: AGENTS_AUTOCOMPLETE_DISPLAY_SIZE)
+    return [] if query.blank?
+
+    results = LinkedData::Client::HTTP.get('/search/agents',
+                                           query: "#{query}*",
+                                           qf: AGENTS_AUTOCOMPLETE_QF,
+                                           include: 'name,acronym,agentType,usages',
+                                           page: 1,
+                                           pagesize: AGENTS_AUTOCOMPLETE_FETCH_SIZE)
+
+    agents_result_to_json(Array(results&.collection), page_size)
+  rescue StandardError => e
+    # The agents section must never take the rest of the dropdown down with it.
+    Rails.logger.error("Agents autocomplete failed for #{query.inspect}: #{e.message}")
+    []
+  end
+
   private
+
+  def agents_result_to_json(agents, page_size)
+    # search/agents ranks bare ORCID/ROR URLs and unattached duplicates
+    # alongside the real records they were extracted from, so agents actually
+    # attached to a submission are promoted into the few visible slots. This
+    # hides nothing: everything stays reachable through "browse all agents".
+    # each_with_index keeps the API's own order within an equal usage count.
+    agents.each_with_index
+          .sort_by { |agent, i| [-helpers.agent_usages_count(agent), i] }
+          .first(page_size)
+          .map do |agent, _|
+      {
+        id: agent_path(helpers.agent_id(agent)),
+        # The shared row template renders `label` as the primary line, so the
+        # agent's name goes there rather than in `name` as an ontology's does.
+        name: nil,
+        acronym: agent.acronym,
+        type: helpers.t("agents.form.#{agent.agentType}", default: agent.agentType.to_s),
+        label: agent.name,
+        group: 'agents'
+      }
+    end
+  end
 
   def search_content_result_to_json(query, changed_query, results, ontologies, selected_onto = [], show_ontologies)
     json = []
@@ -108,7 +158,8 @@ module SearchContent
           name: x.name,
           acronym: x.acronym,
           type: x.viewOf.blank? ? 'Ontology' : 'Ontology View',
-          label: nil
+          label: nil,
+          group: 'ontologies'
         }
       end
     end
@@ -139,7 +190,8 @@ module SearchContent
         name: x.resource_id,
         acronym: acronym,
         type: type || '',
-        label: label
+        label: label,
+        group: 'concepts'
       }
     end.compact
 

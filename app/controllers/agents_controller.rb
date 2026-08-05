@@ -6,6 +6,9 @@ class AgentsController < ApplicationController
   layout :determine_layout, only: [:index, :details]
 
   def index
+    # Deep link target for the "browse all agents" action of the site-wide
+    # search box; the table itself still filters through /ajax/agents/list.
+    @search = params[:search].to_s
   end
 
   def details
@@ -95,8 +98,11 @@ class AgentsController < ApplicationController
         id: agent.id,
         name: agent.name,
         type: agent.agentType,
+        # The agents Solr core is searchable on identifiers_texts but does not
+        # store identifiers, so this is always empty regardless of `include`.
+        # The key stays so the row template's placeholder still gets cleared.
         identifiers: agent.identifiers&.join(', '),
-        acronym: agent.acronym_text
+        acronym: agent.acronym
       }
     end
 
