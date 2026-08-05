@@ -7,5 +7,8 @@
     = render partial: 'agents/table/affiliations', locals: { agent: agent }
   %td
     = render partial: 'agents/table/usages', locals: { agent: agent }
+  - if current_user_admin?
+    %td
+      = render partial: 'agents/table/added', locals: { agent: agent }
   %td
     = render partial: 'agents/table/actions', locals: { agent: agent }
