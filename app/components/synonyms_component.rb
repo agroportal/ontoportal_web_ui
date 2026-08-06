@@ -15,6 +15,8 @@
 # are shown followed by a "+N" chip that opens an accessible modal dialog with
 # the full list (keyboard operable: Enter / Space to open, Esc to close).
 class SynonymsComponent < ViewComponent::Base
+  include MultiLanguageValues
+
   def initialize(synonyms:, id: nil, show_max: 10)
     @synonyms = synonyms
     @show_max = show_max
@@ -27,7 +29,7 @@ class SynonymsComponent < ViewComponent::Base
 
   # [{ text: "Etiology", lang: "en" }, ...] ; lang is nil when language-agnostic
   def chips
-    @chips ||= normalize(@synonyms)
+    @chips ||= normalize_multi_language(@synonyms)
   end
 
   def visible_chips
@@ -58,42 +60,4 @@ class SynonymsComponent < ViewComponent::Base
     tag.span(safe_join([text, lang].compact), class: 'synonym-chip')
   end
 
-  private
-
-  def normalize(raw)
-    raw = raw.to_h.reject { |k, _| %i[links context].include?(k) } if raw.is_a?(OpenStruct)
-
-    case raw
-    when String
-      raw.blank? ? [] : [chip(raw, nil)]
-    when Array
-      raw.flat_map { |value| normalize_value(value) }
-    when Hash
-      raw.flat_map { |lang, values| Array(values).map { |value| chip(value, lang) } }
-    else
-      raw.blank? ? [] : [chip(raw, nil)]
-    end.reject { |c| c[:text].blank? }
-  end
-
-  def normalize_value(value)
-    if value.is_a?(String)
-      [chip(value, nil)]
-    elsif value.respond_to?(:to_h)
-      value.to_h.reject { |k, _| %i[links context].include?(k) }
-           .flat_map { |lang, values| Array(values).map { |v| chip(v, lang) } }
-    else
-      [chip(value, nil)]
-    end
-  end
-
-  def chip(text, lang)
-    { text: text.to_s, lang: normalize_lang(lang) }
-  end
-
-  def normalize_lang(lang)
-    code = lang.to_s.strip
-    return nil if code.blank? || %w[none @none].include?(code.downcase)
-
-    code
-  end
 end

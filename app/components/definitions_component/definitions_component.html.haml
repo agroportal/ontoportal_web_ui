@@ -1,0 +1,7 @@
+.definitions-component{id: @id}
+  %ul.definitions-list{role: 'list'}
+    - items.each do |item|
+      %li
+        %p.definition-text{lang: item[:lang]}
+          = item[:text]
+          = language_tag(item)

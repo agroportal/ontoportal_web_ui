@@ -8,6 +8,9 @@
       - t.add_row({th: t('properties.id')}, {td: link_to_with_actions(@property.id, acronym: @acronym)})
       - t.add_row({th: t('properties.type')}, {td: @property.type })
       - t.add_row({th: t('properties.preferred_name')}, {td: display_in_multiple_languages(@property.label)}) unless  @property.label.blank?
-      - t.add_row({th: t('properties.definitions')}, {td: display_in_multiple_languages(@property.definition)}) unless @property.definition.blank?
+      - unless @property.definition.blank?
+        - t.add_row({th: t('properties.definitions')}) do |h|
+          - h.td do
+            = render DefinitionsComponent.new(definitions: @property.definition, id: 'property-definitions')
       - t.add_row({th: t('properties.domain')}, {td:  get_link_for_cls_ajax(@property.domain, @acronym, '_top')}) unless @property.domain.blank?
       - t.add_row({th: t('properties.range')}, {td: get_link_for_cls_ajax(@property.range, @acronym, '_top')}) unless @property.range.blank?

@@ -1,0 +1,39 @@
+// Concept definitions.
+//
+// Rendered as plain prose: same colour and size as the surrounding content,
+// upright, on the page background. The previous italic + portal-colour-on-tint
+// treatment sat around 2.4:1 contrast on every theme (AA asks for 4.5:1), and
+// looked like both a link and a synonym chip without being either.
+
+.definitions-component {
+  min-width: 0;
+}
+
+.definitions-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  > li {
+    margin: 0;
+  }
+
+  > li + li {
+    margin-top: 12px;
+  }
+}
+
+.definition-text {
+  margin: 0;
+  color: inherit;
+  font-style: normal;
+  overflow-wrap: anywhere;
+}
+
+// Per-definition language tag. Reuses the app-wide `badge badge-secondary`
+// look; this only handles its inline placement and size.
+.definition-lang {
+  margin-inline-start: 6px;
+  vertical-align: middle;
+  font-size: 0.72em;
+}
