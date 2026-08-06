@@ -37,13 +37,19 @@ class InstancesController < ApplicationController
 
   def show
     get_ontology(params)
-    # `lang: 'all'` because this view lists a resource triple by triple: the API
-    # otherwise keeps only literals in the request language, hiding the ones a
-    # reified node usually carries its text in.
-    @instance = get_instance_details_json(params[:ontology], params[:id] || params[:instanceid],
-                                          { include: 'all', lang: 'all' })
+    # REST first, SPARQL when the resource is untyped and so invisible to the
+    # REST endpoint - see ResourceLookupService. `lang: 'all'` is applied there,
+    # because this view lists a resource triple by triple and the API otherwise
+    # keeps only literals in the request language, hiding the one a reified node
+    # carries its text in.
+    instance_id = params[:id] || params[:instanceid]
+    @instance = ResourceLookupService.call(params[:ontology], instance_id)
 
-    redirect_to(ontology_path(id: params[:ontology], p: 'instances', instanceid: params[:id] || params[:instanceid], lang: request_lang)) and return unless turbo_frame_request?
+    redirect_to(ontology_path(id: params[:ontology], p: 'instances', instanceid: instance_id, lang: request_lang)) and return unless turbo_frame_request?
+
+    # Neither source knows it: the lookup returns nil where the REST call used to
+    # return an error object the view could not render either.
+    return concept_not_found(instance_id) if @instance.nil?
 
     render partial: 'show'
   end

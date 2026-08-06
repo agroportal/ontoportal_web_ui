@@ -59,19 +59,10 @@ module ResourceLinksHelper
 
   private
 
-  # The node as the API knows it, or nil when it does not exist there.
-  # `lang: 'all'` matters: without it the API keeps only literals in the request
-  # language, and a node whose text is tagged in another one comes back empty.
+  # The node, or nil when neither the REST API nor SPARQL knows it. See
+  # ResourceLookupService for why one source is not enough.
   def ontology_resource(acronym, uri)
-    resource = get_instance_details_json(acronym, uri, { include: 'all', lang: 'all' })
-
-    return nil if resource.nil?
-    return nil if resource.respond_to?(:errors) && resource.errors.present?
-    return nil if resource['@id'].blank?
-
-    resource
-  rescue StandardError
-    nil
+    ResourceLookupService.call(acronym, uri)
   end
 
   def resource_chip_label(resource, uri)

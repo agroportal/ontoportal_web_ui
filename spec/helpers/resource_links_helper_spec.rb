@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
-require 'active_support'
-require 'active_support/core_ext/object/blank'
-require_relative '../../app/helpers/resource_links_helper'
+require 'rails_helper'
 
 describe ResourceLinksHelper do
   include ResourceLinksHelper
@@ -50,14 +47,14 @@ describe ResourceLinksHelper do
   end
 
   describe '#reified_resource_chip' do
-    it 'never asks the API about a URI from another vocabulary' do
-      expect(self).not_to receive(:get_instance_details_json)
+    it 'never looks up a URI from another vocabulary' do
+      expect(ResourceLookupService).not_to receive(:call)
 
       expect(reified_resource_chip('TEST', 'http://www.w3.org/2002/07/owl#Thing', parent_uri: concept)).to be_nil
     end
 
-    it 'falls back to the caller when the API does not know the resource' do
-      allow(self).to receive(:get_instance_details_json).and_return(nil)
+    it 'falls back to the caller when no source knows the resource' do
+      allow(ResourceLookupService).to receive(:call).and_return(nil)
 
       expect(reified_resource_chip('TEST', note, parent_uri: concept)).to be_nil
     end
@@ -73,11 +70,5 @@ describe ResourceLinksHelper do
   # Provided by UrlsHelper in the app.
   def escape(string)
     CGI.escape(string) if string
-  end
-
-  # Provided by InstancesHelper in the app; every example either stubs it or
-  # expects it never to be reached.
-  def get_instance_details_json(_acronym, _uri, _params)
-    raise 'the API was asked about a URI it should have been spared'
   end
 end
