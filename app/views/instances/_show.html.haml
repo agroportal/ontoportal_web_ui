@@ -29,8 +29,7 @@
       - if predicate
         - t.add_row({ th: link_to_property(predicate, @ontology.acronym) }) do |r|
           - r.td do
-            = render DefinitionsComponent.new(definitions: values, id: 'resource-value',
-                                              acronym: @ontology.acronym, parent_id: @instance["@id"])
+            = render DefinitionsComponent.new(definitions: values, id: 'resource-value')
 
 
 

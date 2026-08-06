@@ -85,43 +85,40 @@ RSpec.describe DefinitionsComponent, type: :component do
   # guard against.
   describe "a definition that is a URI" do
     let(:node) { "http://aims.fao.org/aos/agrovoc/xDef_46a719b8" }
-    let(:concept) { "http://aims.fao.org/aos/agrovoc/c_9000021" }
 
     it "is never rendered as prose" do
-      result = render_component([node], acronym: "AGROVOC", parent_id: concept)
+      result = render_component([node])
 
       expect(result.css(".definition-text")).to be_empty
       expect(result.css(".definition-node")).not_to be_empty
     end
 
-    it "resolves through the same lazy chip the raw-data rows use" do
-      result = render_component([node], acronym: "AGROVOC", parent_id: concept)
-      frame = result.css("turbo-frame").first
-
-      expect(frame).to be_present
-      expect(frame["src"]).to include("/ajax/classes/label")
-      expect(CGI.unescape(frame["src"])).to include(concept) # the namespace to compare against
-    end
-
-    it "degrades to a plain external link when there is nothing to resolve against" do
-      result = render_component([node])
-      link = result.css("a.definition-external-link").first
+    it "is a plain link to the node" do
+      link = render_component([node]).css("a.definition-external-link").first
 
       expect(link).to be_present
       expect(link["href"]).to eq(node)
       expect(link["rel"]).to eq("noopener noreferrer")
-      expect(result.css(".definition-text")).to be_empty
+    end
+
+    # Opening the node's triples belongs to the raw-data table; this row keeps
+    # one predictable kind of link.
+    it "does not open a modal" do
+      result = render_component([node])
+
+      expect(result.css("[data-controller~='show-modal']")).to be_empty
+      expect(result.css("turbo-frame")).to be_empty
     end
 
     it "still renders a literal definition beside it as prose" do
-      result = render_component([node, "A parasitic disease."], acronym: "AGROVOC", parent_id: concept)
+      result = render_component([node, "A parasitic disease."])
 
       expect(result.css(".definition-node").size).to eq(1)
       expect(result.css(".definition-text").map(&:text).map(&:strip)).to eq(["A parasitic disease."])
     end
 
     it "keeps the language badge on a URI definition" do
-      result = render_component({ en: [node] }, acronym: "AGROVOC", parent_id: concept)
+      result = render_component({ en: [node] })
 
       expect(result.css(".definition-node .definition-lang").first.text.strip).to eq("EN")
     end

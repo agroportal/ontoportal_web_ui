@@ -15,15 +15,15 @@
 #
 # A value that is a URI is *not* a definition: it points at a reified node that
 # holds the text. Setting one as prose dresses a URL up as a sentence, so those
-# are rendered as links instead - see +definition_link+.
+# are rendered as a link to the node - see +definition_link+. The node's triples
+# are reachable from the raw-data table below, which is where that belongs; this
+# row stays a plain reading surface.
 class DefinitionsComponent < ViewComponent::Base
   include MultiLanguageValues
-  include ApplicationHelper
+  include UrlsHelper
 
-  def initialize(definitions:, id: nil, acronym: nil, parent_id: nil)
+  def initialize(definitions:, id: nil)
     @definitions = definitions
-    @acronym = acronym
-    @parent_id = parent_id
     @id = id.presence || "definitions-#{SecureRandom.hex(4)}"
   end
 
@@ -46,21 +46,11 @@ class DefinitionsComponent < ViewComponent::Base
     tag.span(item[:lang].upcase, class: 'badge badge-secondary definition-lang', 'aria-hidden': 'true')
   end
 
-  # A reified definition, rendered the way the raw-data rows render one: a chip
-  # that resolves lazily, opening the node's triples in a modal where the API
-  # knows the node and falling back to a link to the node where it does not.
-  #
-  # Without an acronym there is nothing to resolve against, so it degrades to a
-  # plain external link - still a link, never prose.
+  # A reified definition: a link to the node, and nothing more. Opening its
+  # triples is the raw-data table's job, so the row keeps a single, predictable
+  # behaviour instead of two kinds of link that look alike.
   def definition_link(item)
-    return external_link(item[:text]) if @acronym.blank?
-
-    get_link_for_cls_ajax(item[:text], @acronym, '_blank', parent_id: @parent_id)
-  end
-
-  private
-
-  def external_link(uri)
-    link_to(uri, uri, target: '_blank', rel: 'noopener noreferrer', class: 'definition-external-link')
+    link_to(item[:text], item[:text], target: '_blank', rel: 'noopener noreferrer',
+                                      class: 'definition-external-link')
   end
 end
