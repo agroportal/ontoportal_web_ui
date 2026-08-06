@@ -43,15 +43,7 @@ class ConceptDetailsComponent < ViewComponent::Base
       url = data[:key]
 
       ajax_links = Array(values).map do |v|
-        if block_given?
-          block.call(v)
-        else
-          if v.is_a?(String)
-            get_link_for_cls_ajax(v, ontology_acronym, '_blank')
-          else
-            display_in_multiple_languages([v].to_h)
-          end
-        end
+        block_given? ? block.call(v) : row_value(v, ontology_acronym)
       end
 
       out << [
@@ -60,6 +52,39 @@ class ConceptDetailsComponent < ViewComponent::Base
       ]
     end
     out
+  end
+
+  # One value of a row. In a single language it is a plain String; under "all
+  # languages" it arrives as a [language, values] pair instead.
+  #
+  # Either shape can hold URIs, and those have to stay links: a reified node is
+  # often language-specific (note_101800en, note_101800fr), so under "all
+  # languages" it is a URI *inside* a language pair - which used to fall through
+  # to the text rendering and come out unclickable.
+  def row_value(value, ontology_acronym)
+    return cls_ajax_link(value, ontology_acronym) if value.is_a?(String)
+
+    language, values = value
+    values = Array(values)
+    return display_in_multiple_languages([value].to_h) unless values.any? && values.all? { |v| v.is_a?(String) && link?(v) }
+
+    safe_join(values.map { |uri| linked_row_value(uri, ontology_acronym, language) })
+  end
+
+  # The link, tagged with the language it was read under - the tag the text
+  # rendering would have shown.
+  def linked_row_value(uri, ontology_acronym, language)
+    link = cls_ajax_link(uri, ontology_acronym)
+    return link if language.blank? || %w[NONE @NONE].include?(language.to_s.upcase)
+
+    content_tag(:span, class: 'd-inline-flex align-items-center') do
+      concat link
+      concat content_tag(:span, language.to_s.upcase, class: 'badge badge-secondary ml-1')
+    end
+  end
+
+  def cls_ajax_link(value, ontology_acronym)
+    get_link_for_cls_ajax(value, ontology_acronym, '_blank', parent_id: @concept_id)
   end
 
   def properties_set_by_keys(keys, concept_properties, exclude_keys = [])
