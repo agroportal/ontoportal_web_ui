@@ -2,6 +2,11 @@
   %ul.definitions-list{role: 'list'}
     - items.each do |item|
       %li
-        %p.definition-text{lang: item[:lang]}
-          = item[:text]
-          = language_tag(item)
+        - if link?(item[:text])
+          .definition-node
+            = definition_link(item)
+            = language_tag(item)
+        - else
+          %p.definition-text{lang: item[:lang]}
+            = item[:text]
+            = language_tag(item)

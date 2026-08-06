@@ -30,6 +30,20 @@
   overflow-wrap: anywhere;
 }
 
+// A definition that is a reified node: a link, never prose. It sits on its own
+// row so a wrapping chip and its language tag stay aligned.
+.definition-node {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.definition-external-link {
+  overflow-wrap: anywhere;
+}
+
 // Per-definition language tag. Reuses the app-wide `badge badge-secondary`
 // look; this only handles its inline placement and size.
 .definition-lang {

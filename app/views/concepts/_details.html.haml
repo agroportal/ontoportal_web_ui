@@ -28,7 +28,8 @@
       - unless @concept.definition.nil? || @concept.definition.empty?
         - t.add_row({th: t('ontology_details.concept.definitions')}) do |h|
           - h.td do
-            = render DefinitionsComponent.new(definitions: @concept.definition, id: 'concept-definitions')
+            = render DefinitionsComponent.new(definitions: @concept.definition, id: 'concept-definitions',
+                                              acronym: @ontology.acronym, parent_id: @concept.id)
 
       - if @concept.obsolete?
         - t.add_row({th: t('ontology_details.concept.obsolete')}, {td: 'true'})

@@ -11,6 +11,7 @@
       - unless @property.definition.blank?
         - t.add_row({th: t('properties.definitions')}) do |h|
           - h.td do
-            = render DefinitionsComponent.new(definitions: @property.definition, id: 'property-definitions')
+            = render DefinitionsComponent.new(definitions: @property.definition, id: 'property-definitions',
+                                              acronym: @acronym, parent_id: @property.id)
       - t.add_row({th: t('properties.domain')}, {td:  get_link_for_cls_ajax(@property.domain, @acronym, '_top')}) unless @property.domain.blank?
       - t.add_row({th: t('properties.range')}, {td: get_link_for_cls_ajax(@property.range, @acronym, '_top')}) unless @property.range.blank?

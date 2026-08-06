@@ -79,4 +79,51 @@ RSpec.describe DefinitionsComponent, type: :component do
 
     expect(result.css("ul.definitions-list").first["role"]).to eq("list")
   end
+
+  # A reified definition arrives as the URI of the node holding the text. Set as
+  # prose it reads as a sentence that happens to be a URL, which is what these
+  # guard against.
+  describe "a definition that is a URI" do
+    let(:node) { "http://aims.fao.org/aos/agrovoc/xDef_46a719b8" }
+    let(:concept) { "http://aims.fao.org/aos/agrovoc/c_9000021" }
+
+    it "is never rendered as prose" do
+      result = render_component([node], acronym: "AGROVOC", parent_id: concept)
+
+      expect(result.css(".definition-text")).to be_empty
+      expect(result.css(".definition-node")).not_to be_empty
+    end
+
+    it "resolves through the same lazy chip the raw-data rows use" do
+      result = render_component([node], acronym: "AGROVOC", parent_id: concept)
+      frame = result.css("turbo-frame").first
+
+      expect(frame).to be_present
+      expect(frame["src"]).to include("/ajax/classes/label")
+      expect(CGI.unescape(frame["src"])).to include(concept) # the namespace to compare against
+    end
+
+    it "degrades to a plain external link when there is nothing to resolve against" do
+      result = render_component([node])
+      link = result.css("a.definition-external-link").first
+
+      expect(link).to be_present
+      expect(link["href"]).to eq(node)
+      expect(link["rel"]).to eq("noopener noreferrer")
+      expect(result.css(".definition-text")).to be_empty
+    end
+
+    it "still renders a literal definition beside it as prose" do
+      result = render_component([node, "A parasitic disease."], acronym: "AGROVOC", parent_id: concept)
+
+      expect(result.css(".definition-node").size).to eq(1)
+      expect(result.css(".definition-text").map(&:text).map(&:strip)).to eq(["A parasitic disease."])
+    end
+
+    it "keeps the language badge on a URI definition" do
+      result = render_component({ en: [node] }, acronym: "AGROVOC", parent_id: concept)
+
+      expect(result.css(".definition-node .definition-lang").first.text.strip).to eq("EN")
+    end
+  end
 end
