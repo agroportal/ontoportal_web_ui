@@ -30,17 +30,22 @@
   overflow-wrap: anywhere;
 }
 
-// A definition that is a reified node: a link, never prose. It sits on its own
-// row so a wrapping chip and its language tag stay aligned.
+// A definition that is a reified node. Its own row, so the value and its
+// language tag stay aligned when the identifier wraps.
 .definition-node {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: baseline;
   gap: 4px;
   min-width: 0;
 }
 
-.definition-external-link {
+// Shown as the identifier it is, not as a sentence - and inert, so it is not
+// mistaken for something to follow. The node's contents are in the raw-data
+// table below.
+.definition-uri {
+  font-size: 0.92em;
+  color: var(--gray-color);
   overflow-wrap: anywhere;
 }
 

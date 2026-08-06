@@ -4,7 +4,7 @@
       %li
         - if link?(item[:text])
           .definition-node
-            = definition_link(item)
+            = definition_uri(item)
             = language_tag(item)
         - else
           %p.definition-text{lang: item[:lang]}

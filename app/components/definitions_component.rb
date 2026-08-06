@@ -14,10 +14,9 @@
 #   * a Hash / OpenStruct {lang => []} -> definitions grouped by language ("all languages" view)
 #
 # A value that is a URI is *not* a definition: it points at a reified node that
-# holds the text. Setting one as prose dresses a URL up as a sentence, so those
-# are rendered as a link to the node - see +definition_link+. The node's triples
-# are reachable from the raw-data table below, which is where that belongs; this
-# row stays a plain reading surface.
+# holds the text. Setting one as prose dresses a URL up as a sentence, so it is
+# marked as the identifier it is - and left inert. Following it, and reading
+# what the node holds, is the raw-data table's job.
 class DefinitionsComponent < ViewComponent::Base
   include MultiLanguageValues
   include UrlsHelper
@@ -46,11 +45,9 @@ class DefinitionsComponent < ViewComponent::Base
     tag.span(item[:lang].upcase, class: 'badge badge-secondary definition-lang', 'aria-hidden': 'true')
   end
 
-  # A reified definition: a link to the node, and nothing more. Opening its
-  # triples is the raw-data table's job, so the row keeps a single, predictable
-  # behaviour instead of two kinds of link that look alike.
-  def definition_link(item)
-    link_to(item[:text], item[:text], target: '_blank', rel: 'noopener noreferrer',
-                                      class: 'definition-external-link')
+  # A reified definition: the node's identifier, shown as an identifier rather
+  # than as a sentence, and not clickable - nothing in this row is.
+  def definition_uri(item)
+    tag.span(item[:text], class: 'definition-uri')
   end
 end

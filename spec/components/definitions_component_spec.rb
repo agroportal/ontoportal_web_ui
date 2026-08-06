@@ -93,19 +93,19 @@ RSpec.describe DefinitionsComponent, type: :component do
       expect(result.css(".definition-node")).not_to be_empty
     end
 
-    it "is a plain link to the node" do
-      link = render_component([node]).css("a.definition-external-link").first
+    it "is shown as the identifier it is" do
+      uri = render_component([node]).css("span.definition-uri").first
 
-      expect(link).to be_present
-      expect(link["href"]).to eq(node)
-      expect(link["rel"]).to eq("noopener noreferrer")
+      expect(uri).to be_present
+      expect(uri.text.strip).to eq(node)
     end
 
-    # Opening the node's triples belongs to the raw-data table; this row keeps
-    # one predictable kind of link.
-    it "does not open a modal" do
+    # Following the node and reading what it holds belongs to the raw-data
+    # table; nothing in this row is actionable.
+    it "is not clickable, and opens nothing" do
       result = render_component([node])
 
+      expect(result.css("a")).to be_empty
       expect(result.css("[data-controller~='show-modal']")).to be_empty
       expect(result.css("turbo-frame")).to be_empty
     end
