@@ -4,10 +4,35 @@ module MultiLanguagesHelper
     session[:locale] || 'en'
   end
 
-  def request_lang
-    lang = params[:language] || params[:lang]
-    lang = portal_lang unless lang
-    lang.upcase
+  # Language used to fetch the content of the browsed ontology.
+  #
+  # The requested language (the +language+/+lang+ param, the portal language
+  # otherwise) is only kept when the submission declares it: the API answers
+  # with the concept URI fragment instead of a label when an ontology has no
+  # translation in the asked language, which shows up as digits in the trees of
+  # ontologies like THESAGRO, only available in Brazilian Portuguese. In that
+  # case fall back to the first language the ontology actually provides.
+  def request_lang(*submissions)
+    requested_lang = (params[:language] || params[:lang] || portal_lang).to_s.upcase
+
+    return requested_lang if requested_lang.eql?('ALL')
+
+    available_langs = available_content_languages(*submissions)
+
+    return requested_lang if available_langs.empty? || available_langs.include?(requested_lang)
+
+    # 'EN' is served by a submission translated in 'EN-US'
+    requested_base_lang = requested_lang.split('-').first
+    available_langs.find { |lang| lang.split('-').first.eql?(requested_base_lang) } || available_langs.first
+  end
+
+  # Languages the browsed ontology is available in, upcased. +naturalLanguage+
+  # is not part of the API default attribute set, so gather it from every
+  # submission the request has at hand.
+  def available_content_languages(*submissions)
+    submissions = submissions.compact
+    submissions = [@submission, @submission_latest].compact if submissions.empty?
+    submissions.flat_map { |submission| submission_languages(submission) }.map(&:upcase).uniq
   end
 
   def portal_language_help_text
@@ -74,9 +99,9 @@ module MultiLanguagesHelper
 
   end
 
-  def content_languages(submission = @submission || @submission_latest)
-    current_lang = request_lang.downcase
-    submission_lang = submission_languages(submission)
+  def content_languages(submission = nil)
+    current_lang = request_lang(submission).downcase
+    submission_lang = available_content_languages(submission)
 
     submission_lang = [current_lang.to_s]  if submission_lang.empty?
 
