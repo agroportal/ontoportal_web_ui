@@ -12,7 +12,7 @@
         .inputs
           %div
             .annotator-page-text-area{'data-controller': 'sample-text'}
-              %textarea{rows: "7" , placeholder: t('annotator.input_hint'), name: "text",  maxlength: "500", 'data-sample-text-target': "input", 'data-annotator-target': 'input'}
+              %textarea{rows: "7" , placeholder: t('annotator.input_hint'), name: "text",  maxlength: "5000", 'data-sample-text-target': "input", 'data-annotator-target': 'input'}
                 = params[:text]
               = insert_sample_text_button(t('annotator.insert_sample_text'))
           .annotator-page-options
@@ -97,11 +97,13 @@
                     = result[:score] 
         .annotator-bottom-actions
           .json-button
-            = render Buttons::RegularButtonComponent.new(id:'annotator_json', value: "JSON", variant: "secondary", href: @json_link, size: "slim", target: '_blank', state: "regular") do |btn|
+            - json_href, json_target = api_button_link_and_target(@json_link)
+            = render Buttons::RegularButtonComponent.new(id:'annotator_json', value: "JSON", variant: "secondary", href: json_href, size: "slim", target: json_target, state: "regular") do |btn|
               - btn.icon_left do
                 = inline_svg_tag "json.svg"
           .rdf-button
-            = render Buttons::RegularButtonComponent.new(id:'annotator_rdf', value: "RDF", variant: "secondary", href: @rdf_link, size: "slim", target: '_blank', state: "regular") do |btn|
+            - rdf_href, rdf_target = api_button_link_and_target(@rdf_link)
+            = render Buttons::RegularButtonComponent.new(id:'annotator_rdf', value: "RDF", variant: "secondary", href: rdf_href, size: "slim", target: rdf_target, state: "regular") do |btn|
               - btn.icon_left do
                 = inline_svg_tag "summary/sparql.svg"
           .cite-us-button

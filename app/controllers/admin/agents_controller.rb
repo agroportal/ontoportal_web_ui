@@ -4,7 +4,7 @@ class Admin::AgentsController < ApplicationController
 
   def index  
   options = {  
-    include: 'agentType,name,homepage,acronym,email,identifiers,affiliations,usages' 
+    include: 'agentType,name,homepage,acronym,email,identifiers,affiliations,usages,created,creator'
   }  
   @agents = LinkedData::Client::Models::Agent.all(options)
   end

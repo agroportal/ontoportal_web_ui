@@ -132,6 +132,9 @@ fr:
       edit_button: Éditer
       configuration_updated_successfully: Configuration de l'API mise à jour avec succès
       configuration_update_error: 'Problème lors de la mise à jour de la configuration: %{error}'
+      federation_provide_apikey: Veuillez fournir une clé API pour l'utilisateur de fédération correspondant à chaque portail afin d'activer la fédération.
+      federation_not_allowed: Ce portail n'est pas autorisé à activer les fonctionnalités de fédération.
+      federation_invalid_apikeys: "Les portails suivants n'ont pas été ajoutés car leur clé API est invalide : %{portals}"
     licenses:
       create:
         success: Licence renouvelée
@@ -221,15 +224,28 @@ fr:
         type: Type
     site_administration:
       cache_management: Gestion du cache
+      cache_management_description:
+        Videz les caches sur lesquels %{portal_name} s'appuie pour servir ses pages, ou réinitialisez la connexion au serveur de cache.
       checking_for_updates: Vérification des mises à jour ...
       clear_cache: Vider le cache de l'UI
       clear_goo_cache: Vider le cache GOO
       clear_http_cache: Vider le cache HTTP
-      flipper_description: Utilisez Flipper pour contrôler la visibilité de fonctionnalités
-        spécifiques de %{portal_name} dans l'interface utilisateur.
+      edit_federated_portals: Éditer les portails fédérés
+      federated_portals: Portails fédérés
+      federated_portals_description:
+        Choisissez les instances OntoPortal avec lesquelles %{portal_name} est fédéré, et fournissez la clé API de l'utilisateur de fédération de chacune d'elles.
+      flipper_description:
+        Utilisez Flipper pour contrôler la visibilité des fonctionnalités spécifiques de %{portal_name} dans l'interface utilisateur.
+      flipper_ui: Interface Flipper
+      no_federated_portal: Aucun portail fédéré pour le moment.
+      sidekiq_description:
+        Utilisez Sidekiq pour surveiller et gérer le traitement des tâches en arrière-plan, les files d'attente et les tâches cron.
+      sidekiq_ui: Interface Sidekiq
       reset_cache: 'Réinitialiser la connexion au cache de l''UI '
       settings: Paramètres
       version_management: Gestion des versions
+      version_management_description:
+        La version d'OntoPortal utilisée par %{portal_name}, et les mises à jour disponibles.
     submission_deleted_successfully: Soumission %{id} pour l'ontologie %{ont} supprimée
     submission_not_found: Soumission %{id} pour l'ontologie %{ont} non trouvée
     turbo_confirm: Êtes-vous sûr de vouloir %{name} ?
@@ -255,13 +271,17 @@ fr:
       homepage: Page d'accueil
       identifiers: Identifiants
       name: Nom
+      name_placeholder: Recherchez dans le registre ROR ou créez une nouvelle organisation
       organization: Organisation
       person: Personne
       type: Type
     index:
       acronym: Acronyme
       actions: Actions
+      added: Ajouté
+      added_by: par %{user}
       create_new_agent: Créer un agent
+      date_unknown: date inconnue
       first_name: Prénom
       no_agents: Il n'y a actuellement aucun agent.
       usages: Utilisations
@@ -405,12 +425,17 @@ fr:
     preferred_name: Nom préféré
     type: Type
   components:
+    add_another_object: "Ajouter un autre %{object_name}"
+    class: "classe"
+    contact: "contact"
+    portal: "portail"
     all_languages: Toutes les langues
     back: Retour
     by: par
     cancel_button: Annuler
     check_resolvability: vérification de la résolvabilité...
     classes: classes
+    close: Fermer
     concepts: concepts
     copy_original_uri: Copier l'URI d'origine
     copy_portal_uri: Copier l'URI de %{portal_name}
@@ -514,6 +539,13 @@ fr:
   fair_score:
     fairness_unreachable_warning: Problème d'accès au service d'évaluation du niveau
       de FAIRness
+    foops_unreachable_warning: Problème d'accès au service d'évaluation FOOPS!
+    foops_description: 'Score d''évaluation FAIR calculé avec l''outil FOOPS! (Ontology
+      Pitfall Scanner for FAIR) à partir du fichier déposé dans le portail. Plus de détails
+      ici : https://foops.linkeddata.es/'
+    description: 'Le score FAIR évalue dans quelle mesure cette ontologie respecte
+      les principes FAIR (Findable, Accessible, Interoperable, Reusable). Deux évaluations
+      complémentaires sont disponibles : O''FAIRe et FOOPS!'
     go_to_api: Aller à l'API
     metadata_properties: Les propriétés de métadonnées listées ci-dessous sont extraites
       de %{mod_link}.
@@ -525,9 +557,9 @@ fr:
     see_metadata_used_properties: Voir les propriétés de métadonnées utilisées
     see_possible_credits: Voir les crédits possibles
     see_the_used_properties: voir les propriétés utilisées
-    view_fair_scores_definitions: 'Vous voyez le score d''évaluation de l''adéquation
-      avec les principes FAIR pour cette ontologie dans AgroPortal. Les scores FAIR
-      sont calculés avec la méthodologie O''FAIRe. Plus de détails ici : https://github.com/agroportal/fairness'
+    view_fair_scores_definitions: 'Score d''évaluation FAIR calculé avec la méthodologie
+      O''FAIRe (Ontology FAIRness Evaluator) à partir de l''enregistrement de métadonnées
+      local. Plus de détails ici : https://github.com/agroportal/fairness'
   federation:
     check_status: Vérification de la disponibilité de %{portal}
     not_responding: ne répond pas.
@@ -1062,7 +1094,8 @@ fr:
     exploring_and_searching: |-
       dans notre liste d'ontologies mais ils ne peuvent pas l'explorer ou la rechercher. Pour permettre l'exploration et la recherche,
       veuillez télécharger une version complète de votre ontologie.
-    fairness_assessment_questions: Questions d'évaluation du nveau de FAIRness O'FAIRe
+    fairness_assessment_questions_ofaire: Questions d'évaluation du niveau de FAIRness O'FAIRe
+    fairness_assessment_questions_foops: Questions d'évaluation du niveau de FAIRness FOOPS!
     filters: Filtres
     formality_levels: Niveaux de formalité
     general_information: Informations générales
@@ -1131,6 +1164,7 @@ fr:
       statuts suivants : %{status}'
     ontology_search_prompt: Rechercher une ontologie ou un terme (e.g., hauteur de
       plante)
+    class_search_prompt: Rechercher une classe (e.g., hauteur de plante)
     ontology_submitted: Ontologie soumise avec succès !
     ontology_types: Types d'ontologies
     outside: extérieur
@@ -1353,6 +1387,7 @@ fr:
       no_preferred_name_for_selected_language: Pas de nom préféré pour la langue sélectionnée.
       obsolete: Obsolète
       preferred_name: Nom préféré
+      show_all_synonyms: Afficher tous les synonymes
       synonyms: Synonymes
       type: Type
     header:
@@ -1566,18 +1601,25 @@ fr:
     show_advanced_options: Afficher les options
   show_advanced_options: Afficher les options avancées
   statistics:
+    agents: Agents
     date: Date
+    description: "Évolution des ressources de %{portal} en chiffres (dernières %{last_years} années)."
     lead: "(dernières %{last_years} années)"
+    menu: Statistiques
     ontologies: Ontologies
     ontology_visits: Visites de l'ontologie
     projects: Projets
+    this_month: ce mois-ci
     title: Statistiques de %{portal}
     users: Utilisateurs
   submission_inputs:
+    name: Nom
+    acronym: Acronyme
+    categories: 'Catégories'
     accounts_allowed: Ajouter ou supprimer des comptes autorisés à voir cette ontologie
       dans %{portal_name}.
     administrators: Administrateurs
-    contact: Contact
+    contact: contact
     contact_email: Email de %{name}
     contact_name: Nom du %{name}
     deprecated_help: Une ontologie avec le statut retired (retirée) doit nécessairement être également deprecated (dépréciée), mais pas l'inverse.
@@ -1627,8 +1669,17 @@ fr:
       de version dans une ontologie, consultez %{link}
     version_helper_link: recommandations.
     visibility: Visibilité
+    view_of: Vue de
+    sample_queries: Requêtes d'exemple
+    description: 'Description'
+    status: 'Statut'
+    valid: 'Date de validité'
+    hasOntologyLanguage: 'Langage de représentation'
+    subjects: Sujets
     theme_taxonomy_not_set: Veuillez définir le champ themeTaxonomy dans la page d'administration pour l'utiliser pour la recherche des sujets
-    subjects_notice: "Les 'Subjets' doivent être sélectionnés dans l'ensemble d'ontologies suivant: %{ontologies}. Si vous souhaitez ajouter un autre mot-clés ou termes de vocabulaires, utiliser la propriété 'Keywords'."
+    subjects_notice: "Les 'Subjets' doivent être sélectionnés dans l'ensemble d'ontologies suivant: %{ontologies}. Si vous souhaitez ajouter un autre mot-clé ou terme de vocabulaire, utilisez la propriété 'Mots-clés'."
+    attributes:
+      description: Description
   submissions:
     actions: Actions
     delete_submission_alert:
@@ -1636,6 +1687,7 @@ fr:
       content_2: "</span> pour l'ontologie <span style='color:red;font-weight:bold;'>"
       content_3: "</span> ?<br/><b>Cette action est IRREVERSIBLE !!!</b>"
     download: Télécharger
+    download_metadata: Métadonnées
     edit_button: Éditer
     filter:
       all_formats: Formats
@@ -1654,6 +1706,7 @@ fr:
     modified: Modifié
     no_submissions_for_ontology: 'Aucune soumission pour l''ontologie : %{ontology}'
     save_button: Sauvegarder
+    submission: Soumission
     submission_updated_successfully: Soumission mise à jour
     submitted: Soumis
     toggle_dropdown: Basculer le menu déroulant

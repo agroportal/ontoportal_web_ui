@@ -2,12 +2,62 @@ module FederationHelper
   include ApplicationHelper
 
   def federated_portals
-    $FEDERATED_PORTALS ||= LinkedData::Client.settings.federated_portals
-    $FEDERATED_PORTALS.each do |key, portal|
-      portal[:ui] += "/" unless portal[:ui].end_with?("/")
-      portal[:api] += "/" unless portal[:api].end_with?("/")
+    cached = Rails.cache.read(FederatedPortal::CACHE_KEY)
+    return cached if cached.present?
+
+    stored = FederatedPortal.as_config
+    return cache_federated_portals(stored) if stored.present?
+
+    portals = fetch_federated_portals_from_catalog
+    return portals unless portals.present? && current_user_admin?
+
+    FederatedPortal.sync!(portals)
+    cache_federated_portals(portals)
+  end
+
+  def cache_federated_portals(portals)
+    Rails.cache.write(FederatedPortal::CACHE_KEY, portals, expires_in: FederatedPortal::CACHE_TTL)
+    portals
+  end
+
+  # The API client opens one connection per federated portal when it boots, but the
+  # portals we federate with are administered at runtime through the catalog.
+  def sync_federated_connections
+    portals = federated_portals
+    settings = LinkedData::Client.settings
+    return if settings.federated_conn && settings.federated_portals == portals
+
+    settings.federated_portals = portals
+    # config_connection only ever runs once, let it open the new connections
+    LinkedData::Client.instance_variable_set(:@settings_run_connection, false)
+    LinkedData::Client.config_connection(cache_store: Rails.cache)
+  end
+
+  def fetch_federated_portals_from_catalog(bust_cache: false)
+    params = { display: 'federated_portals' }
+    params[:_ts] = Time.current.to_i if bust_cache
+
+    # Fetch federated portals from the catalog metadata
+    catalog_data = LinkedData::Client::HTTP.get("#{LinkedData::Client.settings.rest_url}/", params)
+
+    federated = {}
+    if catalog_data&.federated_portals.present?
+      Array(catalog_data.federated_portals).each do |portal|
+        # A portal can only be queried once an administrator has filled in its apikey
+        next unless portal[:apikey].present? && portal[:name].present? && portal[:api].present?
+
+        portal_key = portal[:name].downcase.to_sym
+        # Ensure URLs end with /
+        portal[:ui] = "#{portal[:ui]}/" if portal[:ui].present? && !portal[:ui].end_with?("/")
+        portal[:api] = "#{portal[:api]}/" if portal[:api].present? && !portal[:api].end_with?("/")
+
+        federated[portal_key] = portal
+      end
     end
-    $FEDERATED_PORTALS
+    federated
+  rescue StandardError => e
+    Rails.logger.error("Error fetching federated portals from catalog: #{e.message}")
+    {}
   end
 
   def internal_portal_config(id)
@@ -162,10 +212,11 @@ module FederationHelper
     end
   end
 
-  def federation_portal_status(portal_name: nil)
+  def federation_portal_status(portal_name: nil, api: nil)
     Rails.cache.fetch("federation_portal_up_#{portal_name}", expires_in: 10.minutes) do
-      portal_api = federated_portals&.dig(portal_name.to_sym,:api)
-      return false unless portal_api
+      portal_api = api.presence || portal_status_api(portal_name)
+
+      return false if portal_api.blank?
       portal_up = false
       begin
         response = Faraday.new(url: portal_api) do |f|
@@ -180,6 +231,13 @@ module FederationHelper
       end
       portal_up
     end
+  end
+
+  def portal_status_api(portal_name)
+    return rest_url if portal_name.to_s.downcase == $SITE.to_s.downcase
+    return nil if portal_name.blank?
+
+    federated_portals&.dig(portal_name.to_sym, :api)
   end
 
   def federation_chip_component(key, name, acronym, checked, portal_up)
@@ -243,9 +301,12 @@ module FederationHelper
       counts[current_portal.downcase] += 1 if id.include?(current_portal.to_s.downcase)
 
       federation_portals.each do |portal|
-        portal_api = federated_portals[portal.downcase.to_sym][:api].sub(/^https?:\/\//, '')
-        portal_ui = federated_portals[portal.downcase.to_sym][:ui].sub(/^https?:\/\//, '')
-        counts[portal.downcase] += 1 if (id.include?(portal_api) || id.include?(portal_ui))
+        portal_config = federated_portals[portal.downcase.to_sym]
+        next unless portal_config&.dig(:api) || portal_config&.dig(:ui)
+
+        portal_api = portal_config[:api]&.sub(/^https?:\/\//, '')
+        portal_ui = portal_config[:ui]&.sub(/^https?:\/\//, '')
+        counts[portal.downcase] += 1 if (portal_api && id.include?(portal_api)) || (portal_ui && id.include?(portal_ui))
       end
     end
 

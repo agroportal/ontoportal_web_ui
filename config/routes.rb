@@ -100,6 +100,7 @@ Rails.application.routes.draw do
     resources :agents, only: [:index]
     resource :catalog_configuration, only: [:show, :update], controller: 'catalog_configuration'
     get 'catalog_configuration/edit_nested_form/:key', to: 'catalog_configuration#edit_nested_form', as: 'edit_nested_form_catalog_configuration'
+    get 'catalog_configuration/validate_apikey', to: 'catalog_configuration#validate_apikey', as: 'validate_apikey_catalog_configuration'
     scope :search do
       get '/', to: 'search#index'
       post 'index_batch', to: 'search#index_batch'
@@ -153,7 +154,7 @@ Rails.application.routes.draw do
   get 'home/metrics', to: 'home#metrics'
   get 'home/agents', to: 'home#agents'
   get 'status/:portal_name', to: 'home#federation_portals_status'
-  
+
   # SPARQL 
   match 'sparql_proxy', to: 'admin#sparql_endpoint', via: [:get, :post]
   get 'sparql', to: 'sparql_endpoint#index', as: 'sparql_endpoint'
@@ -222,6 +223,7 @@ Rails.application.routes.draw do
   get '/ajax/fair_score/html' => 'fair_score#details_html'
   get '/ajax/submission/show_licenses/:id' => 'ontologies#show_licenses'
   get '/ajax/fair_score/json' => 'fair_score#details_json'
+  get '/ajax/fair_score/foops_json' => 'fair_score#foops_json'
   get '/ajax/ontologies', to: 'ontologies#ajax_ontologies'
   get '/ajax/agents', to: 'agents#ajax_agents'
   get '/ajax/agents/list', to: 'agents#ajax_agents_list'
@@ -243,6 +245,7 @@ Rails.application.routes.draw do
   get 'search', to: 'search#index'
   get 'search/json_search/:id', to: 'search#json_search'
   get 'ajax/search/ontologies/content', to: 'search#json_ontology_content_search'
+  get 'ajax/search/ontologies/:ontology_acronym/classes', to: 'search#json_ontology_classes_search'
 
   get 'check_resolvability' => 'check_resolvability#index'
   get 'check_url_resolvability' => 'check_resolvability#check_resolvability'

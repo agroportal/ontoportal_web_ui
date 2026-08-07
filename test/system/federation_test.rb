@@ -6,6 +6,7 @@ class FederationTest < ApplicationSystemTestCase
     @search_path = "/search"
     @query = "test"
     @ontologies_path = "/ontologies"
+    federate_with(AGROPORTAL, PORTAL_DOWN)
   end
 
   test "perform federated search in search page and make sure federation is working" do

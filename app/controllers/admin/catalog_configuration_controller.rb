@@ -1,4 +1,6 @@
 class Admin::CatalogConfigurationController < ApplicationController
+  include OntoportalInstances
+
   before_action :authorize_admin
   before_action :load_catalog_metadata, only: [:show]
   before_action :load_catalog_data, only: [:show]
@@ -17,21 +19,34 @@ class Admin::CatalogConfigurationController < ApplicationController
     response = update_remote_config(config)
     if response.status == 200
       flash.now[:notice] = t('admin.catalog_configuration.configuration_updated_successfully')
+      refresh_federated_portals if federated_portals_update?
     else
       flash.now[:alert] = t('admin.catalog_configuration.configuration_update_error', error: response.body)
+    end
+
+    if @rejected_federated_portals.present?
+      flash.now[:warning] = t('admin.catalog_configuration.federation_invalid_apikeys',
+                              portals: @rejected_federated_portals.join(', '))
     end
 
     @catalog_data = load_catalog_data
     session[:catalog_data] = @catalog_data
     @catalog_metadata = session[:catalog_metadata] || load_catalog_metadata
     @catalog_groups = attributes_groups
-    
+
     respond_to do |format|
       format.turbo_stream do
-        render turbo_stream: turbo_stream.replace(
-          'catalog-config',
-          render_to_string('admin/catalog_configuration/show')
-        )
+        if federated_portals_update?
+          render turbo_stream: turbo_stream.replace(
+            'federated-portals-config',
+            partial: 'admin/catalog_configuration/federated_portals'
+          )
+        else
+          render turbo_stream: turbo_stream.replace(
+            'catalog-config',
+            render_to_string('admin/catalog_configuration/show')
+          )
+        end
       end
       format.html { redirect_to admin_api_configuration_index_path }
     end
@@ -44,14 +59,49 @@ class Admin::CatalogConfigurationController < ApplicationController
 
     @catalog_data = session[:catalog_data] || load_catalog_data
     @catalog_metadata = session[:catalog_metadata] || load_catalog_metadata
-    
+
     @value_attrs = @catalog_data&.dig(@key) || []
-    @field_names = extract_field_names_for_key(@key)
-    
+
+    # Merge federated_portals from ontoportal.org with existing ones
+    if @key == :federated_portals
+      portals_from_source = fetch_federated_portals_from_source
+      @value_attrs = merge_federated_portals(@value_attrs, portals_from_source)
+      # For federated_portals, explicitly set all field names
+      @field_names = %w[name ui api color apikey]
+
+      domain = current_portal_domain
+      @federation_allowed = federation_allowed?
+      # Never let a portal federate with itself.
+      @value_attrs = reject_current_portal(@value_attrs, domain)
+    else
+      @field_names = extract_field_names_for_key(@key)
+    end
+
     render partial: 'edit_nested_form_modal', layout: false
   end
 
+  # Live check used by the federated portals form to give immediate feedback
+  # before saving: is this apikey a valid, working federation key?
+  def validate_apikey
+    apikey = params[:apikey].to_s
+    api = params[:api].to_s
+
+    render json: {
+      uuid: valid_uuid?(apikey),
+      valid: valid_federation_apikey?(api, apikey)
+    }
+  end
+
   private
+
+
+  def federated_portals_update?
+    params[:config]&.key?('federated_portals')
+  end
+
+  def federation_allowed?
+    Rails.env.development? || current_portal_federated_on_source?
+  end
 
   def attributes_groups
     {
@@ -73,12 +123,16 @@ class Admin::CatalogConfigurationController < ApplicationController
       usage: %w[knownUsage coverage example themeTaxonomy],
       methodology_and_provenance: %w[accrualMethod accrualPeriodicity accrualPolicy],
       media: %w[associatedMedia depiction logo],
-      other: %w[color federated_portals relation sampleQueries]
+      other: %w[color relation sampleQueries]
     }.freeze
   end
 
+  def standalone_attributes
+    %w[federated_portals].freeze
+  end
+
   def list_included_attributes
-    attributes_groups.values.flatten.freeze
+    (attributes_groups.values.flatten + standalone_attributes).freeze
   end
 
   def agents_list
@@ -158,7 +212,12 @@ class Admin::CatalogConfigurationController < ApplicationController
     config = params.require(:config).permit!.to_h
 
     list_included_attributes.each do |key|
-      config[key] = sanitize_attribute_value(config[key.to_s])
+      # Special handling for federated_portals
+      if key == 'federated_portals'
+        config[key] = sanitize_federated_portals(config[key.to_s])
+      else
+        config[key] = sanitize_attribute_value(config[key.to_s])
+      end
     end
 
     config['rightsHolder'] = config['rightsHolder']&.first&.presence || '' if config['rightsHolder']
@@ -182,13 +241,152 @@ class Admin::CatalogConfigurationController < ApplicationController
     end
   end
 
+  def sanitize_federated_portals(raw_value)
+    return nil if raw_value.nil?
+
+    portals_data = case raw_value
+                   when Hash
+                     # raw_value is a hash with numeric keys and portal data as values
+                     raw_value.values
+                   when Array
+                     # raw_value is already an array of portal objects
+                     raw_value
+                   else
+                     []
+                   end
+
+    @rejected_federated_portals ||= []
+
+    portals = portals_data.filter_map do |portal_data|
+      next unless portal_data.is_a?(Hash)
+      # The apikey is required: skip portals without one so they are not
+      # added to the catalog.
+      next if portal_data['apikey'].blank?
+
+      portal = {}
+      portal[:name] = portal_data['name'] if portal_data['name'].present?
+      portal[:ui] = portal_data['ui'] if portal_data['ui'].present?
+      portal[:api] = portal_data['api'] if portal_data['api'].present?
+      portal[:color] = portal_data['color'] if portal_data['color'].present?
+      portal[:apikey] = portal_data['apikey']
+
+      # Only keep portals whose apikey is a valid, working federation key.
+      unless valid_federation_apikey?(portal[:api], portal[:apikey])
+        @rejected_federated_portals << (portal[:name].presence || portal[:ui].presence || portal[:api].presence)
+        next
+      end
+
+      portal
+    end
+
+    portals.presence
+  end
+
+  UUID_REGEX = /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i
+
+  def valid_uuid?(value)
+    value.to_s.match?(UUID_REGEX)
+  end
+
+  # A federation apikey must be a valid UUID and must be accepted by the target
+  # portal. We probe its API and only reject the key when the portal answers
+  # with 401 Unauthorized. Any other outcome (including a network error we
+  # cannot draw a conclusion from) leaves the key in place.
+  def valid_federation_apikey?(api, apikey)
+    return false unless valid_uuid?(apikey)
+    return true if api.blank?
+
+    uri = URI.parse("#{api.to_s.chomp('/')}/agents")
+    uri.query = URI.encode_www_form(
+      page: 1, pagesize: 1, include: 'test',
+      display_links: false, display_context: false, apikey: apikey
+    )
+
+    response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https',
+                                                   open_timeout: 5, read_timeout: 5) do |http|
+      http.request(Net::HTTP::Get.new(uri.request_uri))
+    end
+
+    response.code.to_i != 401
+  rescue StandardError => e
+    Rails.logger.warn("Could not verify federation apikey for #{api}: #{e.message}")
+    true
+  end
+
   def extract_field_names_for_key(key)
     metadata = @catalog_metadata[key.to_s]
     return [] unless metadata&.enforcedValues
-    
+
     metadata.enforcedValues.flat_map do |field|
       field.to_h.keys - [:links, :context]
     end
+  end
+
+  # The apikey is deliberately left out: it is what the administrator has to fill in
+  # to actually federate with a portal.
+  def fetch_federated_portals_from_source
+    federated_ontoportal_instances.map do |portal|
+      OpenStruct.new(
+        name: portal[:name],
+        ui: portal[:ui],
+        api: portal[:api],
+        color: portal[:color]
+      )
+    end
+  rescue StandardError => e
+    Rails.logger.error("Error fetching federated portals: #{e.message}")
+    []
+  end
+
+  # The domain that identifies the current portal, taken from the incoming
+  # request host rather than a configurable setting the admin controls.
+  def current_portal_domain
+    portal_domain(request.host)
+  end
+
+  # Remove the current portal from the list so it is not offered to federate
+  # with itself.
+  def reject_current_portal(portals, domain)
+    return portals if domain.blank?
+
+    portals.reject do |portal|
+      ui = portal.respond_to?(:ui) ? portal.ui : portal['ui']
+      api = portal.respond_to?(:api) ? portal.api : portal['api']
+      [portal_domain(ui), portal_domain(api)].compact.include?(domain)
+    end
+  end
+
+  def merge_federated_portals(existing_portals, source_portals)
+    # Create a map of existing portals by normalized UI domain
+    existing_by_domain = {}
+    existing_portals.each do |portal|
+      ui = portal.respond_to?(:ui) ? portal.ui : portal['ui']
+      next if ui.blank?
+
+      domain = portal_domain(ui)
+      existing_by_domain[domain] = portal
+    end
+
+    # Add portals from source, avoiding duplicates by domain
+    source_portals.each do |portal|
+      next if portal.ui.blank?
+
+      domain = portal_domain(portal.ui)
+      existing_by_domain[domain] ||= portal
+    end
+
+    # Return merged list
+    existing_by_domain.values
+  end
+
+  def refresh_federated_portals
+    Rails.cache.delete(FederatedPortal::CACHE_KEY)
+    portals = helpers.fetch_federated_portals_from_catalog(bust_cache: true)
+
+    FederatedPortal.sync!(portals)
+    helpers.cache_federated_portals(portals) if portals.present?
+
+    Rails.logger.info("Refreshed the federated portals cache and database copy (#{portals.size} portals)")
   end
 
 

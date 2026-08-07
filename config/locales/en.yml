@@ -126,6 +126,9 @@ en:
       edit_button: Edit
       configuration_updated_successfully: Configuration updated successfully
       configuration_update_error: 'Problem updating the configuration: %{error}'
+      federation_provide_apikey: Please provide an APIKEY for the federation user corresponding to each portal in order to enable the federation.
+      federation_not_allowed: This portal isn't allowed to activate federation features.
+      federation_invalid_apikeys: 'The following portals were not added because their API key is invalid: %{portals}'
     licenses:
       create:
         success: License renewed successfully
@@ -212,15 +215,28 @@ en:
         type: Type
     site_administration:
       cache_management: Cache management
+      cache_management_description:
+        Flush the caches %{portal_name} relies on to serve pages, or reset the connection to the cache server.
       checking_for_updates: Checking for updates ...
       clear_cache: Flush UI cache
       clear_goo_cache: Flush GOO cache
       clear_http_cache: Flush HTTP cache
-      flipper_description: Use Flipper to control the visibility of specific %{portal_name}
-        features within the user interface.
+      edit_federated_portals: Edit federated portals
+      federated_portals: Federated portals
+      federated_portals_description:
+        Choose the OntoPortal instances %{portal_name} federates with, and provide the API key of the federation user of each of them.
+      flipper_description:
+        Use Flipper to control the visibility of specific %{portal_name} features within the user interface.
+      flipper_ui: Flipper UI
+      no_federated_portal: No portal federated yet.
+      sidekiq_description:
+        Use Sidekiq to monitor and manage background job processing, queues, and cron jobs.
+      sidekiq_ui: Sidekiq UI
       reset_cache: Reset UI cache connection
       settings: Settings
       version_management: Version management
+      version_management_description:
+        The OntoPortal version %{portal_name} runs, and the updates available for it.
     submission_deleted_successfully: Submission %{id} for ontology %{ont} was deleted
       successfully
     submission_not_found: Submission %{id} for ontology %{ont} was not found
@@ -248,13 +264,17 @@ en:
       identifiers: Identifiers
       identifier: Identifier
       name: Name
+      name_placeholder: Lookup the ROR registry or create a new organization
       organization: Organization
       person: Person
       type: Type
     index:
       acronym: Acronym
       actions: Actions
+      added: Added
+      added_by: by %{user}
       create_new_agent: Create agent
+      date_unknown: date unknown
       first_name: First name
       no_agents: There are currently no  agents.
       usages: Usages
@@ -395,12 +415,17 @@ en:
     preferred_name: Preferred name
     type: Type
   components:
+    add_another_object: "Add another %{object_name}"
+    class: "class"
+    contact: "contact"
+    portal: "portal"
     all_languages: All languages
     back: Back
     by: by
     cancel_button: Cancel
     check_resolvability: checking resolvability...
     classes: classes
+    close: Close
     concepts: concepts
     copy_original_uri: Copy original URI
     copy_portal_uri: Copy %{portal_name} URI
@@ -501,6 +526,13 @@ en:
     send_feedback_button: Send a feedback
   fair_score:
     fairness_unreachable_warning: FAIRness assessment service unreachable
+    foops_unreachable_warning: FOOPS! assessment service unreachable
+    foops_description: 'FAIRness assessment score computed with the FOOPS! tool (Ontology
+      Pitfall Scanner for FAIR) based on the file loaded in the portal. More details
+      here: https://foops.linkeddata.es/'
+    description: 'The FAIR score evaluates how well this ontology follows the FAIR
+      principles (Findable, Accessible, Interoperable, Reusable). Two complementary
+      assessments are available: O''FAIRe and FOOPS!'
     go_to_api: Go to API
     metadata_properties: Metadata properties listed in the following are picked from
       %{mod_link}.
@@ -512,8 +544,8 @@ en:
     see_metadata_used_properties: See metadata used properties
     see_possible_credits: See possible credits
     see_the_used_properties: see the used properties
-    view_fair_scores_definitions: 'You are seeing the FAIRness assessment score for
-      this ontology in AgroPortal. FAIR scores are computed with the O''FAIRe methodology.
+    view_fair_scores_definitions: 'FAIRness assessment score computed with the O''FAIRe
+      methodology (Ontology FAIRness Evaluator) based on the local metadata record.
       More details here: https://github.com/agroportal/fairness'
   federation:
     check_status: Checking %{portal} availability
@@ -1031,7 +1063,8 @@ en:
       ontology.
 
       '
-    fairness_assessment_questions: O'FAIRe FAIRness assessment questions
+    fairness_assessment_questions_ofaire: O'FAIRe FAIRness assessment questions
+    fairness_assessment_questions_foops: FOOPS! FAIRness assessment questions
     filters: Filters
     formality_levels: Formality levels
     general_information: General information
@@ -1095,6 +1128,7 @@ en:
     ontology_processing_failed: 'The ontology processing failed, with the current
       statuses: %{status}'
     ontology_search_prompt: Search an ontology or a term (e.g., plant height)
+    class_search_prompt: Search a class (e.g., plant height)
     ontology_submitted: Ontology submitted successfully!
     ontology_types: Ontology types
     outside: outside
@@ -1305,6 +1339,7 @@ en:
       no_preferred_name_for_selected_language: No preferred name for selected language.
       obsolete: Obsolete
       preferred_name: Preferred name
+      show_all_synonyms: Show all synonyms
       synonyms: Synonyms
       type: Type
     header:
@@ -1516,20 +1551,27 @@ en:
     show_advanced_options: Show options
   show_advanced_options: Show advanced options
   statistics:
+    agents: Agents
     date: Date
+    description: "Evolution of resources in %{portal} through numbers (last %{last_years} years)."
     lead: "(last %{last_years} years)"
+    menu: Statistics
     ontologies: Ontologies
     ontology_visits: Ontology visits
     projects: Projects
+    this_month: this month
     title: "%{portal} Statistics"
     users: Users
   submission_inputs:
+    name: Name
+    acronym: Acronym
+    categories: Categories
     accounts_allowed: Add or remove accounts that are allowed to see this ontology
       in %{portal_name}.
     administrators: Administrators
     contact: Contact
-    contact_email: "%{name} Email"
-    contact_name: "%{name} Name"
+    contact_email: "%{name} email"
+    contact_name: "%{name} name"
     deprecated_help: An ontology with status retired shall necessarily be also deprecated, but not the opposite.
     edit_metadata_instruction: Edit the metadata of your ontology here. Some of these
       values are used by %{portal_name} functionalities, including for FAIRness assessment.
@@ -1579,8 +1621,15 @@ en:
       an ontology, see %{link}
     version_helper_link: guidelines and recommendations.
     visibility: Visibility
+    view_of: View of
+    sample_queries: Sample queries
+    subjects: Subjects
     theme_taxonomy_not_set: Please set the themeTaxonomy field in the admin page to use it for subjects search
     subjects_notice: "The 'Subjects' must be selected from the following set of ontologies: %{ontologies}. If you wish to add another keyword or controlled term, use the 'Keywords' property."
+    description: 'Description'
+    status: 'Status'
+    valid: 'Valid date'
+    hasOntologyLanguage: 'Representation language'
   submissions:
     actions: Actions
     delete_submission_alert:
@@ -1588,6 +1637,7 @@ en:
       content_2: "</span> for ontology <span style='color:red;font-weight:bold;'>"
       content_3: "</span>?<br/><b>This action CAN NOT be undone!!!</b>"
     download: Download
+    download_metadata: Metadata
     edit_button: Edit
     filter:
       all_formats: Formats
@@ -1606,6 +1656,7 @@ en:
     modified: Modified
     no_submissions_for_ontology: 'No submissions for ontology: %{ontology}'
     save_button: Save
+    submission: Submission
     submission_updated_successfully: Submission updated successfully
     submitted: Submitted
     toggle_dropdown: Toggle dropdown

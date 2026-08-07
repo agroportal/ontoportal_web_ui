@@ -1,0 +1,99 @@
+# frozen_string_literal: true
+
+# Renders a concept's synonyms as compact, wrapping "chips".
+#
+# Synonyms are displayed close to (but visually distinct from) the preferred
+# name: same nature (terms) with a different status (alternative labels). They
+# are deliberately styled so they don't look like links or clickable objects.
+#
+# Accepts synonyms in any of the shapes the API / the rest of the app use:
+#   * a String                        -> a single synonym
+#   * an Array of Strings             -> synonyms in the current content language
+#   * a Hash / OpenStruct {lang => []}-> synonyms grouped by language ("all languages" view)
+#
+# When there are more than +show_max+ synonyms, only the first +show_max+ chips
+# are shown followed by a "+N" chip that opens an accessible modal dialog with
+# the full list (keyboard operable: Enter / Space to open, Esc to close).
+class SynonymsComponent < ViewComponent::Base
+  def initialize(synonyms:, id: nil, show_max: 10)
+    @synonyms = synonyms
+    @show_max = show_max
+    @id = id.presence || "synonyms-#{SecureRandom.hex(4)}"
+  end
+
+  def render?
+    chips.present?
+  end
+
+  # [{ text: "Etiology", lang: "en" }, ...] ; lang is nil when language-agnostic
+  def chips
+    @chips ||= normalize(@synonyms)
+  end
+
+  def visible_chips
+    chips.first(@show_max)
+  end
+
+  def hidden_count
+    [chips.size - @show_max, 0].max
+  end
+
+  def overflow?
+    hidden_count.positive?
+  end
+
+  def modal_id
+    "#{@id}-modal"
+  end
+
+  def title_id
+    "#{@id}-title"
+  end
+
+  # Renders a single synonym chip: the term, and its language tag when known.
+  def chip_tag(chip)
+    text = tag.span(chip[:text], class: 'synonym-chip__text', lang: chip[:lang])
+    lang = chip[:lang] ? tag.span(chip[:lang].upcase, class: 'synonym-chip__lang', 'aria-hidden': 'true') : nil
+
+    tag.span(safe_join([text, lang].compact), class: 'synonym-chip')
+  end
+
+  private
+
+  def normalize(raw)
+    raw = raw.to_h.reject { |k, _| %i[links context].include?(k) } if raw.is_a?(OpenStruct)
+
+    case raw
+    when String
+      raw.blank? ? [] : [chip(raw, nil)]
+    when Array
+      raw.flat_map { |value| normalize_value(value) }
+    when Hash
+      raw.flat_map { |lang, values| Array(values).map { |value| chip(value, lang) } }
+    else
+      raw.blank? ? [] : [chip(raw, nil)]
+    end.reject { |c| c[:text].blank? }
+  end
+
+  def normalize_value(value)
+    if value.is_a?(String)
+      [chip(value, nil)]
+    elsif value.respond_to?(:to_h)
+      value.to_h.reject { |k, _| %i[links context].include?(k) }
+           .flat_map { |lang, values| Array(values).map { |v| chip(v, lang) } }
+    else
+      [chip(value, nil)]
+    end
+  end
+
+  def chip(text, lang)
+    { text: text.to_s, lang: normalize_lang(lang) }
+  end
+
+  def normalize_lang(lang)
+    code = lang.to_s.strip
+    return nil if code.blank? || %w[none @none].include?(code.downcase)
+
+    code
+  end
+end

@@ -20,8 +20,8 @@ x-app: &default-app
   environment: &env
     BUNDLE_WITHOUT: ""
     BUNDLE_PATH: /srv/ontoportal/bundle
-    DB_HOST: 127.0.0.1
-    MEMCACHE_SERVERS: 127.0.0.1:11211
+    DB_HOST: host.docker.internal
+    MEMCACHE_SERVERS: host.docker.internal:11211
   tmpfs:
     - /tmp
     - /app/tmp/pids
@@ -61,7 +61,7 @@ services:
     <<: *default-app
     ports:
       - "3000:3000"
-    network_mode: "host"
+    # network_mode: "host"
 
   production:
     <<: *default-app

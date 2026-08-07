@@ -44,7 +44,10 @@ module ApplicationHelper
     user = current_user rescue nil
     Flipper.enabled?('SPARQL', user) && $SPARQL_ENDPOINT_URL
   end
-
+  def sidekiq_enabled?
+    user = current_user rescue nil
+    Flipper.enabled?('SIDEKIQ_UI', user) && $SIDEKIQ_UI_URL
+  end
   def portal_name_from_uri(uri)
     URI.parse(uri).hostname.split('.').first
   end
@@ -322,12 +325,13 @@ module ApplicationHelper
       userapikey: get_apikey,
       rest_url: LinkedData::Client.settings.rest_url,
       proxy_url: $PROXY_URL,
+      fairness_url: $FAIRNESS_URL,
       biomixer_url: $BIOMIXER_URL,
       annotator_url: $ANNOTATOR_URL,
       ncbo_annotator_url: $NCBO_ANNOTATOR_URL,
       ncbo_apikey: $NCBO_API_KEY,
       interportal_hash: $INTERPORTAL_HASH,
-      resolve_namespace: RESOLVE_NAMESPACE
+      resolve_namespace: RESOLVE_NAMESPACE,
     }
     config[:ncbo_slice] = @subdomain_filter[:acronym] if (@subdomain_filter[:active] && !@subdomain_filter[:acronym].empty?)
     config.to_json
@@ -389,6 +393,10 @@ module ApplicationHelper
     cleaned_path = path.chomp('/')
     # Reconstruct the cleaned URL
     "#{protocol}://#{cleaned_path}"
+  end
+
+  def sidekiq_ui_url
+    sidekiq_ui_url = $SIDEKIQ_UI_URL
   end
   
   def categories_browse_url(category)

@@ -25,6 +25,9 @@ application.register("fair-score-landscape", FairScoreLandscapeController)
 import FairScoreSummaryController from "./fair_score_summary_controller"
 application.register("fair-score-summary", FairScoreSummaryController)
 
+import FoopsScoreSummaryController from "./foops_score_summary_controller"
+application.register("foops-score-summary", FoopsScoreSummaryController)
+
 import FormAutoCompleteController from "./form_auto_complete_controller"
 application.register("form-auto-complete", FormAutoCompleteController)
 
@@ -88,6 +91,9 @@ application.register("sample-text", SampleTextController)
 import AnnotatorController from "./annotator_controller"
 application.register('annotator', AnnotatorController)
 
+import ApikeyValidatorController from "./apikey_validator_controller"
+application.register('apikey-validator', ApikeyValidatorController)
+
 import FormUrlController from "./form_url_controller"
 application.register('form-url', FormUrlController)
 
@@ -106,6 +112,20 @@ application.register('concepts-json', ConceptsJsonButtonController)
 import ParentCategoriesSelectorController from "./parent_categories_selector_controller.js"
 application.register('parent-categories-selector', ParentCategoriesSelectorController)
 
+import ClassPickerController from "./class_picker_controller.js"
+application.register("class-picker", ClassPickerController)
 
 import SubjectsController from "./subjects_controller.js"
 application.register("subjects", SubjectsController)
+
+import CarouselController from "./carousel_controller.js"
+application.register("carousel", CarouselController)
+
+import FairnessCarouselController from "./fairness_carousel_controller.js"
+application.register("fairness-carousel", FairnessCarouselController)
+
+import PasswordToggleController from "./password_toggle_controller.js"
+application.register("password-toggle", PasswordToggleController)
+
+import RorSearchController from "./ror_search_controller.js"
+application.register("ror-search", RorSearchController)

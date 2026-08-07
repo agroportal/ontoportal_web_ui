@@ -25,16 +25,21 @@ module HomeHelper
   end
 
   def portal_config_tooltip(portal, &block)
-    portal_id = portal&.downcase
-    title = if (federation_portal_status(portal_name: portal_id.to_sym) || portal_id.eql?(portal_name&.downcase))
-      render(
-        TurboFrameComponent.new(
-          id: "portal_config_tooltip_#{portal_id}",
-          src: "/config?portal=#{portal_id}",
-          style: "width: 600px !important; max-height: 300px; overflow: scroll"
-        )
+    return capture(&block) if portal.blank?
+
+    portal = { name: portal } if portal.is_a?(String)
+    portal_id = portal[:name].to_s.downcase
+    return capture(&block) if portal_id.blank?
+
+    # The frame is only requested once the tooltip is opened, and /config describes the
+    # portal from the registry when its API does not answer.
+    title = render(
+      TurboFrameComponent.new(
+        id: "portal_config_tooltip_#{portal_id}",
+        src: "/config?portal=#{portal_id}",
+        style: "width: 600px !important; max-height: 300px; overflow: scroll"
       )
-    end
+    )
     render Display::InfoTooltipComponent.new(text: title, interactive: true) do
       capture(&block)
     end

@@ -1,23 +1,22 @@
 %div
-  %div#site-admin-clear-caches
-    %div.site-admin-page-header
-      = t('admin.site_administration.cache_management')
-    %dive.site-admin-page-section.d-flex
-      = action_button(t('admin.site_administration.clear_cache'), admin_clearcache_path, class_style: 'btn btn-primary mx-1')
-      = action_button(t('admin.site_administration.reset_cache'), admin_resetcache_path, class_style: 'btn btn-primary mx-1')
-      = action_button(t('admin.site_administration.clear_goo_cache'), admin_clear_goo_cache_path, class_style: 'btn btn-primary mx-1')
-      = action_button(t('admin.site_administration.clear_http_cache'), admin_clear_http_cache_path, class_style: 'btn btn-primary mx-1')
+  = render Admin::SectionComponent.new(id: 'site-admin-clear-caches', title: t('admin.site_administration.cache_management'), description: t('admin.site_administration.cache_management_description', portal_name: portal_name)) do
+    .site-admin-section-actions
+      = action_button(t('admin.site_administration.clear_cache'), admin_clearcache_path, class_style: 'btn btn-primary')
+      = action_button(t('admin.site_administration.reset_cache'), admin_resetcache_path, class_style: 'btn btn-primary')
+      = action_button(t('admin.site_administration.clear_goo_cache'), admin_clear_goo_cache_path, class_style: 'btn btn-primary')
+      = action_button(t('admin.site_administration.clear_http_cache'), admin_clear_http_cache_path, class_style: 'btn btn-primary')
 
-  %div.mb-5
-    %div.site-admin-page-header
-      = t('admin.site_administration.version_management')
-    %dive.site-admin-page-section.p-2
-      = render TurboFrameComponent.new(id: 'update_check_frame', src: '/admin/update_check_enabled') do |c|
-        - c.loader { t('admin.site_administration.checking_for_updates') }
+  = render Admin::SectionComponent.new(id: 'site-admin-version', title: t('admin.site_administration.version_management'), description: t('admin.site_administration.version_management_description', portal_name: portal_name)) do
+    = render TurboFrameComponent.new(id: 'update_check_frame', src: '/admin/update_check_enabled') do |c|
+      - c.loader { t('admin.site_administration.checking_for_updates') }
 
-  %div.mb-5
-    %div.site-admin-page-header
-      = t('admin.site_administration.settings')
-      = description_tooltip(t('admin.index.site_administration'), t('admin.site_administration.flipper_description', portal_name: portal_name))
-    %dive.site-admin-page-section.d-flex
-      = link_to 'Flipper UI', admin_flipper_path, class: 'btn btn-primary mx-1', target: '_blank'
+  = render Admin::SectionComponent.new(id: 'site-admin-federation', title: t('admin.site_administration.federated_portals'), description: t('admin.site_administration.federated_portals_description', portal_name: portal_name)) do
+    = render partial: 'admin/catalog_configuration/federated_portals'
+
+  - settings_description = t('admin.site_administration.flipper_description', portal_name: portal_name)
+  - settings_description += "\n" + t('admin.site_administration.sidekiq_description') if sidekiq_enabled?
+  = render Admin::SectionComponent.new(id: 'site-admin-settings', title: t('admin.site_administration.settings'), description: settings_description) do
+    .site-admin-section-actions
+      = link_to t('admin.site_administration.flipper_ui'), admin_flipper_path, class: 'btn btn-primary', target: '_blank', id: 'flipper-link'
+      - if sidekiq_enabled?
+        = link_to t('admin.site_administration.sidekiq_ui'), sidekiq_ui_url, class: 'btn btn-primary', target: '_blank', id: 'sidekiq-link'
