@@ -400,10 +400,17 @@ module SubmissionInputsHelper
                value: attr.values, helper_text: nil)
   end
 
+  # Display-only override: the "XLSX" format is shown as "TDv5" in the UI.
+  # The submitted value stays "XLSX" (unchanged backend format acronym).
+  FORMAT_VALUE_LABELS = { 'XLSX' => 'TDv5' }.freeze
+
   def generate_select_input(attr, multiple: false, help_text: nil)
     name = attr.name
     label = attr_header_label(attr)
     metadata_values, select_values = selected_values(attr, enforced_values(attr))
+    if attr.attr_key.to_s == 'hasOntologyLanguage'
+      select_values = select_values.map { |lbl, val| [FORMAT_VALUE_LABELS[val] || lbl, val] }
+    end
 
     if !multiple && !attr.required?
       select_values << ['', '']
