@@ -10,7 +10,7 @@ class InstancesController < ApplicationController
     end
 
     get_ontology(params)
-    @submission  = @ontology.explore.latest_submission(include:'uriRegexPattern,preferredNamespaceUri')
+    @submission  = @ontology.explore.latest_submission(include:'uriRegexPattern,preferredNamespaceUri,naturalLanguage')
     query, page, page_size = helpers.search_content_params
 
     results, _, next_page, total_count = search_ontologies_content(query: query,
