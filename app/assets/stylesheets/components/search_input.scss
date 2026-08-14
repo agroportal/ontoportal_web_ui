@@ -44,6 +44,31 @@
   word-break: break-word;
 }
 
+.search-container.search-container-sections{
+  max-height: 560px;
+}
+
+.search-section-heading{
+  margin: 0;
+  padding: 10px 20px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9a9a9a;
+  background: #fbfbfb;
+  border-top: 1px solid #f7f7f7;
+  // Keeps the current group labelled while scrolling a long result list.
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+// The row directly under a heading already has the heading's border above it.
+.search-section-heading + .search-content{
+  border-top: none;
+}
+
 .search-dropdown-active{
   box-shadow: none !important;
 }

@@ -1575,6 +1575,10 @@ fr:
     preferred_name: Nom préféré
     type: Type
   search:
+    autocomplete:
+      agents: Agents
+      concepts: Concepts
+      ontologies: Ontologies
     advanced_options:
       include_in_search_title: Inclure dans la recherche
       include_in_search_values:
