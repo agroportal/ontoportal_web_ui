@@ -336,7 +336,7 @@ class ApplicationController < ActionController::Base
       if ignore_concept_param
         # get the top level nodes for the root
         # TODO_REV: Support views? Replace old view call: @ontology.top_level_classes(view)
-        @roots = @ontology.explore.roots(concept_schemes: params[:concept_schemes]) rescue nil
+        @roots = @ontology.explore.roots(concept_schemes: params[:concept_schemes], lang: lang) rescue nil
 
         if @roots.blank? || response_error?(@roots) || @roots.compact&.empty?
           LOG.add :debug, t('application.missing_roots_for_ontology', acronym: @ontology.acronym)
@@ -369,7 +369,7 @@ class ApplicationController < ActionController::Base
         # Create the tree
         rootNode = @concept.explore.tree(include: include, concept_schemes: params[:concept_schemes], lang: lang)
         if rootNode.nil? || rootNode.empty?
-          @roots = @ontology.explore.roots(concept_schemes: params[:concept_schemes])
+          @roots = @ontology.explore.roots(concept_schemes: params[:concept_schemes], lang: lang)
           if @roots.nil? || response_error?(@roots) || @roots.compact&.empty?
             LOG.add :debug, t('application.missing_roots_for_ontology', acronym: @ontology.acronym)
             @concept = @ontology.explore.classes.collection.first.explore.self(full: true)
@@ -432,8 +432,11 @@ class ApplicationController < ActionController::Base
     @metadata ||= helpers.submission_metadata
   end
 
+  # `helpers` memoizes a view context built from the assigns available on its
+  # first call, so pass the submissions explicitly: they are usually loaded
+  # after that snapshot was taken.
   def request_lang
-    helpers.request_lang
+    helpers.request_lang(@submission, @submission_latest)
   end
 
   def json_link(url, optional_params)

@@ -178,6 +178,20 @@ module AgentHelper
     usages.values.flatten.size
   end
 
+  def agent_created_at(agent)
+    DateTime.parse(agent.created) if agent.created.present?
+  rescue ArgumentError, TypeError
+    nil
+  end
+
+  def agent_created_sort_key(agent)
+    agent_created_at(agent)&.strftime('%Y%m%d%H%M%S') || '0' * 14
+  end
+
+  def agent_creator_username(agent)
+    agent.creator.to_s.split('/').last.presence
+  end
+
   def agents_metadata
     submission_metadata.select { |x| x["enforce"]&.include?('Agent') }.map do |x|
       SubmissionInputsHelper::SubmissionMetadataInput.new(attribute_key: x["attribute"], attr_metadata: x)

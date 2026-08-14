@@ -42,7 +42,7 @@ class ConceptsController < ApplicationController
 
     @submission = LinkedData::Client::Models::Ontology.explore(params[:ontology])
                                                       .latest_submission
-                                                      .get(include: 'uriRegexPattern,preferredNamespaceUri')
+                                                      .get(include: 'uriRegexPattern,preferredNamespaceUri,naturalLanguage')
     @schemes = params[:concept_schemes].split(',')
 
     @concept = LinkedData::Client::Models::Class.new(values: { id: params[:id] })
@@ -96,7 +96,7 @@ class ConceptsController < ApplicationController
     if @ontology.nil? || @ontology.errors
       ontology_not_found(params[:ontology])
     else
-      @submission = @ontology.explore.latest_submission(include: 'uriRegexPattern,preferredNamespaceUri')
+      @submission = @ontology.explore.latest_submission(include: 'uriRegexPattern,preferredNamespaceUri,naturalLanguage')
       get_class(params) # application_controller
 
       not_found(t('concepts.missing_roots')) if @root.nil?
@@ -112,7 +112,7 @@ class ConceptsController < ApplicationController
     if @ontology.nil? || @ontology.errors
       ontology_not_found(params[:ontology])
     else
-      @submission = @ontology.explore.latest_submission(include: 'uriRegexPattern,preferredNamespaceUri')
+      @submission = @ontology.explore.latest_submission(include: 'uriRegexPattern,preferredNamespaceUri,naturalLanguage')
       page = params[:page]
       @last_date = params[:last_date]
       auto_click = page.to_s.eql?('1')

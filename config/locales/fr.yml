@@ -278,7 +278,10 @@ fr:
     index:
       acronym: Acronyme
       actions: Actions
+      added: Ajouté
+      added_by: par %{user}
       create_new_agent: Créer un agent
+      date_unknown: date inconnue
       first_name: Prénom
       no_agents: Il n'y a actuellement aucun agent.
       usages: Utilisations
@@ -1572,6 +1575,10 @@ fr:
     preferred_name: Nom préféré
     type: Type
   search:
+    autocomplete:
+      agents: Agents
+      concepts: Concepts
+      ontologies: Ontologies
     advanced_options:
       include_in_search_title: Inclure dans la recherche
       include_in_search_values:
