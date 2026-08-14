@@ -47,6 +47,12 @@
   overflow-wrap: anywhere;
 }
 
+// The badge and the raw-data link travel together at the end of the sentence,
+// and wrap to the next line as one rather than being torn apart by it.
+.definition-meta {
+  white-space: nowrap;
+}
+
 // The reified node a definition was read from, opened as raw data. Left in the
 // portal colour the popup-link icon carries everywhere else, and only placed
 // here: on the baseline of the sentence it annotates, never on a line of its own.

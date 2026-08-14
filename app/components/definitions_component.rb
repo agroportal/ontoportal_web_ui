@@ -74,6 +74,16 @@ class DefinitionsComponent < ViewComponent::Base
     tag.span(item[:text], class: 'definition-uri')
   end
 
+  # What trails the sentence - the language it is written in, the node it was
+  # read from - kept on one line: split by a wrap, a lone badge or a lone icon
+  # reads as a stray mark belonging to nothing.
+  def definition_meta(item)
+    meta = safe_join([language_tag(item), raw_data_link(item)].compact)
+    return if meta.blank?
+
+    tag.span(meta, class: 'definition-meta')
+  end
+
   # The node the text was read from, opened as the triples it holds - its
   # source, its dates, everything a sentence cannot carry. Marked with the icon
   # every other link that opens a modal carries, at the size PopupLinkTextComponent

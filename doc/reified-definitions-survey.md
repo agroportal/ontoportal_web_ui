@@ -148,6 +148,14 @@ the identifiers they are, since there is no node to open and no text to show ins
    a link to the node's raw data, and a node holding nothing in this language is left to the "all
    languages" view. Submissions parsed before the extraction hold nodes and no literals at all —
    AGROVOC among them — so the node's own text is what the row shows for those.
+5. **The Raw data table holds the same triples, and reads them the same way** — but only for the
+   rows `ConceptDetailsComponent` is given as `reified_keys`. Two reasons not to detect them
+   instead: resolving a URI costs a request and most rows are full of URIs (a `narrower` with
+   fifty children would pay fifty lookups to learn that none of them is a node); and
+   `instances/<uri>` answers for a skos:Concept as readily as for a node, so a fold that read
+   `skos:definition` as "the node's text" would replace a link to a parent term with the parent's
+   own definition. Folding therefore reads only `rdf:value` and `skosxl:literalForm` — the two
+   predicates no class carries.
 
 ## Reproducing
 

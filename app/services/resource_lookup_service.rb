@@ -35,6 +35,14 @@ class ResourceLookupService < ApplicationService
     http://www.w3.org/2004/02/skos/core#note
   ].freeze
 
+  # The half of them only a reified node ever carries, and the only ones a fold
+  # may read. Folding turns a link into a sentence, so it must not fire on a
+  # class: `instances/<uri>` answers for a skos:Concept as readily as for a
+  # node, and a concept carries skos:definition and skos:note too - reading
+  # those as "the node's text" would quietly replace a link to a parent term
+  # with the parent's own definition.
+  REIFIED_VALUE_PREDICATES = VALUE_PREDICATES.first(2).freeze
+
   CACHE_TTL = 1.hour
   QUERY_TIMEOUT = 8
 
@@ -90,18 +98,18 @@ class ResourceLookupService < ApplicationService
 
     cached("resource_values/#{@lang.downcase}/#{Digest::SHA1.hexdigest(@uri)}") do
       resource = call
-      resource && text_of(resource)
+      resource && text_of(resource, REIFIED_VALUE_PREDICATES)
     end
   end
 
   private
 
-  # The first of VALUE_PREDICATES the node actually carries. Everything else it
+  # The first of +predicates+ the node actually carries. Everything else it
   # holds is provenance, and stays where it came from.
-  def text_of(resource)
+  def text_of(resource, predicates)
     properties = resource[:properties].to_h.transform_keys(&:to_s)
 
-    VALUE_PREDICATES.each do |predicate|
+    predicates.each do |predicate|
       values = Array(properties[predicate]).map(&:to_s).reject(&:blank?)
       return values if values.present?
     end

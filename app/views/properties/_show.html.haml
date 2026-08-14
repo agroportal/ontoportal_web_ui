@@ -3,13 +3,15 @@
                         properties: @property.properties,
                         top_keys: [],
                         bottom_keys: LinkedData::Client::Models::Property.properties_to_hash(@property).first.keys.map(&:to_s),
+                        reified_keys: %w[definition], lang: request_lang,
                         exclude_keys: []) do |c|
     - c.header(stripped: true) do |t|
       - t.add_row({th: t('properties.id')}, {td: link_to_with_actions(@property.id, acronym: @acronym)})
       - t.add_row({th: t('properties.type')}, {td: @property.type })
       - t.add_row({th: t('properties.preferred_name')}, {td: display_in_multiple_languages(@property.label)}) unless  @property.label.blank?
-      - definitions = DefinitionsComponent.new(definitions: @property.definition, id: 'property-definitions',
-                                               acronym: @acronym, parent_uri: @property.id, lang: request_lang)
+      - definitions = DefinitionsComponent.new(definitions: c.reified_values || @property.definition,
+                                               id: 'property-definitions', acronym: @acronym,
+                                               parent_uri: @property.id, lang: request_lang)
       - if definitions.render?
         - t.add_row({th: t('properties.definitions')}) do |h|
           - h.td do

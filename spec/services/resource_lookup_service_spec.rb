@@ -187,10 +187,22 @@ RSpec.describe ResourceLookupService do
 
     it 'prefers rdf:value to the other predicates a node can carry its text under' do
       allow(LinkedData::Client::HTTP).to receive(:get)
-        .and_return(rest_node('http://www.w3.org/2004/02/skos/core#note' => ['a note'],
+        .and_return(rest_node('http://www.w3.org/2008/05/skos-xl#literalForm' => ['Etiology'],
                               value_predicate => ['Coastal areas…']))
 
       expect(described_class.values('INRAETHES', node, lang: 'en')).to eq(['Coastal areas…'])
+    end
+
+    # `instances/<uri>` answers for a skos:Concept as readily as for a node, and
+    # a concept carries skos:definition. Reading that as the node's text would
+    # fold a link to a parent term into the parent's own definition.
+    it 'reads nothing from a resource carrying only the predicates a class has too' do
+      allow(LinkedData::Client::HTTP).to receive(:get)
+        .and_return(rest_node('http://www.w3.org/2004/02/skos/core#definition' => ['A parasitic disease.'],
+                              'http://www.w3.org/2004/02/skos/core#note' => ['a note'],
+                              'http://www.w3.org/2004/02/skos/core#prefLabel' => ['malaria']))
+
+      expect(described_class.values('INRAETHES', node, lang: 'en')).to eq([])
     end
 
     # Empty and nil are different answers, and the caller renders them
