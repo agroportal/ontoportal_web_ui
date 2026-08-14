@@ -23,6 +23,14 @@ class DefinitionsComponent < ViewComponent::Base
   include ResourceLinksHelper
   include UrlsHelper
 
+  # Past this many characters a definition is cropped, and read on through the
+  # app's own read-more control. The clamp is what decides whether that control
+  # ever shows itself - a definition that fits stays whole either way - so this
+  # only decides which definitions are worth restructuring the row for: a short
+  # one keeps its badge and icon on the line it ends, where they read as part of
+  # the sentence.
+  CROP_AFTER = 240
+
   # +parent_uri+ is the resource these definitions were read from: a node minted
   # by another vocabulary cannot belong to this ontology, and is not looked up.
   # +lang+ is the content language the page is being read in, and the one a node
@@ -74,6 +82,13 @@ class DefinitionsComponent < ViewComponent::Base
     tag.span(item[:text], class: 'definition-uri')
   end
 
+  # A definition long enough to swamp the row, cropped to three lines. Some
+  # vocabularies write a paragraph where others write a sentence, and six of
+  # those under "all languages" bury everything below them.
+  def cropped?(item)
+    item[:text].to_s.length > CROP_AFTER
+  end
+
   # What trails the sentence - the language it is written in, the node it was
   # read from - kept on one line: split by a wrap, a lone badge or a lone icon
   # reads as a stray mark belonging to nothing.
@@ -110,7 +125,12 @@ class DefinitionsComponent < ViewComponent::Base
   # Folds one reified node into +texts+, returning what is left to render of it.
   def fold_in(node, texts)
     values = ResourceLookupService.values(@acronym, node[:text], lang: @lang) if reified?(node[:text])
-    return [node] if values.nil?
+
+    # A node that resolves to no text is read as a definition written in some
+    # other language, and left to the "all languages" view. Under that view
+    # there is no other language for it to be left to: it is a node nothing
+    # could read, and dropping it would lose a definition the resource holds.
+    return [node] if values.nil? || (values.empty? && all_languages?)
 
     values.filter_map do |value|
       shown = texts.find { |text| same_text?(text[:text], value) }
@@ -119,6 +139,10 @@ class DefinitionsComponent < ViewComponent::Base
       shown[:node] ||= node[:text]
       nil
     end
+  end
+
+  def all_languages?
+    @lang.to_s.casecmp?('all')
   end
 
   # Worth a lookup: a URI minted by this ontology. One borrowed from another

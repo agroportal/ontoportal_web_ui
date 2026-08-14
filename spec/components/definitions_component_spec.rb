@@ -80,6 +80,46 @@ RSpec.describe DefinitionsComponent, type: :component do
     expect(result.css("ul.definitions-list").first["role"]).to eq("list")
   end
 
+  # Some vocabularies write a paragraph where others write a sentence, and six
+  # paragraphs under "all languages" bury everything below them.
+  describe "a definition too long for the row" do
+    let(:long) { "The outputs of fisheries and aquaculture production, whole or in parts. " * 5 }
+
+    it "is cropped, and read on through the app's own read-more control" do
+      result = render_component([long])
+
+      expect(result.css("[data-controller~='text-truncate']")).not_to be_empty
+      expect(result.css(".text-content").first.text).to include("The outputs of fisheries")
+    end
+
+    it "is cropped to three lines" do
+      result = render_component([long])
+
+      expect(result.css("[data-controller~='text-truncate']").first["style"])
+        .to include("--read-more-line-clamp: 3")
+    end
+
+    it "leaves a definition that fits whole" do
+      result = render_component(["A parasitic disease caused by Plasmodium."])
+
+      expect(result.css("[data-controller~='text-truncate']")).to be_empty
+      expect(result.css(".definition-text").first.text.strip).to eq("A parasitic disease caused by Plasmodium.")
+    end
+
+    # Cropping hides everything past the third line, so the way through to the
+    # node has to sit outside what is cropped.
+    it "keeps the raw-data link out of what is cropped" do
+      allow(ResourceLookupService).to receive(:values).and_return([long])
+      node = "http://opendata.inrae.fr/thesaurusINRAE/note_101800en"
+      result = render_component([node, long], acronym: "INRAETHES",
+                                              parent_uri: "http://opendata.inrae.fr/thesaurusINRAE/c_10180",
+                                              lang: "en")
+
+      expect(result.css(".definition-text a.definition-raw-data").size).to eq(1)
+      expect(result.css(".text-content a.definition-raw-data")).to be_empty
+    end
+  end
+
   # A reified definition arrives as the URI of the node holding the text. Set as
   # prose it reads as a sentence that happens to be a URL, which is what these
   # guard against.
@@ -191,6 +231,24 @@ RSpec.describe DefinitionsComponent, type: :component do
       expect(result.css(".definition-uri")).to be_empty
       expect(result.css(".definition-text").map(&:text).map(&:strip)).to eq([text])
       expect(result.css("a.definition-raw-data").size).to eq(1)
+    end
+
+    # Under "all languages" there is no other language for it to be left to, so
+    # a node that reads as nothing is a node nothing could read - and hiding it
+    # would leave the row emptier than the resource is.
+    it "keeps a node holding no text when every language was asked for" do
+      allow(ResourceLookupService).to receive(:values).and_return([])
+      result = render_component([english], acronym: "INRAETHES", parent_uri: concept, lang: "all")
+
+      expect(result.css(".definition-uri").first.text.strip).to eq(english)
+    end
+
+    it "still drops it when one language was asked for" do
+      allow(ResourceLookupService).to receive(:values).and_return([])
+      result = render_component([english, text], acronym: "INRAETHES", parent_uri: concept, lang: "en")
+
+      expect(result.css(".definition-uri")).to be_empty
+      expect(result.css(".definition-text").map(&:text).map(&:strip)).to eq([text])
     end
 
     it "keeps the identifier of a node no source knows, inert" do

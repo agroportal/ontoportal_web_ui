@@ -47,6 +47,21 @@
   overflow-wrap: anywhere;
 }
 
+// A cropped definition. TextAreaFieldComponent wraps its text and its
+// read-more control in a block of their own; dissolving that block into the
+// paragraph puts the control and the badge on one line under the text, rather
+// than stacking a line for each.
+.definition-text > [data-controller~='text-truncate'] {
+  display: contents;
+}
+
+.definition-text .see_more_text {
+  display: inline;
+  margin-top: 0;
+  margin-inline-end: 6px;
+  cursor: pointer;
+}
+
 // The badge and the raw-data link travel together at the end of the sentence,
 // and wrap to the next line as one rather than being torn apart by it.
 .definition-meta {

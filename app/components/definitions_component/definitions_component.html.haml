@@ -7,6 +7,12 @@
             = definition_uri(item)
             = language_tag(item)
         - else
-          %p.definition-text{lang: item[:lang]}
-            = item[:text]
+          -# Not a %p: a cropped definition nests the read-more block inside it,
+            and a paragraph that contains a block is closed by the parser before
+            it, which throws the badge and the icon out of the definition.
+          %div.definition-text{lang: item[:lang]}
+            - if cropped?(item)
+              = render TextAreaFieldComponent.new(value: item[:text], lines: 3)
+            - else
+              = item[:text]
             = definition_meta(item)
