@@ -47,6 +47,26 @@
   overflow-wrap: anywhere;
 }
 
+// The reified node a definition was read from, opened as raw data. Left in the
+// portal colour the popup-link icon carries everywhere else, and only placed
+// here: on the baseline of the sentence it annotates, never on a line of its own.
+.definition-raw-data {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 6px;
+  vertical-align: middle;
+  transition: opacity 0.15s ease-in-out;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 0.7;
+  }
+
+  svg {
+    display: block;
+  }
+}
+
 // Per-definition language tag. Reuses the app-wide `badge badge-secondary`
 // look; this only handles its inline placement and size.
 .definition-lang {

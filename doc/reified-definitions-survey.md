@@ -58,8 +58,8 @@ honest empty one, not into a working lookup.)
 
 ## Predicates
 
-`rdf:value` carries the text in **all 12**. `RESOURCE_VALUE_PREDICATES` in
-`app/helpers/instances_helper.rb` leads with it, so detection needs nothing added.
+`rdf:value` carries the text in **all 12**. `ResourceLookupService::VALUE_PREDICATES` leads with it,
+so detection needs nothing added.
 
 Provenance varies and would need three predicates if ever surfaced:
 
@@ -70,6 +70,18 @@ Provenance varies and would need three predicates if ever surfaced:
 | `prov:wasQuotedFrom` | ANAEETHES only |
 
 Dates: `dcterms:created` is common, `dcterms:modified` occasional.
+
+### Language
+
+The text is tagged, the node is not — which is why a language-filtered class keeps every node it
+points at while dropping the literals it does not want. Both sources can tell the two apart, so the
+node's language never has to be guessed:
+
+- REST honours `lang=` on `instances/<uri>`: `rdf:value` comes back null for a node whose text is in
+  another language, while its untagged provenance stays.
+- SPARQL returns `xml:lang` on each literal binding.
+
+Untagged literals belong to every language and are kept whatever is asked for.
 
 ## Method
 
@@ -110,8 +122,8 @@ pointing at a controlled-vocabulary term:
 | OESO-SIXTINE-V | `https://www.fao.org/wiews/glossary/fr/ - 2026-05-12` | citation string |
 | VBO | `http://www.wkc.org.au/` | plain URL |
 
-These still render as a bare URL in the Definitions row, so the display fix matters for them even
-though there is no node to open.
+Nothing resolves them, and nothing should: they are the values the Definitions row keeps showing as
+the identifiers they are, since there is no node to open and no text to show instead.
 
 ## Implications for the web UI
 
@@ -129,6 +141,13 @@ though there is no node to open.
      AGROVOC shares the URI and *is* in the store. SPARQL widens coverage without guaranteeing it.
    - Queries must be bound to a single subject URI. An unscoped
      `SELECT DISTINCT ?g WHERE { GRAPH ?g { ?s ?p ?o } }` is rejected by the endpoint with a 500.
+4. **A resolved node belongs in the prose, not beside it.** The API now extracts the text of a
+   reified definition into the class as a literal too, so a language-filtered class can hold the
+   same definition twice — once as a sentence, once as the address of the node it was read from.
+   `DefinitionsComponent` resolves each node and folds it back in: the text is shown once, carrying
+   a link to the node's raw data, and a node holding nothing in this language is left to the "all
+   languages" view. Submissions parsed before the extraction hold nodes and no literals at all —
+   AGROVOC among them — so the node's own text is what the row shows for those.
 
 ## Reproducing
 

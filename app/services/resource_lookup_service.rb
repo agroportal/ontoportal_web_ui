@@ -22,6 +22,19 @@ class ResourceLookupService < ApplicationService
   RDFS_LABEL     = 'http://www.w3.org/2000/01/rdf-schema#label'
   SKOS_PREFLABEL = 'http://www.w3.org/2004/02/skos/core#prefLabel'
 
+  # A reified node carries its own text under one of these, most specific
+  # first. The API maps none of them: of a resource it names only rdf:type,
+  # rdfs:label and skos:prefLabel, and leaves everything else undifferentiated
+  # in `properties`. So what counts as the node's text is decided here, not
+  # derived from the model. `rdf:value` covers all twelve vocabularies that
+  # reify their definitions - see doc/reified-definitions-survey.md.
+  VALUE_PREDICATES = %w[
+    http://www.w3.org/1999/02/22-rdf-syntax-ns#value
+    http://www.w3.org/2008/05/skos-xl#literalForm
+    http://www.w3.org/2004/02/skos/core#definition
+    http://www.w3.org/2004/02/skos/core#note
+  ].freeze
+
   CACHE_TTL = 1.hour
   QUERY_TIMEOUT = 8
 
@@ -48,9 +61,21 @@ class ResourceLookupService < ApplicationService
     end
   end
 
-  def initialize(acronym, uri)
+  # +lang+ is the content language the resource is read in. 'all' - the default,
+  # and what the raw-data modal wants - keeps every literal whatever its tag.
+  def initialize(acronym, uri, lang: 'all')
     @acronym = acronym
     @uri = uri.to_s
+    @lang = lang.to_s.presence || 'all'
+  end
+
+  # The text the node carries in +lang+, or nil when no source knows the node.
+  # An empty list and nil are not the same answer and callers depend on the
+  # difference: a node nothing resolves has to keep rendering as the identifier
+  # it is, while one that resolves but holds no text here carries it in another
+  # language.
+  def self.values(acronym, uri, lang: 'all')
+    new(acronym, uri, lang: lang).values
   end
 
   # The resource, or nil when neither source knows it.
@@ -60,11 +85,33 @@ class ResourceLookupService < ApplicationService
     rest_resource || sparql_resource
   end
 
+  def values
+    return nil if @uri.blank?
+
+    cached("resource_values/#{@lang.downcase}/#{Digest::SHA1.hexdigest(@uri)}") do
+      resource = call
+      resource && text_of(resource)
+    end
+  end
+
   private
+
+  # The first of VALUE_PREDICATES the node actually carries. Everything else it
+  # holds is provenance, and stays where it came from.
+  def text_of(resource)
+    properties = resource[:properties].to_h.transform_keys(&:to_s)
+
+    VALUE_PREDICATES.each do |predicate|
+      values = Array(properties[predicate]).map(&:to_s).reject(&:blank?)
+      return values if values.present?
+    end
+
+    []
+  end
 
   def rest_resource
     resource = LinkedData::Client::HTTP.get("/ontologies/#{@acronym}/instances/#{CGI.escape(@uri)}",
-                                            { include: 'all', lang: 'all' })
+                                            { include: 'all', lang: @lang })
 
     return nil if resource.nil?
     return nil if resource.respond_to?(:errors) && resource.errors.present?
@@ -75,42 +122,68 @@ class ResourceLookupService < ApplicationService
     nil
   end
 
+  # Whether the node exists is read from the unfiltered bindings, so a node that
+  # holds nothing in this language still resolves - to a resource with no text,
+  # which is a different answer from not resolving at all.
   def sparql_resource
-    triples = cached_triples
-    return nil if triples.blank?
+    bindings = cached_bindings
+    return nil if bindings.blank?
 
-    Resource.build(@uri, triples)
+    Resource.build(@uri, triples(bindings))
   end
 
   # Misses are cached too: a node no source can resolve is looked up once, not
-  # on every render of every row that mentions it.
-  def cached_triples
-    Rails.cache.fetch("resource_lookup/#{Digest::SHA1.hexdigest(@uri)}", expires_in: CACHE_TTL) do
-      query_triples
-    end
-  rescue StandardError
-    query_triples
+  # on every render of every row that mentions it. The bindings are what is
+  # cached rather than the triples they group into, because the language they
+  # are filtered by is the caller's, not the node's - one query serves them all.
+  def cached_bindings
+    cached("resource_lookup/#{Digest::SHA1.hexdigest(@uri)}") { query_bindings }
   end
 
-  # { "<predicate>" => ["<value>", ...] }
-  def query_triples
-    return {} if $SPARQL_ENDPOINT_URL.blank?
-    return {} unless @uri.match?(SAFE_URI)
+  # { "<predicate>" => ["<value>", ...] }, keeping only what this language
+  # covers. A literal with no tag belongs to every language, and a URI - a type,
+  # a relation - carries none at all, so both stay whatever is asked for.
+  def triples(bindings)
+    bindings.each_with_object({}) do |binding, out|
+      next unless language_match?(binding[:lang])
+
+      out[binding[:predicate]] ||= []
+      out[binding[:predicate]] << binding[:value] unless out[binding[:predicate]].include?(binding[:value])
+    end
+  end
+
+  def language_match?(lang)
+    return true if lang.blank? || @lang.casecmp?('all')
+
+    lang.to_s.split('-').first.casecmp?(@lang.split('-').first)
+  end
+
+  # [{ predicate:, value:, lang: }, ...] - the node's triples as the endpoint
+  # returns them, language tags included.
+  def query_bindings
+    return [] if $SPARQL_ENDPOINT_URL.blank?
+    return [] unless @uri.match?(SAFE_URI)
 
     body = sparql_get("SELECT DISTINCT ?p ?o WHERE { <#{@uri}> ?p ?o }")
-    return {} if body.blank?
+    return [] if body.blank?
 
     bindings = JSON.parse(body).dig('results', 'bindings') || []
-    bindings.each_with_object({}) do |binding, out|
+    bindings.filter_map do |binding|
       predicate = binding.dig('p', 'value')
       value = binding.dig('o', 'value')
       next if predicate.blank? || value.blank?
 
-      out[predicate] ||= []
-      out[predicate] << value unless out[predicate].include?(value)
+      { predicate: predicate, value: value, lang: binding.dig('o', 'xml:lang') }
     end
   rescue StandardError
-    {}
+    []
+  end
+
+  # A cache the app can lose: every miss falls back to computing the answer.
+  def cached(key, &block)
+    Rails.cache.fetch(key, expires_in: CACHE_TTL, &block)
+  rescue StandardError
+    block.call
   end
 
   def sparql_get(query)

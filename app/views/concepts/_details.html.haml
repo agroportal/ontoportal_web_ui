@@ -25,10 +25,15 @@
                 = remove_synonym_button
 
 
-      - unless @concept.definition.nil? || @concept.definition.empty?
+      -# Asked before the row is added, not after: a definition can be a reified
+        node holding its text in another language, and every one of them dropping
+        out would otherwise leave the row labelled and empty.
+      - definitions = DefinitionsComponent.new(definitions: @concept.definition, id: 'concept-definitions',
+                                               acronym: @ontology.acronym, parent_uri: @concept.id, lang: request_lang)
+      - if definitions.render?
         - t.add_row({th: t('ontology_details.concept.definitions')}) do |h|
           - h.td do
-            = render DefinitionsComponent.new(definitions: @concept.definition, id: 'concept-definitions')
+            = render definitions
 
       - if @concept.obsolete?
         - t.add_row({th: t('ontology_details.concept.obsolete')}, {td: 'true'})

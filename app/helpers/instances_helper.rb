@@ -2,25 +2,15 @@ module InstancesHelper
   include ConceptsHelper
   include ApplicationHelper
 
-  # A reified node - a skos:Definition, a note - carries its own text under one
-  # of these, most specific first. The API maps none of them: of a resource it
-  # names only rdf:type, rdfs:label and skos:prefLabel, and leaves everything
-  # else undifferentiated in `properties`. So the choice of what counts as the
-  # node's text is made here, not derived from the model.
-  RESOURCE_VALUE_PREDICATES = %w[
-    http://www.w3.org/1999/02/22-rdf-syntax-ns#value
-    http://www.w3.org/2008/05/skos-xl#literalForm
-    http://www.w3.org/2004/02/skos/core#definition
-    http://www.w3.org/2004/02/skos/core#note
-  ].freeze
-
   # [predicate, values] for the node's own text, or nil when it carries none -
   # an ordinary individual, whose text is its label. Everything else the node
-  # holds stays where it came from, listed under Raw data.
+  # holds stays where it came from, listed under Raw data. Which predicates can
+  # carry that text is ResourceLookupService's to say: the definitions row reads
+  # the same nodes, and has to read them the same way.
   def resource_value(instance)
     properties = instance[:properties].to_h.transform_keys(&:to_s)
 
-    RESOURCE_VALUE_PREDICATES.each do |uri|
+    ResourceLookupService::VALUE_PREDICATES.each do |uri|
       values = Array(properties[uri]).reject(&:blank?)
       return [uri, values] if values.present?
     end

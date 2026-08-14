@@ -12,8 +12,11 @@ RSpec.describe ResourceLookupService do
                                        body: { results: { bindings: bindings } }.to_json)
   end
 
-  def binding_for(predicate, value)
-    { 'p' => { 'type' => 'uri', 'value' => predicate }, 'o' => { 'type' => 'literal', 'value' => value } }
+  def binding_for(predicate, value, lang = nil)
+    object = { 'type' => 'literal', 'value' => value }
+    object['xml:lang'] = lang if lang
+
+    { 'p' => { 'type' => 'uri', 'value' => predicate }, 'o' => object }
   end
 
   before do
@@ -152,6 +155,92 @@ RSpec.describe ResourceLookupService do
 
       2.times { expect(described_class.call('AGROVOC', node)).to be_nil }
     end
+  end
+
+  # The definitions row folds a node back into the prose, so it needs the text
+  # and the language it is written in - not the whole resource.
+  describe '.values' do
+    def rest_node(properties)
+      OpenStruct.new('@id' => node, 'properties' => OpenStruct.new(properties))
+    end
+
+    def with_bindings(bindings, lang)
+      allow(LinkedData::Client::HTTP).to receive(:get).and_return(nil)
+      allow(Faraday).to receive(:new).and_return(instance_double(Faraday::Connection, get: sparql_response(bindings)))
+      described_class.values('AGROVOC', node, lang: lang)
+    end
+
+    it 'is the text the node carries' do
+      allow(LinkedData::Client::HTTP).to receive(:get)
+        .and_return(rest_node(value_predicate => ['Coastal areas…'], source_predicate => ['FAO, 1998']))
+
+      expect(described_class.values('INRAETHES', node, lang: 'en')).to eq(['Coastal areas…'])
+    end
+
+    it 'reads the node in the language it is asked for' do
+      expect(LinkedData::Client::HTTP).to receive(:get)
+        .with(a_string_including(CGI.escape(node)), hash_including(lang: 'fr'))
+        .and_return(rest_node(value_predicate => ['Action de réduire…']))
+
+      expect(described_class.values('INRAETHES', node, lang: 'fr')).to eq(['Action de réduire…'])
+    end
+
+    it 'prefers rdf:value to the other predicates a node can carry its text under' do
+      allow(LinkedData::Client::HTTP).to receive(:get)
+        .and_return(rest_node('http://www.w3.org/2004/02/skos/core#note' => ['a note'],
+                              value_predicate => ['Coastal areas…']))
+
+      expect(described_class.values('INRAETHES', node, lang: 'en')).to eq(['Coastal areas…'])
+    end
+
+    # Empty and nil are different answers, and the caller renders them
+    # differently: one is a definition written in another language, the other is
+    # a node nothing can say anything about.
+    it 'is empty when the node resolves but holds no text in this language' do
+      allow(LinkedData::Client::HTTP).to receive(:get).and_return(rest_node(source_predicate => ['FAO, 1998']))
+
+      expect(described_class.values('INRAETHES', node, lang: 'en')).to eq([])
+    end
+
+    it 'is nil when no source knows the node' do
+      allow(LinkedData::Client::HTTP).to receive(:get).and_return(nil)
+      allow(Faraday).to receive(:new).and_return(instance_double(Faraday::Connection, get: sparql_response([])))
+
+      expect(described_class.values('AGROVOC', node, lang: 'en')).to be_nil
+    end
+
+    it 'keeps only what the language covers when it falls back to SPARQL' do
+      bindings = [binding_for(value_predicate, 'Coastal areas…', 'en'),
+                  binding_for(value_predicate, 'Litoral é a região…', 'pt')]
+
+      expect(with_bindings(bindings, 'en')).to eq(['Coastal areas…'])
+      expect(with_bindings(bindings, 'pt')).to eq(['Litoral é a região…'])
+    end
+
+    it 'resolves a node whose text is in another language to no text, not to nothing' do
+      expect(with_bindings([binding_for(value_predicate, 'Litoral é a região…', 'pt')], 'en')).to eq([])
+    end
+
+    it 'reads an untagged literal in whatever language is asked for' do
+      expect(with_bindings([binding_for(value_predicate, 'Coastal areas…')], 'de')).to eq(['Coastal areas…'])
+    end
+
+    it 'matches a regional tag against the language it is a variant of' do
+      expect(with_bindings([binding_for(value_predicate, 'Coastal areas…', 'en-US')], 'en'))
+        .to eq(['Coastal areas…'])
+    end
+
+    it 'is nil without a URI' do
+      expect(described_class.values('AGROVOC', nil, lang: 'en')).to be_nil
+    end
+  end
+
+  # The raw-data modal shows the node whole, so nothing is filtered out of it.
+  it 'reads every language for the resource itself' do
+    expect(LinkedData::Client::HTTP).to receive(:get)
+      .with(anything, hash_including(lang: 'all')).and_return(OpenStruct.new('@id' => node))
+
+    described_class.call('INRAETHES', node)
   end
 
   it 'is nil without a URI' do

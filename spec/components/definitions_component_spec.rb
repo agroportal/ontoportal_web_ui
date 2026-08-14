@@ -83,7 +83,7 @@ RSpec.describe DefinitionsComponent, type: :component do
   # A reified definition arrives as the URI of the node holding the text. Set as
   # prose it reads as a sentence that happens to be a URL, which is what these
   # guard against.
-  describe "a definition that is a URI" do
+  describe "a definition that is a URI, with no ontology to resolve it against" do
     let(:node) { "http://aims.fao.org/aos/agrovoc/xDef_46a719b8" }
 
     it "is never rendered as prose" do
@@ -100,14 +100,18 @@ RSpec.describe DefinitionsComponent, type: :component do
       expect(uri.text.strip).to eq(node)
     end
 
-    # Following the node and reading what it holds belongs to the raw-data
-    # table; nothing in this row is actionable.
     it "is not clickable, and opens nothing" do
       result = render_component([node])
 
       expect(result.css("a")).to be_empty
       expect(result.css("[data-controller~='show-modal']")).to be_empty
       expect(result.css("turbo-frame")).to be_empty
+    end
+
+    it "is never looked up" do
+      expect(ResourceLookupService).not_to receive(:values)
+
+      render_component([node])
     end
 
     it "still renders a literal definition beside it as prose" do
@@ -121,6 +125,102 @@ RSpec.describe DefinitionsComponent, type: :component do
       result = render_component({ en: [node] })
 
       expect(result.css(".definition-node .definition-lang").first.text.strip).to eq("EN")
+    end
+  end
+
+  # Given the ontology, the node is resolved and folded back into the prose:
+  # what it holds is the definition, and the URI is only the address of it.
+  describe "a definition that is a reified node" do
+    let(:concept) { "http://opendata.inrae.fr/thesaurusINRAE/c_10180" }
+    let(:english) { "http://opendata.inrae.fr/thesaurusINRAE/note_101800en" }
+    let(:french)  { "http://opendata.inrae.fr/thesaurusINRAE/note_f8b3787c" }
+    let(:text)    { "The action of reducing to smaller fragments by pressure or impact." }
+
+    def resolving(answers)
+      allow(ResourceLookupService).to receive(:values) do |_acronym, uri, **|
+        answers.fetch(uri)
+      end
+    end
+
+    def render_definitions(definitions)
+      render_component(definitions, acronym: "INRAETHES", parent_uri: concept, lang: "en")
+    end
+
+    it "drops the URI of a node whose text was already extracted" do
+      resolving(english => [text])
+      result = render_definitions([english, text])
+
+      expect(result.css(".definition-uri")).to be_empty
+      expect(result.css(".definition-text").map(&:text).map(&:strip)).to eq([text])
+    end
+
+    it "opens that node's raw data from the text it was extracted into" do
+      resolving(english => [text])
+      link = render_definitions([english, text]).css("a.definition-raw-data").first
+
+      expect(link).to be_present
+      expect(link["href"]).to eq("/ontologies/INRAETHES/instances/show?instanceid=#{CGI.escape(english)}&modal=true")
+      expect(link["data-controller"]).to include("show-modal")
+    end
+
+    it "matches a text the parser wrote with different spacing" do
+      resolving(english => ["  The action of reducing to smaller\n fragments by pressure or impact.  "])
+      result = render_definitions([english, text])
+
+      expect(result.css(".definition-text").size).to eq(1)
+      expect(result.css("a.definition-raw-data").size).to eq(1)
+    end
+
+    # Submissions parsed before the text was extracted hold nothing but nodes,
+    # and the node's text is a better definition than the node's address.
+    it "shows the node's text when there is no literal to fold it into" do
+      resolving(english => [text])
+      result = render_definitions([english])
+
+      expect(result.css(".definition-uri")).to be_empty
+      expect(result.css(".definition-text").first.text.strip).to start_with(text)
+      expect(result.css("a.definition-raw-data").size).to eq(1)
+    end
+
+    # It is a definition, but not one in the language being read: the "all
+    # languages" view is where it belongs.
+    it "drops a node holding no text in this language" do
+      resolving(english => [text], french => [])
+      result = render_definitions([english, french, text])
+
+      expect(result.css(".definition-uri")).to be_empty
+      expect(result.css(".definition-text").map(&:text).map(&:strip)).to eq([text])
+      expect(result.css("a.definition-raw-data").size).to eq(1)
+    end
+
+    it "keeps the identifier of a node no source knows, inert" do
+      resolving(english => nil)
+      result = render_definitions([english, text])
+
+      expect(result.css(".definition-uri").first.text.strip).to eq(english)
+      expect(result.css("a")).to be_empty
+    end
+
+    # A definition pointing at a term of another vocabulary, or a plain URL
+    # typed into the field: no node of this ontology, and no lookup to make.
+    it "never looks up a URI minted by another vocabulary" do
+      expect(ResourceLookupService).not_to receive(:values)
+      result = render_definitions(["http://www.wkc.org.au/"])
+
+      expect(result.css(".definition-uri").first.text.strip).to eq("http://www.wkc.org.au/")
+    end
+
+    it "does not show the same text twice when two nodes carry it" do
+      resolving(english => [text], french => [text])
+      result = render_definitions([english, french, text])
+
+      expect(result.css(".definition-text").size).to eq(1)
+    end
+
+    it "leaves a definition with no node behind it unadorned" do
+      result = render_definitions([text])
+
+      expect(result.css("a.definition-raw-data")).to be_empty
     end
   end
 end
