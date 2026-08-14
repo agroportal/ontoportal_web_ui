@@ -13,7 +13,8 @@ export default class extends Controller {
         cache: {type: Boolean, default: true},
         selectedItem: Number,
         searchEndpoint: {type: String, default: '/search'},
-        displayAll: Boolean
+        displayAll: Boolean,
+        sections: Array
     }
 
     connect() {
@@ -62,11 +63,14 @@ export default class extends Controller {
         if(this.inputTarget.value != ''){
             let results = this.dropDownTarget.querySelectorAll('.search-content')
             if(this.selectedItemValue === 0 || this.dropDownTarget.style.display === 'none'){
-                results[results.length - 2].click()
+                // The first action link is the primary one. Addressing it by
+                // target rather than by offset from the end keeps Enter working
+                // however many action links a call site declares.
+                this.actionLinks[0]?.click()
             } else {
                 results[this.selectedItemValue-1].click()
             }
-        }        
+        }
     }
     #inputValue() {
         return this.input.value.trim()
@@ -130,10 +134,7 @@ export default class extends Controller {
                 }
             }
 
-            results_list.forEach((item) => {
-                let link = this.#renderLine(item);
-                this.dropDown.appendChild(link);
-            });
+            this.#renderResults(results_list)
 
             this.actionLinks.forEach(x => this.dropDown.appendChild(x))
             this.dropDown.style.display = "block";
@@ -148,24 +149,81 @@ export default class extends Controller {
 
     }
 
+    // Without sections this appends every row in order, exactly as before.
+    // With sections, rows are bucketed by their `group` key and each non-empty
+    // bucket gets a heading. Anything whose group is unknown keeps the flat
+    // behaviour and is appended last, so a result can never go missing.
+    #renderResults(items) {
+        const sections = this.sectionsValue
+        if (sections.length === 0) {
+            items.forEach(item => this.dropDown.appendChild(this.#renderLine(item)))
+            return
+        }
+
+        const known = new Set(sections.map(s => s.key))
+        sections.forEach(section => {
+            let rows = items.filter(item => item.group === section.key)
+            if (rows.length === 0) return
+            // Capped so a section that comes back long (the content search
+            // returns up to 50 concepts) cannot bury the sections under it.
+            if (section.limit > 0) rows = rows.slice(0, section.limit)
+            this.dropDown.appendChild(this.#renderSectionHeading(section.label))
+            rows.forEach(item => this.dropDown.appendChild(this.#renderLine(item)))
+        })
+        items.filter(item => !known.has(item.group))
+             .forEach(item => this.dropDown.appendChild(this.#renderLine(item)))
+    }
+
+    #renderSectionHeading(label) {
+        const heading = document.createElement('p')
+        // Deliberately not .search-content: arrow-key navigation indexes that
+        // class and must skip over headings.
+        heading.className = 'search-section-heading'
+        heading.textContent = label
+        return heading
+    }
+
     #renderLine(item) {
-        let template = this.templateTarget.content
-        let newElement = template.firstElementChild.outerHTML
-        Object.entries(item).forEach( ([key, value]) => {
+        const node = this.templateTarget.content.firstElementChild.cloneNode(true)
+        const values = {}
+
+        Object.entries(item).forEach(([key, value]) => {
             key = key.toString().toUpperCase()
-            if (key === 'TYPE'){
-                value  = value.toString().split('/').slice(-1)
-            }
-            if (key === 'ACRONYM'){
+            if (key === 'TYPE') {
+                value = value ? value.toString().split('/').slice(-1) : ''
+            } else if (key === 'ACRONYM') {
                 value = value ? `(${value.toString()})` : ''
-            }
-            if (key === 'IDENTIFIERS'){
+            } else if (key === 'IDENTIFIERS') {
                 value = value ? `- ${value.toString()}` : ''
             }
-            const regex = new RegExp('\\b' + key + '\\b', 'gi');
-            newElement =  newElement.replace(regex, value ? value.toString() : "")
+            values[key] = (value === null || value === undefined) ? '' : value.toString()
         })
-        
-        return new DOMParser().parseFromString(newElement, "text/html").body.firstElementChild
+
+        const keys = Object.keys(values)
+        if (keys.length === 0) return node
+
+        // Placeholders are upper-case, so match case-sensitively: a case
+        // insensitive pass also rewrites lower-case class names that happen to
+        // end in a placeholder ("home-result-type" became "home-result-Class").
+        // One combined pass, so a substituted value that itself contains a
+        // placeholder word is not clobbered by the next replacement.
+        const escaped = keys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        const regex = new RegExp('\\b(' + escaped.join('|') + ')\\b', 'g')
+        const substitute = (text) => text.replace(regex, (match) => values[match])
+
+        const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT)
+        while (walker.nextNode()) {
+            walker.currentNode.nodeValue = substitute(walker.currentNode.nodeValue)
+        }
+        // Substituting into live nodes rather than into an HTML string keeps
+        // API-supplied names (agent names are free text) inert.
+        for (const element of [node, ...node.querySelectorAll('*')]) {
+            for (const attribute of Array.from(element.attributes)) {
+                const replaced = substitute(attribute.value)
+                if (replaced !== attribute.value) element.setAttribute(attribute.name, replaced)
+            }
+        }
+
+        return node
     }
 }

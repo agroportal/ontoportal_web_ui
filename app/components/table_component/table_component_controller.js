@@ -13,7 +13,8 @@
       ordering: Boolean,
       ajaxUrl: String,
       columns: Array,
-      showAll: Boolean
+      showAll: Boolean,
+      search: String
     }
 
     connect() {
@@ -55,7 +56,11 @@
           } : null,
           order: this.noinitsortValue ? [] : [[defaultSortColumn, 'desc']],
           search: {
-            return: true
+            return: true,
+            // Primes the filter box so a deep link like /agents?search=inrae
+            // lands pre-filtered. Server-side tables send it with the first
+            // ajax call, so no extra request is made.
+            search: this.searchValue
           },
           language: {
             search: '_INPUT_',
@@ -69,8 +74,9 @@
       const searchInput = document.querySelector(`#${table.id}_filter input`)
 
       if (searchInput) {
-        let lastSearchValue = ''
-      
+        // Seeded so that clearing a short pre-filled search still resets the table.
+        let lastSearchValue = this.searchValue || ''
+
         searchInput.addEventListener('input', () => {
           const value = searchInput.value
           // Check if the input value has changed and is at least 3 characters long

@@ -167,10 +167,19 @@ class SearchController < ApplicationController
                                         filter_by_types: type,
                                         show_ontologies: show_ontologies)
 
+    results += search_agents_content(query: params[:search].to_s) if show_agents?
+
     render json: results
   end
 
   private
+
+  # Opt-in per call site: only the site-wide box (homepage and navbar) asks for
+  # agents. The ontology-scoped and subjects pickers share this endpoint and
+  # must keep returning ontology content alone.
+  def show_agents?
+    params[:show_agents].eql?('true') && helpers.agents_enabled?
+  end
 
   def check_params_query(params)
     params[:q] = params[:q].strip

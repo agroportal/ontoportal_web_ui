@@ -93,8 +93,23 @@
 .nav-search-container .search-container{
     position: absolute;
     z-index: 9999;
-    font-size: 12px !important;
+    font-size: 14px !important;
 
+}
+
+// The dropdown is not bound by the 350px input above it. Anchored to the
+// input's left edge, so the extra width grows rightwards. Below the responsive
+// breakpoint the nav stacks into a column, where the dropdown has to stay
+// inside its container, so this only applies to the full-width navbar.
+@media (min-width: 1301px){
+    .nav-search-container .search-container{
+        width: 520px;
+        left: 0;
+        right: auto;
+    }
+    .nav-search-container .search-element{
+        max-width: 380px;
+    }
 }
 
 .nav-language {
