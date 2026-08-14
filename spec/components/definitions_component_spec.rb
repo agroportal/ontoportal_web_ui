@@ -109,7 +109,7 @@ RSpec.describe DefinitionsComponent, type: :component do
     # Cropping hides everything past the third line, so the way through to the
     # node has to sit outside what is cropped.
     it "keeps the raw-data link out of what is cropped" do
-      allow(ResourceLookupService).to receive(:values).and_return([long])
+      allow(ResourceLookupService).to receive(:values).and_return([{ text: long, lang: "en" }])
       node = "http://opendata.inrae.fr/thesaurusINRAE/note_101800en"
       result = render_component([node, long], acronym: "INRAETHES",
                                               parent_uri: "http://opendata.inrae.fr/thesaurusINRAE/c_10180",
@@ -176,9 +176,11 @@ RSpec.describe DefinitionsComponent, type: :component do
     let(:french)  { "http://opendata.inrae.fr/thesaurusINRAE/note_f8b3787c" }
     let(:text)    { "The action of reducing to smaller fragments by pressure or impact." }
 
+    # Answers are given as plain strings; the service hands back { text:, lang: }.
+    # No keyword here: a bare hash at the call site would be read as one.
     def resolving(answers)
       allow(ResourceLookupService).to receive(:values) do |_acronym, uri, **|
-        answers.fetch(uri)
+        answers.fetch(uri)&.map { |value| { text: value, lang: "en" } }
       end
     end
 
@@ -249,6 +251,26 @@ RSpec.describe DefinitionsComponent, type: :component do
 
       expect(result.css(".definition-uri")).to be_empty
       expect(result.css(".definition-text").map(&:text).map(&:strip)).to eq([text])
+    end
+
+    # A node carries no language of its own, so the tag comes from the literal
+    # read out of it - which only SPARQL returns tagged.
+    it "badges the node's own language when every language was asked for" do
+      allow(ResourceLookupService).to receive(:values)
+        .and_return([{ text: "Bir projede zaman ve özkaynak tüketen…", lang: "tr" }])
+      result = render_component([english], acronym: "INRAETHES", parent_uri: concept, lang: "all")
+
+      expect(result.css(".definition-lang").first.text.strip).to eq("TR")
+      expect(result.css('.definition-text[lang="tr"]')).not_to be_empty
+    end
+
+    # Under one language the whole row is in it, and the app names it nowhere.
+    it "badges nothing when one language was asked for" do
+      resolving(english => [text])
+      result = render_component([english], acronym: "INRAETHES", parent_uri: concept, lang: "en")
+
+      expect(result.css(".definition-text").first.text.strip).to eq(text)
+      expect(result.css(".definition-lang")).to be_empty
     end
 
     it "keeps the identifier of a node no source knows, inert" do

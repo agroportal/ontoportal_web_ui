@@ -133,12 +133,20 @@ class DefinitionsComponent < ViewComponent::Base
     return [node] if values.nil? || (values.empty? && all_languages?)
 
     values.filter_map do |value|
-      shown = texts.find { |text| same_text?(text[:text], value) }
-      next node.merge(text: value, node: node[:text]) if shown.nil?
+      shown = texts.find { |text| same_text?(text[:text], value[:text]) }
+      next node.merge(text: value[:text], lang: node_language(value, node), node: node[:text]) if shown.nil?
 
       shown[:node] ||= node[:text]
       nil
     end
+  end
+
+  # A node carries no language of its own - the literal inside it does - so the
+  # tag comes from the text that was read out of it. Worth naming only when
+  # every language was asked for: under one, the whole row is in it and the app
+  # names it nowhere.
+  def node_language(value, node)
+    all_languages? ? value[:lang] : node[:lang]
   end
 
   def all_languages?

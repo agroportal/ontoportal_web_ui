@@ -77,11 +77,11 @@ class ResourceLookupService < ApplicationService
     @lang = lang.to_s.presence || 'all'
   end
 
-  # The text the node carries in +lang+, or nil when no source knows the node.
-  # An empty list and nil are not the same answer and callers depend on the
-  # difference: a node nothing resolves has to keep rendering as the identifier
-  # it is, while one that resolves but holds no text here carries it in another
-  # language.
+  # The text the node carries in +lang+, as <tt>{ text:, lang: }</tt>, or nil
+  # when no source knows the node. An empty list and nil are not the same answer
+  # and callers depend on the difference: a node nothing resolves has to keep
+  # rendering as the identifier it is, while one that resolves but holds no text
+  # here carries it in another language.
   def self.values(acronym, uri, lang: 'all')
     new(acronym, uri, lang: lang).values
   end
@@ -97,12 +97,38 @@ class ResourceLookupService < ApplicationService
     return nil if @uri.blank?
 
     cached("resource_values/#{@lang.downcase}/#{Digest::SHA1.hexdigest(@uri)}") do
-      resource = call
-      resource && text_of(resource, REIFIED_VALUE_PREDICATES)
+      resource = rest_resource
+      next rest_values(resource) if resource
+
+      bindings = cached_bindings
+      bindings.blank? ? nil : sparql_values(bindings)
     end
   end
 
   private
+
+  # What REST hands back is in the language it was asked for, because that is
+  # what the API filtered by - except under 'all', where it returns every
+  # language and names none of them.
+  def rest_values(resource)
+    language = all_languages? ? nil : @lang.downcase
+
+    text_of(resource, REIFIED_VALUE_PREDICATES).map { |text| { text: text, lang: language } }
+  end
+
+  # SPARQL, on the other hand, tags every literal it returns, which is the only
+  # way a node's language can be named under 'all'.
+  def sparql_values(bindings)
+    REIFIED_VALUE_PREDICATES.each do |predicate|
+      values = bindings.select { |binding| binding[:predicate] == predicate && language_match?(binding[:lang]) }
+      next if values.empty?
+
+      return values.map { |binding| { text: binding[:value], lang: binding[:lang]&.downcase } }
+                   .uniq { |value| [value[:text], value[:lang]] }
+    end
+
+    []
+  end
 
   # The first of +predicates+ the node actually carries. Everything else it
   # holds is provenance, and stays where it came from.
@@ -161,9 +187,13 @@ class ResourceLookupService < ApplicationService
   end
 
   def language_match?(lang)
-    return true if lang.blank? || @lang.casecmp?('all')
+    return true if lang.blank? || all_languages?
 
     lang.to_s.split('-').first.casecmp?(@lang.split('-').first)
+  end
+
+  def all_languages?
+    @lang.casecmp?('all')
   end
 
   # [{ predicate:, value:, lang: }, ...] - the node's triples as the endpoint

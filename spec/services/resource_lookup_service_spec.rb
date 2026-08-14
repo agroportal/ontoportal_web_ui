@@ -174,7 +174,8 @@ RSpec.describe ResourceLookupService do
       allow(LinkedData::Client::HTTP).to receive(:get)
         .and_return(rest_node(value_predicate => ['Coastal areas…'], source_predicate => ['FAO, 1998']))
 
-      expect(described_class.values('INRAETHES', node, lang: 'en')).to eq(['Coastal areas…'])
+      expect(described_class.values('INRAETHES', node, lang: 'en'))
+        .to eq([{ text: 'Coastal areas…', lang: 'en' }])
     end
 
     it 'reads the node in the language it is asked for' do
@@ -182,7 +183,27 @@ RSpec.describe ResourceLookupService do
         .with(a_string_including(CGI.escape(node)), hash_including(lang: 'fr'))
         .and_return(rest_node(value_predicate => ['Action de réduire…']))
 
-      expect(described_class.values('INRAETHES', node, lang: 'fr')).to eq(['Action de réduire…'])
+      expect(described_class.values('INRAETHES', node, lang: 'fr'))
+        .to eq([{ text: 'Action de réduire…', lang: 'fr' }])
+    end
+
+    # REST returns every language under 'all' and names none of them, so there
+    # is no tag to hand back - the literals a row already holds carry their own.
+    it 'names no language when REST was asked for every one' do
+      allow(LinkedData::Client::HTTP).to receive(:get).and_return(rest_node(value_predicate => ['Coastal areas…']))
+
+      expect(described_class.values('INRAETHES', node, lang: 'all'))
+        .to eq([{ text: 'Coastal areas…', lang: nil }])
+    end
+
+    # SPARQL does tag them, which is the only way a node's language can be named
+    # when every language was asked for.
+    it 'names the language of each literal SPARQL returns, under every language' do
+      values = with_bindings([binding_for(value_predicate, 'Coastal areas…', 'en'),
+                              binding_for(value_predicate, 'Litoral é a região…', 'pt')], 'all')
+
+      expect(values).to eq([{ text: 'Coastal areas…', lang: 'en' },
+                            { text: 'Litoral é a região…', lang: 'pt' }])
     end
 
     it 'prefers rdf:value to the other predicates a node can carry its text under' do
@@ -190,7 +211,8 @@ RSpec.describe ResourceLookupService do
         .and_return(rest_node('http://www.w3.org/2008/05/skos-xl#literalForm' => ['Etiology'],
                               value_predicate => ['Coastal areas…']))
 
-      expect(described_class.values('INRAETHES', node, lang: 'en')).to eq(['Coastal areas…'])
+      expect(described_class.values('INRAETHES', node, lang: 'en'))
+        .to eq([{ text: 'Coastal areas…', lang: 'en' }])
     end
 
     # `instances/<uri>` answers for a skos:Concept as readily as for a node, and
@@ -225,8 +247,8 @@ RSpec.describe ResourceLookupService do
       bindings = [binding_for(value_predicate, 'Coastal areas…', 'en'),
                   binding_for(value_predicate, 'Litoral é a região…', 'pt')]
 
-      expect(with_bindings(bindings, 'en')).to eq(['Coastal areas…'])
-      expect(with_bindings(bindings, 'pt')).to eq(['Litoral é a região…'])
+      expect(with_bindings(bindings, 'en')).to eq([{ text: 'Coastal areas…', lang: 'en' }])
+      expect(with_bindings(bindings, 'pt')).to eq([{ text: 'Litoral é a região…', lang: 'pt' }])
     end
 
     it 'resolves a node whose text is in another language to no text, not to nothing' do
@@ -234,12 +256,13 @@ RSpec.describe ResourceLookupService do
     end
 
     it 'reads an untagged literal in whatever language is asked for' do
-      expect(with_bindings([binding_for(value_predicate, 'Coastal areas…')], 'de')).to eq(['Coastal areas…'])
+      expect(with_bindings([binding_for(value_predicate, 'Coastal areas…')], 'de'))
+        .to eq([{ text: 'Coastal areas…', lang: nil }])
     end
 
     it 'matches a regional tag against the language it is a variant of' do
       expect(with_bindings([binding_for(value_predicate, 'Coastal areas…', 'en-US')], 'en'))
-        .to eq(['Coastal areas…'])
+        .to eq([{ text: 'Coastal areas…', lang: 'en-us' }])
     end
 
     it 'is nil without a URI' do
