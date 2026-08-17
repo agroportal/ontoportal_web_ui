@@ -1,7 +1,23 @@
 module InstancesHelper
   include ConceptsHelper
   include ApplicationHelper
-  
+
+  # [predicate, values] for the node's own text, or nil when it carries none -
+  # an ordinary individual, whose text is its label. Everything else the node
+  # holds stays where it came from, listed under Raw data. Which predicates can
+  # carry that text is ResourceLookupService's to say: the definitions row reads
+  # the same nodes, and has to read them the same way.
+  def resource_value(instance)
+    properties = instance[:properties].to_h.transform_keys(&:to_s)
+
+    ResourceLookupService::VALUE_PREDICATES.each do |uri|
+      values = Array(properties[uri]).reject(&:blank?)
+      return [uri, values] if values.present?
+    end
+
+    nil
+  end
+
   def get_instance_details_json(ontology_acronym, instance_uri , query_parameters, raw: false)
     LinkedData::Client::HTTP
       .get("/ontologies/#{ontology_acronym}/instances/#{CGI.escape(instance_uri)}",

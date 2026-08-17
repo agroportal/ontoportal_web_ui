@@ -62,12 +62,22 @@ class ConceptsController < ApplicationController
   def show_label
     cls_id = params[:concept] || params[:id]
     ont_id = params[:ontology]
+    # NOTE: concept_label is what sets @ontology, so it has to run first.
     pref_label = begin
                    concept_label(ont_id, cls_id)
                  rescue
                    cls_id
                  end
     cls = @ontology.explore&.single_class({ language: request_lang, include: 'prefLabel' }, cls_id)
+
+    # Not a class: it may be a reified node of this ontology - a definition, a
+    # note - which has no page of its own, so it opens its triples in a modal
+    # rather than pointing at a link that leads nowhere.
+    if cls.nil? || cls.errors
+      chip = helpers.reified_resource_chip(ont_id, cls_id, parent_uri: params[:parent])
+      return render(inline: chip, layout: nil) if chip
+    end
+
     label = helpers.main_language_label(pref_label)
     link = concept_path(cls_id, ont_id, request_lang)
 

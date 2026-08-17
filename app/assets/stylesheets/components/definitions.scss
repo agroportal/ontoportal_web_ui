@@ -1,0 +1,97 @@
+// Concept definitions.
+//
+// Rendered as plain prose: same colour and size as the surrounding content,
+// upright, on the page background. The previous italic + portal-colour-on-tint
+// treatment sat around 2.4:1 contrast on every theme (AA asks for 4.5:1), and
+// looked like both a link and a synonym chip without being either.
+
+.definitions-component {
+  min-width: 0;
+}
+
+.definitions-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  > li {
+    margin: 0;
+  }
+
+  > li + li {
+    margin-top: 12px;
+  }
+}
+
+.definition-text {
+  margin: 0;
+  color: inherit;
+  font-style: normal;
+  overflow-wrap: anywhere;
+}
+
+// A definition that is a reified node. Its own row, so the value and its
+// language tag stay aligned when the identifier wraps.
+.definition-node {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+  min-width: 0;
+}
+
+// Inert, and set like the rest of the row: same colour and size as a definition
+// that is plain text. The node's contents are in the raw-data table below.
+.definition-uri {
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+// A cropped definition. TextAreaFieldComponent wraps its text and its
+// read-more control in a block of their own; dissolving that block into the
+// paragraph puts the control and the badge on one line under the text, rather
+// than stacking a line for each.
+.definition-text > [data-controller~='text-truncate'] {
+  display: contents;
+}
+
+.definition-text .see_more_text {
+  display: inline;
+  margin-top: 0;
+  margin-inline-end: 6px;
+  cursor: pointer;
+}
+
+// The badge and the raw-data link travel together at the end of the sentence,
+// and wrap to the next line as one rather than being torn apart by it.
+.definition-meta {
+  white-space: nowrap;
+}
+
+// The reified node a definition was read from, opened as raw data. Left in the
+// portal colour the popup-link icon carries everywhere else, and only placed
+// here: on the baseline of the sentence it annotates, never on a line of its own.
+.definition-raw-data {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 6px;
+  vertical-align: middle;
+  transition: opacity 0.15s ease-in-out;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 0.7;
+  }
+
+  svg {
+    display: block;
+  }
+}
+
+// Per-definition language tag. Reuses the app-wide `badge badge-secondary`
+// look; this only handles its inline placement and size.
+.definition-lang {
+  margin-inline-start: 6px;
+  vertical-align: middle;
+  font-size: 0.72em;
+}

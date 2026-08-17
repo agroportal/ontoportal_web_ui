@@ -7,6 +7,7 @@
                 properties: @concept.properties,
                 top_keys: %w[description comment],
                 bottom_keys: %w[disjoint subclass is_a has_part],
+                reified_keys: %w[definition], lang: request_lang,
                 exclude_keys: schemes_keys + label_xl_set + ['inScheme', 'narrower']) do |c|
 
     - c.header(stripped: true) do |t|
@@ -25,8 +26,20 @@
                 = remove_synonym_button
 
 
-      - unless @concept.definition.nil? || @concept.definition.empty?
-        - t.add_row({th: t('ontology_details.concept.definitions')}, {td: display_in_multiple_languages(@concept.definition)})
+      -# Read from the raw triples where they are available, so this row and the
+        skos:definition row below it are two views of one thing. The `definition`
+        attribute is the fallback, and drops the node URIs under "all languages".
+
+        Asked before the row is added, not after: a definition can be a reified
+        node holding its text in another language, and every one of them dropping
+        out would otherwise leave the row labelled and empty.
+      - definitions = DefinitionsComponent.new(definitions: c.reified_values || @concept.definition,
+                                               id: 'concept-definitions', acronym: @ontology.acronym,
+                                               parent_uri: @concept.id, lang: request_lang)
+      - if definitions.render?
+        - t.add_row({th: t('ontology_details.concept.definitions')}) do |h|
+          - h.td do
+            = render definitions
 
       - if @concept.obsolete?
         - t.add_row({th: t('ontology_details.concept.obsolete')}, {td: 'true'})

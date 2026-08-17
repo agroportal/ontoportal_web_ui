@@ -1,0 +1,18 @@
+.definitions-component{id: @id}
+  %ul.definitions-list{role: 'list'}
+    - items.each do |item|
+      %li
+        - if link?(item[:text])
+          .definition-node
+            = definition_uri(item)
+            = language_tag(item)
+        - else
+          -# Not a %p: a cropped definition nests the read-more block inside it,
+            and a paragraph that contains a block is closed by the parser before
+            it, which throws the badge and the icon out of the definition.
+          %div.definition-text{lang: item[:lang]}
+            - if cropped?(item)
+              = render TextAreaFieldComponent.new(value: item[:text], lines: 3)
+            - else
+              = item[:text]
+            = definition_meta(item)
