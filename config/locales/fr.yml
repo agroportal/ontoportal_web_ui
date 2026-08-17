@@ -530,6 +530,8 @@ fr:
       month_day_year: "%-d %b %Y"
       monthfull_day_year: "%-d %b %Y"
       year_month_day_concise: "%d-%m-%Y"
+  definitions:
+    raw_data: Afficher la source, les dates et les données brutes de cette définition
   errors:
     error_message: Nous sommes désolés mais quelque chose a mal tourné.
     go_home_button: Accueil

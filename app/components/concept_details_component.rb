@@ -4,18 +4,25 @@ class ConceptDetailsComponent < ViewComponent::Base
   include ApplicationHelper
   include OntologiesHelper
   include MultiLanguagesHelper
+  include MultiLanguageValues
 
   renders_one :header, TableComponent
   renders_many :sections, TableRowComponent
 
   attr_reader :concept_properties
 
-  def initialize(id:, acronym:, concept_id: nil, properties: nil, top_keys: [], bottom_keys: [], exclude_keys: [])
+  # +reified_keys+ names the rows that hold reified nodes - the raw side of what
+  # the Definitions row shows - and are read the same way there as here.
+  # +lang+ is the content language those nodes are resolved in.
+  def initialize(id:, acronym:, concept_id: nil, properties: nil, top_keys: [], bottom_keys: [], exclude_keys: [],
+                 reified_keys: [], lang: 'all')
     @acronym = acronym
     @properties = properties
     @top_keys = top_keys
     @bottom_keys = bottom_keys
     @exclude_keys = exclude_keys
+    @reified_keys = reified_keys
+    @lang = lang
     @id = id
     @concept_id = concept_id
 
@@ -41,25 +48,97 @@ class ConceptDetailsComponent < ViewComponent::Base
 
       values = data[:values]
       url = data[:key]
+      th = { th: content_tag(:span, remove_owl_notation(key), title: url, 'data-controller': 'tooltip') }
 
-      ajax_links = Array(values).map do |v|
-        if block_given?
-          block.call(v)
-        else
-          if v.is_a?(String)
-            get_link_for_cls_ajax(v, ontology_acronym, '_blank')
-          else
-            display_in_multiple_languages([v].to_h)
-          end
-        end
+      if reified_row?(url) && !block_given?
+        definitions = definitions_component(values, url, ontology_acronym)
+        # Every node in another language: the row holds nothing to read here,
+        # exactly as the Definitions row holds nothing.
+        next unless definitions.render?
+
+        out << [th, { td: render(definitions) }]
+        next
       end
 
-      out << [
-        { th: content_tag(:span, remove_owl_notation(key), title: url, 'data-controller': 'tooltip') },
-        { td: list_items_component(max_items: 5) { |r| ajax_links.map { |val| r.container { val.html_safe } } } }
-      ]
+      ajax_links = Array(values).map do |v|
+        block_given? ? block.call(v) : row_value(v, ontology_acronym)
+      end
+
+      out << [th, { td: list_items_component(max_items: 5) { |r| ajax_links.map { |val| r.container { val.html_safe } } } }]
     end
     out
+  end
+
+  # A row whose values are reified nodes, read here the way the Definitions row
+  # reads them: the node folded into the text it carries, its raw data a click
+  # away rather than its identifier on the page.
+  #
+  # Named by the caller rather than detected, because resolving a URI costs a
+  # request and most rows are full of URIs - a `narrower` with fifty children
+  # would pay fifty lookups to learn that not one of them is a node.
+  def reified_row?(predicate)
+    @reified_keys.any? { |key| predicate.to_s.include?(key) }
+  end
+
+  # The values of the row named as reified, read straight from the properties -
+  # what the Definitions row should be built from too.
+  #
+  # That row is otherwise built from the `definition` attribute, and under "all
+  # languages" the attribute holds only the literals: the API groups them by
+  # language, and a node URI has no language to be grouped under, so it drops
+  # out. The properties keep it - under `@none` - and without it the row cannot
+  # know which node a sentence was read from, leaving it the one place with no
+  # way through to the raw data.
+  #
+  # Nil unless the row actually holds a node, so that a vocabulary defining its
+  # terms in plain literals keeps the attribute it always used: which property
+  # counts as the definition is the API's to say, and only a node makes it worth
+  # second-guessing.
+  def reified_values
+    return nil if @reified_keys.empty?
+
+    row = concept_properties&.find { |_, data| data[:values].present? && reified_row?(data[:key]) }
+    values = row&.last&.fetch(:values, nil)
+
+    values if normalize_multi_language(values).any? { |item| link?(item[:text]) }
+  end
+
+  def definitions_component(values, predicate, ontology_acronym)
+    DefinitionsComponent.new(definitions: values, id: "raw-#{predicate.to_s.split(%r{[#/]}).last}",
+                             acronym: ontology_acronym, parent_uri: @concept_id, lang: @lang)
+  end
+
+  # One value of a row. In a single language it is a plain String; under "all
+  # languages" it arrives as a [language, values] pair instead.
+  #
+  # Either shape can hold URIs, and those have to stay links: a reified node is
+  # often language-specific (note_101800en, note_101800fr), so under "all
+  # languages" it is a URI *inside* a language pair - which used to fall through
+  # to the text rendering and come out unclickable.
+  def row_value(value, ontology_acronym)
+    return cls_ajax_link(value, ontology_acronym) if value.is_a?(String)
+
+    language, values = value
+    values = Array(values)
+    return display_in_multiple_languages([value].to_h) unless values.any? && values.all? { |v| v.is_a?(String) && link?(v) }
+
+    safe_join(values.map { |uri| linked_row_value(uri, ontology_acronym, language) })
+  end
+
+  # The link, tagged with the language it was read under - the tag the text
+  # rendering would have shown.
+  def linked_row_value(uri, ontology_acronym, language)
+    link = cls_ajax_link(uri, ontology_acronym)
+    return link if language.blank? || %w[NONE @NONE].include?(language.to_s.upcase)
+
+    content_tag(:span, class: 'd-inline-flex align-items-center') do
+      concat link
+      concat content_tag(:span, language.to_s.upcase, class: 'badge badge-secondary ml-1')
+    end
+  end
+
+  def cls_ajax_link(value, ontology_acronym)
+    get_link_for_cls_ajax(value, ontology_acronym, '_blank', parent_id: @concept_id)
   end
 
   def properties_set_by_keys(keys, concept_properties, exclude_keys = [])

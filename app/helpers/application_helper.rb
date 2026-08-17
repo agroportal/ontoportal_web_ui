@@ -258,9 +258,13 @@ module ApplicationHelper
     end
   end
 
-  def get_link_for_cls_ajax(cls_id, ont_acronym, target = nil)
+  # +parent_id+ is the resource this value was read from. It tells the label
+  # endpoint which namespace the value would have to share to be a node of this
+  # ontology rather than a URI borrowed from elsewhere. See ResourceLinksHelper.
+  def get_link_for_cls_ajax(cls_id, ont_acronym, target = nil, parent_id: nil)
     if cls_id.start_with?('http://') || cls_id.start_with?('https://')
       ajax_url = '/ajax/classes/label'
+      ajax_url += "?parent=#{escape(parent_id)}" if parent_id.present?
       label_ajax_link(cls_id, ont_acronym, ajax_url, target)
     else
       content_tag(:div, cls_id)

@@ -518,6 +518,8 @@ en:
       month_day_year: "%b %-d, %Y"
       monthfull_day_year: "%B %-d, %Y"
       year_month_day_concise: "%Y-%m-%d"
+  definitions:
+    raw_data: Show this definition's source, dates and raw data
   errors:
     error_message: We're sorry but something has gone wrong.
     go_home_button: Go home

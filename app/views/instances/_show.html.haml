@@ -1,22 +1,35 @@
 = ontology_object_details_component(frame_id: params['modal'].eql?('true') ? modal_frame_id : "instance_show", ontology_id:  @ontology.acronym, objects_title:  "instances", object: @instance) do
-  = render ConceptDetailsComponent.new(id: 'instance-details', acronym: @ontology.acronym, concept_id: @instance["@id"]) do |c|
+  -# Details keeps what identifies the resource and, for a reified node, the one
+    thing it exists to carry: its text. Every predicate - that one included - is
+    listed verbatim under Raw data, the way a class page lists its own.
+  = render ConceptDetailsComponent.new(id: 'instance-details', acronym: @ontology.acronym,
+                                       concept_id: @instance["@id"], properties: @instance[:properties],
+                                       bottom_keys: %w[created modified]) do |c|
     - c.header(stripped: true) do |t|
       - t.add_row({ th: t("instances.id") }, { td: link_to_with_actions(@instance["@id"], acronym: @ontology.acronym) })
 
-      - label = @instance['label'] || @instance['prefLabel']
-      - t.add_row({ th: t('instances.label') }, { td: label.join(', ').html_safe }) unless label.blank?
+      -# Under `lang=all` a label arrives as {lang => value}, not as a list, so
+        it is rendered through the helper that handles every shape.
+      - label = @instance['label'].presence || @instance['prefLabel']
+      - t.add_row({ th: t('instances.label') }, { td: display_in_multiple_languages(label) }) unless label.blank?
 
-      - types = @instance.types.reject { |x| x['NamedIndividual'] }
+      -# owl:NamedIndividual and rdfs:Resource say nothing - every resource
+        carries both. A reified node has no other type, so the row drops out for
+        it, leaving Details with the node's identity and its text.
+      - types = @instance.types.reject { |type| type['NamedIndividual'] || type['rdf-schema#Resource'] }
       - unless types.empty?
         - t.add_row({ th: t('instances.type') }) do |r|
           - r.td do
             = types.map { |cls| link_to_class(@ontology.acronym, cls) }.join(', ').html_safe
 
-      - filter_properties = %w[http://www.w3.org/1999/02/22-rdf-syntax-ns#type http://www.w3.org/2000/01/rdf-schema#label http://www.w3.org/2004/02/skos/core#prefLabel]
-      - properties = @instance[:properties].to_h.reject { |k, _| filter_properties.include?(k.to_s) }
-      - properties.each do |prop, values|
-        - if values.present?
-          - t.add_row({ th: link_to_property(prop, @ontology.acronym) }, { td: values.map { |value| instance_property_value(value, @ontology.acronym) }.join(', ').html_safe })
+      -# The node's text is prose, and reads as prose: the same component the
+        classes and properties pages use for a definition, so it is never set in
+        italic or in the portal colour on a tint.
+      - predicate, values = resource_value(@instance)
+      - if predicate
+        - t.add_row({ th: link_to_property(predicate, @ontology.acronym) }) do |r|
+          - r.td do
+            = render DefinitionsComponent.new(definitions: values, id: 'resource-value')
 
 
 
