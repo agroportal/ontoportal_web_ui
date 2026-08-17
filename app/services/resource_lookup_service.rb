@@ -69,6 +69,10 @@ class ResourceLookupService < ApplicationService
     end
   end
 
+  def self.rest_served?(resource)
+    resource.present? && !resource.is_a?(Resource)
+  end
+
   # +lang+ is the content language the resource is read in. 'all' - the default,
   # and what the raw-data modal wants - keeps every literal whatever its tag.
   def initialize(acronym, uri, lang: 'all')

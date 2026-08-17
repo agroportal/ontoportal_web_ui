@@ -282,4 +282,18 @@ RSpec.describe ResourceLookupService do
     expect(described_class.call('AGROVOC', nil)).to be_nil
     expect(described_class.call('AGROVOC', '')).to be_nil
   end
+
+  describe '.rest_served?' do
+    it 'holds for what the API itself answered with' do
+      expect(described_class.rest_served?(OpenStruct.new('@id' => node))).to be true
+    end
+
+    it 'rejects a node built from SPARQL bindings' do
+      expect(described_class.rest_served?(described_class::Resource.build(node, {}))).to be false
+    end
+
+    it 'rejects a resource no source knew' do
+      expect(described_class.rest_served?(nil)).to be false
+    end
+  end
 end

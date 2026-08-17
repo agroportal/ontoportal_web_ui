@@ -569,7 +569,9 @@ module OntologiesHelper
       if object.errors
         alert_component(object.errors.join)
       else
-        ontology_object_tabs_component(ontology_id: ontology_id, objects_title: objects_title, object_id: object["@id"]) do |tabs|
+        ontology_object_tabs_component(ontology_id: ontology_id, objects_title: objects_title,
+                                       object_id: object["@id"],
+                                       api_link: ResourceLookupService.rest_served?(object)) do |tabs|
           tab_item_component(container_tabs: tabs, title: t('concepts.details'), path: '#details', selected: true) do
             capture(&block)
           end
@@ -578,13 +580,13 @@ module OntologiesHelper
     end
   end
 
-  def ontology_object_tabs_component(ontology_id:, objects_title:, object_id:, &block)
+  def ontology_object_tabs_component(ontology_id:, objects_title:, object_id:, api_link: true, &block)
     resource_url = ontology_object_json_link(ontology_id, objects_title, object_id)
     render TabsContainerComponent.new(type: 'outline') do |c|
       concat(c.pinned_right do
         content_tag(:div, '', 'data-concepts-json-target': 'button') do
           concat(render_permalink_link) if $PURL_ENABLED
-          concat(render_concepts_json_button(resource_url))
+          concat(render_concepts_json_button(resource_url)) if api_link
         end
       end)
 
