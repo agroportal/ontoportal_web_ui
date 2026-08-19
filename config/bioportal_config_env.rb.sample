@@ -113,6 +113,10 @@ $ENABLE_SLICES = false
 # Google Analytics ID (optional)
 $ANALYTICS_ID = ENV['ANALYTICS_ID']
 
+# Piano Analytics site ID and collect domain (optional, both required to enable the tag)
+$PIANO_SITE_ID = ENV['PIANO_SITE_ID']
+$PIANO_COLLECT_DOMAIN = ENV['PIANO_COLLECT_DOMAIN']
+
 # Enable client request caching
 $CLIENT_REQUEST_CACHING = true
 

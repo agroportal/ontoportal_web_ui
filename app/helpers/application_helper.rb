@@ -315,6 +315,16 @@ module ApplicationHelper
     request.path.eql?(path)
   end
 
+  def piano_page_properties
+    properties = {
+      page: params[:p].presence || action_name,
+      page_chapter1: controller_path.tr('/', '_'),
+      site_level2: portal_name
+    }
+    properties[:page_chapter2] = @ontology.acronym if @ontology.respond_to?(:acronym)
+    properties
+  end
+
   def bp_config_json
     # For config settings, see
     # config/bioportal_config.rb

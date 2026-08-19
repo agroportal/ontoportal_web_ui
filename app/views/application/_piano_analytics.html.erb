@@ -1,0 +1,23 @@
+<% site_id = Rails.application.credentials.dig(:piano_analytics, :site_id) || $PIANO_SITE_ID %>
+<% collect_domain = Rails.application.credentials.dig(:piano_analytics, :collect_domain) || $PIANO_COLLECT_DOMAIN %>
+<% if site_id.present? && collect_domain.present? %>
+  <script>
+      window.pdl = window.pdl || {};
+      window.pdl.requireConsent = "v2";
+      window.pdl.consent = {
+          products: ["PA"],
+          defaultPreset: {PA: "<%= cookies[:cookies_accepted].present? ? 'opt-in' : 'essential' %>"}
+      };
+
+      window._paq = window._paq || [];
+      window._paq.push(["sendEvent", "page.display", <%= piano_page_properties.to_json.html_safe %>]);
+
+      (function (config) {
+          var script = document.createElement("script");
+          script.src = "https://tag.aticdn.net/piano-analytics.js";
+          script.async = true;
+          script.dataset.config = JSON.stringify(config);
+          document.head.appendChild(script);
+      })(<%= { site: site_id.to_i, collectDomain: collect_domain }.to_json.html_safe %>);
+  </script>
+<% end %>
