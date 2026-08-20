@@ -316,12 +316,15 @@ module ApplicationHelper
   end
 
   def piano_page_properties
+    section = controller_path.tr('/', '_')
+    view = params[:p].presence || action_name
     properties = {
-      page: params[:p].presence || action_name,
-      page_chapter1: controller_path.tr('/', '_'),
+      page: view.eql?('index') ? section : "#{section}_#{view}",
+      page_chapter1: section,
       site_level2: portal_name
     }
-    properties[:page_chapter2] = @ontology.acronym if @ontology.respond_to?(:acronym)
+    acronym = @ontology.acronym if @ontology.respond_to?(:acronym)
+    properties[:page_chapter2] = acronym if acronym.present?
     properties
   end
 
