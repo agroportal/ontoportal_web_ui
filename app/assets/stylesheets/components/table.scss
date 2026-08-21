@@ -53,3 +53,12 @@ table.dataTable thead td, table.dataTable thead th{
   padding: 10px;
 }
 
+@media (max-width: 767.98px) {
+  .table-component-container {
+    overflow-x: auto;
+  }
+
+  .table-content td, .table-content th {
+    padding: 0.5rem 0.35rem;
+  }
+}

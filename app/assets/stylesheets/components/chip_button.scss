@@ -10,7 +10,20 @@
 }
 .chip-button-component-container {
   display: inline-block;
+  max-width: 100%;
   text-wrap: nowrap !important;
+
+  @media (max-width: 767.98px) {
+    text-wrap: wrap !important;
+    overflow-wrap: anywhere;
+
+    .chip_button_container,
+    .chip_button_container_clickable {
+      display: inline-block;
+      max-width: 100%;
+      line-height: 20px;
+    }
+  }
 }
 .chip-button-component-container svg path{
   fill: var(--primary-color);

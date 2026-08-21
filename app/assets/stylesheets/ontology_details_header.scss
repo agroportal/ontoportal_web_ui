@@ -1,7 +1,8 @@
 .ontology-details-header-container{
     padding: 0 50px;
     margin: 20px 0;
-    width: 1248px;
+    width: 100%;
+    max-width: 1248px;
 }
 
 .ontology-details-path{
@@ -22,11 +23,15 @@
     justify-content: space-between;
     align-items: center;
     position: relative;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .ontology-details-name-bar{
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 0;
 }
 .ontology-details-name-bar > div{
     font-size: 25px;
@@ -109,4 +114,8 @@
     transition: background-color ease 0.3s;
 }
 
-
+@media (max-width: 767.98px) {
+    .ontology-details-header-container{
+        padding: 0 16px;
+    }
+}
