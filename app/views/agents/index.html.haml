@@ -4,9 +4,8 @@
     .d-flex.align-items-center
       - link, target = api_button_link_and_target(agents_rest_url)
       = render RoundedButtonComponent.new(link: link, target: target, size: 'medium', title: t("components.go_to_api"))
-      - if session[:user]
-        .span.m-2
-        = agents_create_button
+      .span.m-2
+      = agents_create_button
   = render_alerts_container(AgentsController)
   - columns_names = ['name', 'acronym', 'affiliations', 'usages']
   - if session[:user] && session[:user].admin?
