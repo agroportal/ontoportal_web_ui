@@ -6,6 +6,7 @@
   .fairness-carousel-viewport {
     overflow: hidden;
     border-radius: 8px;
+    contain: inline-size;
   }
 
   .carousel-track,

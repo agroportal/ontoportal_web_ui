@@ -177,6 +177,21 @@ $non_applicable_color :  rgba(176, 190, 197, 0.4);
   padding: 0 16px 16px;
 }
 
+@media (max-width: 767.98px) {
+  .fair-section-head {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+
+  .statistics_container {
+    flex-wrap: wrap;
+
+    > .w-50 {
+      width: 100% !important;
+    }
+  }
+}
+
 // Loading skeleton mirroring the FAIR charts layout (radar + principle bars +
 // details link) until the async scores arrive. Animated with the global
 // `skeleton` keyframes from browse.scss.
@@ -193,15 +208,24 @@ $non_applicable_color :  rgba(176, 190, 197, 0.4);
   .fair-score-skeleton-charts {
     display: flex;
     align-items: center;
+
+    @media (max-width: 767.98px) {
+      flex-wrap: wrap;
+    }
   }
 
   .fair-score-skeleton-radar,
   .fair-score-skeleton-bars {
     width: 50%;
+
+    @media (max-width: 767.98px) {
+      width: 100%;
+    }
   }
 
   .fair-skeleton-circle {
     width: 180px;
+    max-width: 100%;
     height: 180px;
     border-radius: 50%;
     margin: 10px auto;

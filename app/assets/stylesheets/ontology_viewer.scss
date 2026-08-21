@@ -1,11 +1,11 @@
-
 .ontologies-tabs-container {
   & > .tabs-container {
     justify-content: center;
   }
 
   & > .tabs-container > div {
-    width: 1248px;
+    width: 100%;
+    max-width: 1248px;
     padding: 0 50px;
   }
 
@@ -14,8 +14,16 @@
     justify-content: center;
 
     & > .tab-pane {
-      width: 1248px;
+      width: 100%;
+      max-width: 1248px;
       padding: 0 50px;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    & > .tabs-container > div,
+    & > .tab-content > .tab-pane {
+      padding: 0 16px;
     }
   }
 }
