@@ -19,7 +19,7 @@ log_requests true
 if %w[production staging appliance].include?(rails_env)
 
   # Define Puma socket (for Nginx)
-  bind "unix:///opt/ontoportal/bioportal_web_ui/shared/tmp/sockets/puma.sock"
+  bind "unix:///opt/ontoportal/ontoportal_web_ui/shared/tmp/sockets/puma.sock"
 
   # Specifies the number of `workers` to boot in clustered mode.
   # Workers are forked webserver processes. If using threads and workers together
