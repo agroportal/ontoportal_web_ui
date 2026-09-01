@@ -1302,6 +1302,7 @@ fr:
       set_the_variable: 'Vous pouvez régler la variable sur ''all'' pour rechercher
         dans toutes les ontologies de %{site} :'
       shortid: shortid
+      submissions: Soumissions
       uri: uri
       use_all_to_search: 'utilisez ''all'' pour rechercher dans toutes les ontologies
         de %{site} :'
@@ -1334,6 +1335,7 @@ fr:
       widgets: Les widgets ne sont disponibles que pour les ontologies stockées dans
         %{site}.
     see_details: Voir les détails
+    self: Ontologies
     showing: Affichage
     showing_ontologies_user_size: Affichage de %{ontologies_size} sur %{analytics_size} ontologie en %{time}s
     showing_ontologies_size: Affichage de %{ontologies_size} sur %{analytics_size} de %{portals}
