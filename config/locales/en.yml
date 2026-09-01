@@ -1260,6 +1260,7 @@ en:
       set_the_variable: 'You can set the variable to ''all'' to search all ontologies
         in %{site}:'
       shortid: shortid
+      submissions: Submissions
       uri: uri
       use_all_to_search: 'use ''all'' to search across all %{site} ontologies:'
       use_following_parameters: 'You can use the following parameters to select which
@@ -1287,6 +1288,7 @@ en:
       widget_block_component_title_4: Tree Widget
       widgets: Widgets are only available for ontologies stored in %{site}.
     see_details: See details
+    self: Ontologies
     showing: Showing
     showing_ontologies_user_size: Showing %{ontologies_size} of %{analytics_size} ontology in %{time}s
     showing_ontologies_size: Showing %{ontologies_size} of %{analytics_size} from %{portals}
