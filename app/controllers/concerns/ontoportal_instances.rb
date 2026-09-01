@@ -9,6 +9,7 @@ module OntoportalInstances
   extend ActiveSupport::Concern
 
   PORTALS_SOURCE_URL = 'https://ontoportal.org/portals.json'
+  RETIRED_STATUS = 'retired'
 
   private
 
@@ -18,6 +19,10 @@ module OntoportalInstances
     end
 
     resolve_missing_portals_api(portals)
+  end
+
+  def active_ontoportal_instances
+    ontoportal_instances.reject { |portal| portal[:status].to_s.casecmp?(RETIRED_STATUS) }
   end
 
   def federated_ontoportal_instances

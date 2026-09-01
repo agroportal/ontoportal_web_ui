@@ -17,7 +17,7 @@ class HomeController < ApplicationController
         @anal_ont_numbers << count
       end
     end
-    @portals_instances = ontoportal_instances
+    @portals_instances = active_ontoportal_instances
   end
 
   # Add a new action for the metrics frame
