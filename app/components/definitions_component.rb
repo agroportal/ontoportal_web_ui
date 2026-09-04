@@ -31,15 +31,28 @@ class DefinitionsComponent < ViewComponent::Base
   # the sentence.
   CROP_AFTER = 240
 
+  # How far a reified node is chased.
+  #
+  #   :full    - every node is looked up, folded into the text it holds and left
+  #              with a way through to its raw data. What a resource's own page
+  #              wants: the definition, and the provenance behind it.
+  #   :summary - a node whose text the row already carries is dropped where it
+  #              stands, and only a node that would leave the row empty costs a
+  #              request. What a page of search results wants: the sentence, and
+  #              no lookup per result to read it.
+  LOOKUP_FULL = :full
+  LOOKUP_SUMMARY = :summary
+
   # +parent_uri+ is the resource these definitions were read from: a node minted
   # by another vocabulary cannot belong to this ontology, and is not looked up.
   # +lang+ is the content language the page is being read in, and the one a node
   # is resolved in - a node holding only French is not an English definition.
-  def initialize(definitions:, id: nil, acronym: nil, parent_uri: nil, lang: 'all')
+  def initialize(definitions:, id: nil, acronym: nil, parent_uri: nil, lang: 'all', lookup: LOOKUP_FULL)
     @definitions = definitions
     @acronym = acronym
     @parent_uri = parent_uri
     @lang = lang
+    @lookup = lookup
     @id = id.presence || "definitions-#{SecureRandom.hex(4)}"
   end
 
@@ -117,9 +130,21 @@ class DefinitionsComponent < ViewComponent::Base
 
   def resolve_nodes(items)
     nodes, texts = items.partition { |item| link?(item[:text]) }
-    return items if nodes.empty? || @acronym.blank?
+    return items if nodes.empty?
+
+    # The row already reads as prose, and under :summary that is all it owes the
+    # reader. Which sentence was read from which node is worth a request on the
+    # resource's own page and not on a page of a hundred and fifty others - and
+    # a URI is no sentence whatever ontology it came from, so this holds without
+    # one to resolve it against.
+    return texts if summary? && texts.present?
+    return items if @acronym.blank?
 
     texts + nodes.flat_map { |node| fold_in(node, texts) }
+  end
+
+  def summary?
+    @lookup == LOOKUP_SUMMARY
   end
 
   # Folds one reified node into +texts+, returning what is left to render of it.

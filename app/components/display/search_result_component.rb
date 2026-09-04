@@ -8,10 +8,11 @@ class Display::SearchResultComponent < ViewComponent::Base
   renders_many :subresults, Display::SearchResultComponent
   renders_many :reuses, Display::SearchResultComponent
 
-  def initialize(number: 0,title: nil, ontology_id: nil ,uri: nil, definition: nil, link: nil,  is_sub_component: false, portal_name: nil, portal_color: nil, portal_light_color: nil, other_portals: [])
+  def initialize(number: 0,title: nil, ontology_id: nil ,uri: nil, definition: nil, link: nil, lang: 'all',  is_sub_component: false, portal_name: nil, portal_color: nil, portal_light_color: nil, other_portals: [])
       @title = title
       @uri = uri
       @definition = definition
+      @lang = lang
       @link = link
       @is_sub_component = is_sub_component
       @ontology_acronym = ontology_id&.split('/')&.last
@@ -20,6 +21,17 @@ class Display::SearchResultComponent < ViewComponent::Base
       @portal_color = portal_color
       @portal_light_color = portal_light_color
       @other_portals = other_portals
+  end
+
+  # A result reads its definitions the way the concept page does - a reified
+  # node is never set as prose - but reads them as a summary: the node's own
+  # data is already a click away behind Details, so a node the row can already
+  # read costs no lookup here. A class from another portal is looked up nowhere,
+  # our API knowing nothing of it.
+  def definitions_component
+    DefinitionsComponent.new(definitions: @definition, lang: @lang, parent_uri: @uri,
+                             acronym: external_class? ? nil : @ontology_acronym,
+                             lookup: DefinitionsComponent::LOOKUP_SUMMARY)
   end
 
   def sub_component_class

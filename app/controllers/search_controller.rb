@@ -86,11 +86,11 @@ class SearchController < ApplicationController
       # Columns: synonym
       json << "|#{(result.synonym || []).join(";")}"
       if params[:id] && params[:id].split(",").length == 1
-        json << "|#{CGI.escape((result.definition || []).join(". "))}#{separator}"
+        json << "|#{CGI.escape(definition_text(result.definition))}#{separator}"
       else
         json << "|#{acronym}"
         json << "|#{acronym}"
-        json << "|#{CGI.escape((result.definition || []).join(". "))}#{separator}"
+        json << "|#{CGI.escape(definition_text(result.definition))}#{separator}"
       end
 
       # Obsolete results go at the end
@@ -179,6 +179,14 @@ class SearchController < ApplicationController
   # must keep returning ontology content alone.
   def show_agents?
     params[:show_agents].eql?('true') && helpers.agents_enabled?
+  end
+
+  # The definitions of a result as one line. A reified definition arrives as the
+  # URI of the node holding the text, and nothing is resolved here - the caller
+  # is an autocomplete answering while the user types - so a node is left out
+  # rather than pasted in as the sentence it is not.
+  def definition_text(definitions)
+    Array(definitions).reject { |value| link?(value) }.join('. ')
   end
 
   def check_params_query(params)
