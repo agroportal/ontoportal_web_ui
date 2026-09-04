@@ -191,3 +191,20 @@ div.synonym-change-request button {
     border: 0;
   }
 }
+
+// Bootstrap 4 stops at modal-xl (1140px), and the tab column is narrower still,
+// which leaves the visualizer's own chrome almost no room for the graph. This
+// size class hands it the viewport instead; show-modal#setSize just swaps the
+// class onto .modal-dialog, so the name only has to match the data attribute.
+.modal-dialog.modal-graph {
+  max-width: none;
+  margin: 1rem;
+
+  // The dialog margins, header and body padding come off the viewport height.
+  // The tab's 600px floor has to go with it, or a short viewport pushes the
+  // dialog past its own bottom edge.
+  .visualizer-embed {
+    height: calc(100vh - 9rem);
+    min-height: 0;
+  }
+}

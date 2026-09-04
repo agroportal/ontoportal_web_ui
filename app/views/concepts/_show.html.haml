@@ -18,6 +18,15 @@
 
 
         - tab_item_component(container_tabs: c, title: t('concepts.visualization'), path: '#visualization') do
+          -# The class tree takes a third of the page, so the tab column leaves the
+          -# visualizer's own chrome (view tabs, search, side panels) little room for
+          -# the graph itself. Offer the same embed in a near-viewport modal.
+          .d-flex.justify-content-end.mb-2
+            = link_to_modal(nil, "/ajax/biomixer?ontology=#{@ontology.acronym}&conceptid=#{CGI.escape(@concept.id)}",
+              { class: 'btn btn-sm btn-outline-primary',
+              data: { show_modal_title_value: t('concepts.visualization'), show_modal_size_value: 'modal-graph' } }) do
+              %i.fas.fa-expand.mr-1
+              = t('concepts.visualization_expand')
           = render :partial =>'/concepts/biomixer'
 
         -# Graph: a node-link diagram of the class's is-a ancestors and asserted

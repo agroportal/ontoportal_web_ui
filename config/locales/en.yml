@@ -510,6 +510,7 @@ en:
     use_jump_to: Use the "Jump To" to find a class and display details, visualization,
       notes, and mappings
     visualization: Visualization
+    visualization_expand: Open in a larger view
   cookies_modal:
     accept_button: Accept
     paragraph1: '%{portal} uses cookies to help you navigate efficiently and for audience
