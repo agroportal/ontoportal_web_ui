@@ -44,6 +44,13 @@
           = render TurboFrameComponent.new(id: 'concept_entity_graph', loading: 'lazy',
           src: "/ajax/entity_graph?ontologyid=#{@ontology.acronym}&conceptid=#{CGI.escape(@concept.id)}&language=#{CGI.escape(request_lang.to_s)}")
 
+        -# Playground: the same neighbourhood rendered by the vendored Ontology
+        -# Playground viewer, which also serves it back as RDF/XML. Lazy for the same
+        -# reason as the Graph tab, and because its script is 780 KB.
+        - tab_item_component(container_tabs: c, id: 'concept-playground', title: t('concepts.playground'), path: '#playground') do
+          = render TurboFrameComponent.new(id: 'concept_ontology_playground', loading: 'lazy',
+          src: "/ajax/ontology_playground?ontologyid=#{@ontology.acronym}&conceptid=#{CGI.escape(@concept.id)}&language=#{CGI.escape(request_lang.to_s)}")
+
 
         - count_span = content_tag(:span, "#{t('concepts.notes')} (#{content_tag(:span, @notes.length, id: 'note_count')})".html_safe)
         - notes_link = api_button_link_and_target("#{baseClassUrl}/notes")[0]

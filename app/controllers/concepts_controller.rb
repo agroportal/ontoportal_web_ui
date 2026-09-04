@@ -183,12 +183,43 @@ class ConceptsController < ApplicationController
   # bottom, superclasses rising to the top). Rendered into the Graph tab; the graph
   # itself is drawn client-side (concept-graph Stimulus controller).
   def entity_graph
+    return unless load_entity_graph
+
+    render partial: 'entity_graph', layout: false
+  end
+
+  # The same neighbourhood, handed to the vendored Ontology Playground viewer
+  # (public/ontology-embed) instead of drawn by us. Reads the cache the Graph tab
+  # fills, so opening both tabs costs one build.
+  def ontology_playground
+    return unless load_entity_graph
+
+    @playground_ontology = PlaygroundOntologyService.call(
+      @graph,
+      name: "#{@ontology.acronym} — #{helpers.main_language_label(@concept.prefLabel)}",
+      description: t('concepts.playground_description', acronym: @ontology.acronym)
+    )
+
+    render partial: 'ontology_playground', layout: false
+  end
+
+  private
+
+  # Loads @ontology, @concept and @graph for the graph endpoints. Returns false and
+  # renders the not-found response when either lookup fails, so callers can bail.
+  def load_entity_graph
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontologyid]).first
-    return ontology_not_found(params[:ontologyid]) if @ontology.nil? || @ontology.errors
+    if @ontology.nil? || @ontology.errors
+      ontology_not_found(params[:ontologyid])
+      return false
+    end
 
     @submission = get_ontology_submission_ready(@ontology)
     @concept = @ontology.explore.single_class({ full: true, language: request_lang }, params[:conceptid])
-    return concept_not_found(params[:conceptid]) if @concept.nil? || @concept.errors
+    if @concept.nil? || @concept.errors
+      concept_not_found(params[:conceptid])
+      return false
+    end
 
     # Building the graph fans out to many API calls, but the result is a pure
     # function of (ontology, class, language) — so cache it. A TTL (not the
@@ -199,11 +230,8 @@ class ConceptsController < ApplicationController
     @graph = Rails.cache.fetch(cache_key, expires_in: ENTITY_GRAPH_CACHE_TTL) do
       EntityGraphService.call(@ontology, @concept, helpers: helpers, lang: request_lang)
     end
-
-    render partial: 'entity_graph', layout: false
+    true
   end
-
-  private
 
   def filter_concept_with_no_date(concepts)
     concepts.present? ? concepts.filter { |c| !concept_date(c).nil? } : []

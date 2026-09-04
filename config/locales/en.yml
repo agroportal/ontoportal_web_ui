@@ -483,6 +483,9 @@ en:
     new_term_requests: New term requests
     notes: Notes
     permanent_link_class: Get a permanent link to this class
+    playground: Playground
+    playground_description: Neighbourhood of the selected class in %{acronym}.
+    playground_load_error: The ontology viewer could not be loaded.
     request_new_term: Request new class or concept
     request_term:
       new_term_instructions: |

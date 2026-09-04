@@ -495,6 +495,9 @@ fr:
     new_term_requests: Nouvelles demandes de termes
     notes: Notes
     permanent_link_class: Obtenir un lien permanent vers cette classe
+    playground: Playground
+    playground_description: Voisinage de la classe sélectionnée dans %{acronym}.
+    playground_load_error: Le visualiseur d'ontologie n'a pas pu être chargé.
     request_new_term: Proposer une nouvelle classe ou classe
     request_term:
       new_term_instructions: |-

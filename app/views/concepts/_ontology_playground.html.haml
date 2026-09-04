@@ -1,0 +1,21 @@
+-# Playground tab body. The class's neighbourhood is handed to the vendored Ontology
+-# Playground viewer (public/ontology-embed) as base64 JSON on data-ontology-inline,
+-# which is the widget's own contract for an ontology it should not fetch itself.
+-# The ontology-playground controller loads the 780 KB script and mounts the widget,
+-# which draws the graph and can show the same neighbourhood as RDF/XML. That RDF is
+-# the widget's own re-minting under an example.org base, not the portal's IRIs — it
+-# describes the diagram, so don't treat it as an export of the ontology.
+-# Wrapped in the matching turbo-frame so the lazy frame in _show.html.haml resolves
+-# the response (same pattern as Mappings).
+= turbo_frame_tag 'concept_ontology_playground' do
+  .playground-embed{data: {controller: 'ontology-playground',
+                           'ontology-playground-script-value': '/ontology-embed/ontology-embed.js',
+                           'ontology-playground-error-message-value': t('concepts.playground_load_error')}}
+    -# The widget reads every option off this element and mounts itself inside it.
+    -# ascii_only escapes every non-ASCII character as \uXXXX before the base64: the
+    -# widget decodes with atob(), which yields one character per BYTE, so UTF-8 in the
+    -# payload comes back as mojibake ("blé" -> "blÃ©"). Escapes survive it intact,
+    -# and JSON.parse turns them back into the right characters.
+    .ontology-embed{data: {'ontology-inline': Base64.strict_encode64(@playground_ontology.to_json(ascii_only: true)),
+                           theme: 'light',
+                           height: '100%'}}

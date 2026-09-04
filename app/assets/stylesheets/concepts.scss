@@ -208,3 +208,16 @@ div.synonym-change-request button {
     min-height: 0;
   }
 }
+
+// Playground tab: the vendored Ontology Playground viewer. It sizes itself to
+// data-height, which is 100% — so the height has to come from here, and .ontology-
+// embed has to pass it down: the widget mounts a div INSIDE that element rather
+// than styling it.
+.playground-embed {
+  height: 75vh;
+  min-height: 600px;
+
+  .ontology-embed {
+    height: 100%;
+  }
+}

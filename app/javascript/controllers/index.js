@@ -135,3 +135,6 @@ application.register("concept-graph", ConceptGraphController)
 
 import VisualizerEmbedController from "./visualizer_embed_controller"
 application.register("visualizer-embed", VisualizerEmbedController)
+
+import OntologyPlaygroundController from "./ontology_playground_controller"
+application.register("ontology-playground", OntologyPlaygroundController)
