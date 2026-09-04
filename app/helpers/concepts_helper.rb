@@ -198,7 +198,39 @@ module ConceptsHelper
     form.select :qualifier, options_for_select(options, 0), {}, { class: 'form-control' }
   end
 
+  # The Visualization tab embeds the OntoPortal BioMixer Visualizer
+  # (https://github.com/ontoportal/biomixer-visualizer), which replaces the legacy
+  # BioMixer GWT app while keeping its query-parameter contract. A copy is vendored
+  # under public/visualizer so the tab needs no extra deployment; $VISUALIZER_URL
+  # points at a separately hosted instance instead.
+  VENDORED_VISUALIZER_PATH = '/visualizer'
+
+  # Embed URL for `concept`. `embed_mode` picks the opening view — paths_to_root,
+  # term_neighborhood, mappings_neighborhood, ontology_mapping_overview, uml,
+  # diagram or print; the visualizer's own tabs switch between them afterwards.
+  def visualizer_embed_url(ontology, concept, embed_mode: 'paths_to_root')
+    params = {
+      mode: 'embed',
+      embed_mode: embed_mode,
+      ontology_acronym: ontology.acronym,
+      full_concept_id: concept.fullId,
+      userapikey: visualizer_apikey,
+      restURLPrefix: $REST_URL,
+      sparql_endpoint: $SPARQL_ENDPOINT_URL
+    }.compact_blank
+
+    base = ($VISUALIZER_URL.presence || VENDORED_VISUALIZER_PATH).chomp('/')
+    "#{base}/index.html?#{params.to_query}"
+  end
+
   private
+
+  # The signed-in user's own key, else the dedicated BioMixer key when the
+  # deployment sets one, else the portal key — so the embed still loads data for
+  # anonymous visitors on portals that never configured $BIOMIXER_APIKEY.
+  def visualizer_apikey
+    session[:user]&.apikey || $BIOMIXER_APIKEY.presence || LinkedData::Client.settings.apikey
+  end
 
   def concept_redirect_path
     ontology_path(@ontology.acronym, p: 'classes', conceptid: @concept.id)

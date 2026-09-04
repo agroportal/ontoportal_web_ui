@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <title>OntoPanel Visualizer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app" class="opv-shell" data-state="booting" data-view="paths">
+      <header class="opv-topbar" aria-label="Ontology visualizer controls">
+        <div class="opv-brand">
+          <div class="opv-logo" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="opv-brand-copy">
+            <p class="opv-eyebrow">OntoPanel Visualizer · OntoPortal</p>
+            <h1 id="workspaceTitle">Ontology graph</h1>
+            <p class="opv-subtitle"><span id="viewSubtitle">Explore ontology structure</span><span id="selectionSubtitle">0 selected for diagram</span></p>
+          </div>
+        </div>
+
+        <nav class="opv-view-tabs" aria-label="Visualization modes">
+          <button type="button" data-view="paths" class="is-active"><span>Paths</span></button>
+          <button type="button" data-view="neighborhood"><span>Neighborhood</span></button>
+          <button type="button" data-view="mappings"><span>Mappings</span></button>
+          <button type="button" data-view="overview"><span>Overview</span></button>
+          <button type="button" data-view="atlas"><span>Atlas</span></button>
+          <button type="button" data-view="diagram"><span>UML / Print</span></button>
+        </nav>
+
+        <div class="opv-top-actions">
+          <label class="opv-search" aria-label="Search ontology classes">
+            <span class="opv-search__icon" aria-hidden="true">⌕</span>
+            <input id="globalSearch" type="search" placeholder="Search classes…" autocomplete="off" />
+          </label>
+          <button id="fitButton" type="button" class="opv-icon-button" title="Fit graph (F)" aria-label="Fit graph">⌘</button>
+          <button id="themeButton" type="button" class="opv-icon-button" title="Toggle theme" aria-label="Toggle theme">◐</button>
+          <button id="helpButton" type="button" class="opv-icon-button" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
+          <button id="fullscreenButton" type="button" class="opv-icon-button" title="Toggle fullscreen" aria-label="Toggle fullscreen">⤢</button>
+        </div>
+      </header>
+
+      <main class="opv-main">
+        <aside class="opv-left-panel" aria-label="Graph tools">
+          <section class="opv-card opv-card--compact">
+            <p class="opv-eyebrow">Context</p>
+            <div class="opv-context-stack">
+              <div>
+                <span>Ontology</span>
+                <strong id="ontologyLabel">—</strong>
+              </div>
+              <div>
+                <span>Focus</span>
+                <strong id="focusLabel">—</strong>
+              </div>
+              <div>
+                <span>API</span>
+                <strong id="apiLabel">—</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="opv-card opv-card--compact">
+            <div class="opv-card__header">
+              <div>
+                <p class="opv-eyebrow">View design</p>
+                <h2>Graph form</h2>
+              </div>
+            </div>
+            <select id="layoutSelect" aria-label="Select layout">
+              <option value="semantic">Semantic map</option>
+              <option value="atlas">Atlas map</option>
+              <option value="radial">Radial map</option>
+              <option value="layers">Layered hierarchy</option>
+              <option value="compact">Compact graph</option>
+              <option value="uml">UML cards</option>
+            </select>
+            <div class="opv-toggle-grid" aria-label="Edge filters">
+              <label><input type="checkbox" data-edge-filter="inheritance" checked /> Inheritance</label>
+              <label><input type="checkbox" data-edge-filter="property" checked /> Properties</label>
+              <label><input type="checkbox" data-edge-filter="mapping" checked /> Mappings</label>
+              <label><input type="checkbox" data-edge-filter="related" checked /> Related</label>
+            </div>
+          </section>
+
+          <section class="opv-card opv-card--compact">
+            <div class="opv-card__header">
+              <div>
+                <p class="opv-eyebrow">Expand</p>
+                <h2>Neighborhood</h2>
+              </div>
+            </div>
+            <div class="opv-action-grid">
+              <button id="expandParentsButton" type="button">Parents</button>
+              <button id="expandChildrenButton" type="button">Children</button>
+              <button id="expandMappingsButton" type="button">Mappings</button>
+              <button id="refocusButton" type="button" class="opv-secondary-button">Refocus</button>
+            </div>
+          </section>
+
+          <section class="opv-card opv-card--compact opv-atlas-card">
+            <div class="opv-card__header">
+              <div>
+                <p class="opv-eyebrow">Whole ontology</p>
+                <h2>Atlas loader</h2>
+              </div>
+              <span class="opv-mini-badge">Map</span>
+            </div>
+            <p class="opv-card-note">Open the Atlas tab to see the ontology as a giant movable map. The minimap rectangle is a jump navigator for the large canvas.</p>
+            <div class="opv-atlas-progress" aria-live="polite">
+              <span id="atlasProgress"></span>
+              <strong id="atlasStatus">Atlas not loaded yet.</strong>
+            </div>
+            <div class="opv-action-grid opv-action-grid--wide">
+              <button id="loadAtlasMoreButton" type="button" class="opv-secondary-button">Load more map</button>
+              <button id="loadAtlasFullButton" type="button">Load full atlas</button>
+            </div>
+          </section>
+
+          <section class="opv-card opv-card--compact opv-selection-card">
+            <div class="opv-card__header">
+              <div>
+                <p class="opv-eyebrow">Selection studio</p>
+                <h2>Printable subset</h2>
+              </div>
+              <span id="selectionMetric" class="opv-mini-badge">0 nodes</span>
+            </div>
+            <p class="opv-card-note">Build a curated subset, then switch to UML / Print for a clean class-diagram style page.</p>
+            <div class="opv-action-grid opv-action-grid--wide">
+              <button id="addSelectionButton" type="button">Add selected</button>
+              <button id="addConnectedButton" type="button" class="opv-secondary-button">Add connected</button>
+              <button id="selectVisibleButton" type="button" class="opv-secondary-button">Use visible</button>
+              <button id="clearSelectionButton" type="button" class="opv-secondary-button">Clear</button>
+            </div>
+            <div id="selectionChips" class="opv-selection-chips" aria-live="polite"></div>
+          </section>
+
+          <section class="opv-card opv-card--compact opv-sparql-card">
+            <div class="opv-card__header">
+              <div>
+                <p class="opv-eyebrow">SPARQL selection</p>
+                <h2>Query subset</h2>
+              </div>
+              <span class="opv-mini-badge">LOD</span>
+            </div>
+            <label class="opv-field-label" for="sparqlEndpoint">Endpoint</label>
+            <input id="sparqlEndpoint" type="url" placeholder="https://…/sparql" autocomplete="off" />
+            <label class="opv-field-label" for="sparqlTemplateSelect">Template</label>
+            <select id="sparqlTemplateSelect" aria-label="SPARQL query template">
+              <option value="directNeighborhood">Focus class neighborhood</option>
+              <option value="children">Direct subclasses of focus</option>
+              <option value="parents">Direct superclasses of focus</option>
+              <option value="rdfTriples">Resource triples</option>
+              <option value="custom">Custom query</option>
+            </select>
+            <textarea id="sparqlQuery" rows="8" spellcheck="false" aria-label="SPARQL query"></textarea>
+            <div class="opv-action-grid">
+              <button id="fillSparqlButton" type="button" class="opv-secondary-button">Template</button>
+              <button id="runSparqlButton" type="button">Run</button>
+            </div>
+            <p id="sparqlStatus" class="opv-card-note">SELECT results can become a UML subset. Triple-style results fill the resource inspector.</p>
+          </section>
+
+          <section class="opv-card opv-card--compact opv-display-card">
+            <div class="opv-card__header">
+              <div>
+                <p class="opv-eyebrow">Display</p>
+                <h2>Graph budget</h2>
+              </div>
+              <span id="hiddenMetric" class="opv-mini-badge">0 hidden</span>
+            </div>
+            <label class="opv-range-field">
+              <span>Visible nodes</span>
+              <strong id="maxNodesValue">240</strong>
+              <input id="maxNodesRange" type="range" min="40" max="8000" step="40" value="240" />
+            </label>
+            <p id="graphNotice" class="opv-card-note">Large ontologies are summarized progressively so the view stays readable.</p>
+          </section>
+
+          <section class="opv-card opv-card--compact opv-hide-when-small">
+            <div class="opv-card__header">
+              <div>
+                <p class="opv-eyebrow">History</p>
+                <h2>Trail</h2>
+              </div>
+            </div>
+            <div id="historyTrail" class="opv-trail" aria-live="polite"></div>
+          </section>
+        </aside>
+
+        <section class="opv-stage" aria-label="Interactive ontology graph">
+          <div class="opv-stage-toolbar">
+            <div id="statusPill" class="opv-status opv-status--idle"><span></span><strong>Starting</strong></div>
+            <div class="opv-metrics" aria-live="polite">
+              <span id="nodeMetric">0 nodes</span>
+              <span id="edgeMetric">0 edges</span>
+              <span id="layoutMetric">semantic layout</span>
+            </div>
+            <div class="opv-export-menu" aria-label="Export options">
+              <button id="exportSvgButton" type="button" class="opv-secondary-button">Download SVG</button>
+              <button id="exportPngButton" type="button" class="opv-secondary-button">Download PNG</button>
+              <button id="exportJsonButton" type="button" class="opv-secondary-button">Download JSON</button>
+              <button id="exportDrawioButton" type="button" class="opv-secondary-button">Download diagrams.net file</button>
+              <button id="exportPlantUmlButton" type="button" class="opv-secondary-button">Download PlantUML source</button>
+              <button id="printButton" type="button" class="opv-secondary-button">Print view</button>
+            </div>
+          </div>
+
+          <div id="canvasHost" class="opv-canvas-host">
+            <div class="opv-paper-frame" aria-hidden="true">
+              <span>A4 landscape print area</span>
+            </div>
+            <svg id="graphSvg" class="opv-graph" role="img" aria-labelledby="graphTitle graphDescription">
+              <title id="graphTitle">Ontology graph</title>
+              <desc id="graphDescription">Interactive graph showing ontology classes, relations, mappings, and UML-like selected diagrams.</desc>
+              <defs>
+                <marker id="arrow-inheritance" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z"></path>
+                </marker>
+                <marker id="arrow-property" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z"></path>
+                </marker>
+                <marker id="arrow-mapping" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z"></path>
+                </marker>
+                <filter id="nodeShadow" x="-40%" y="-40%" width="180%" height="180%">
+                  <feDropShadow dx="0" dy="14" stdDeviation="10" flood-color="#102129" flood-opacity="0.18"></feDropShadow>
+                </filter>
+              </defs>
+              <rect class="opv-graph__hitbox" x="-50000" y="-50000" width="100000" height="100000"></rect>
+              <g id="viewportLayer">
+                <g id="regionLayer"></g>
+                <g id="edgeLayer"></g>
+                <g id="nodeLayer"></g>
+              </g>
+            </svg>
+
+            <div id="graphStory" class="opv-graph-story" aria-live="polite">
+              <p class="opv-eyebrow">Map reading</p>
+              <h2 id="storyTitle">Follow the focus node</h2>
+              <p id="storyText">Use the tabs to switch between hierarchy, local neighborhood, mappings, overview, and printable UML-style diagrams.</p>
+            </div>
+            <div class="opv-graph-legend" aria-label="Graph legend">
+              <span><i class="opv-dot opv-dot--focus"></i>Focus</span>
+              <span><i class="opv-dot opv-dot--inheritance"></i>Inheritance</span>
+              <span><i class="opv-dot opv-dot--property"></i>Property</span>
+              <span><i class="opv-dot opv-dot--mapping"></i>Mapping</span>
+              <span><i class="opv-dot opv-dot--selected"></i>Diagram selection</span>
+            </div>
+            <div class="opv-zoom-controls" aria-label="Zoom controls">
+              <button id="zoomInButton" type="button" class="opv-icon-button" aria-label="Zoom in">+</button>
+              <button id="zoomOutButton" type="button" class="opv-icon-button" aria-label="Zoom out">−</button>
+            </div>
+            <div id="tooltip" class="opv-tooltip" role="status" aria-live="polite"></div>
+            <div id="miniMapHost" class="opv-minimap" aria-label="Mini map: drag the viewport frame to move around the large ontology map">
+              <div class="opv-minimap__label">Map window</div>
+              <svg id="miniMapSvg" role="img" aria-label="Mini map overview"></svg>
+              <div class="opv-minimap__hint">drag frame</div>
+            </div>
+            <div id="emptyState" class="opv-empty-state" hidden>
+              <p class="opv-eyebrow">No graph yet</p>
+              <h2>Open an ontology concept to build the visualization.</h2>
+              <p>Expected parameters: <code>ontology_acronym</code> and <code>full_concept_id</code>. The overview mode only needs an ontology acronym.</p>
+            </div>
+          </div>
+        </section>
+
+        <aside class="opv-detail-panel" aria-label="Selected node details">
+          <section class="opv-card opv-detail-card">
+            <div class="opv-card__header">
+              <div>
+                <p class="opv-eyebrow">Selection</p>
+                <h2 id="detailTitle">No node selected</h2>
+              </div>
+              <button id="copyIriButton" type="button" class="opv-icon-button" title="Copy IRI" aria-label="Copy IRI">⧉</button>
+            </div>
+            <p id="detailKind" class="opv-kind-chip">—</p>
+            <p id="detailDefinition" class="opv-definition">Select a node to inspect labels, IRIs, definitions, mappings, and relation context.</p>
+            <dl class="opv-detail-list">
+              <div>
+                <dt>IRI</dt>
+                <dd id="detailIri">—</dd>
+              </div>
+              <div>
+                <dt>Ontology</dt>
+                <dd id="detailOntology">—</dd>
+              </div>
+              <div>
+                <dt>Synonyms</dt>
+                <dd id="detailSynonyms">—</dd>
+              </div>
+            </dl>
+            <div class="opv-detail-actions">
+              <button id="toggleSelectionButton" type="button" class="opv-secondary-button">Add to printable subset</button>
+              <button id="copyNodeJsonButton" type="button" class="opv-secondary-button">Copy node JSON</button>
+              <button id="openClassButton" type="button" class="opv-secondary-button">Open API record</button>
+              <button id="openResourceButton" type="button" class="opv-secondary-button">Open resource IRI</button>
+            </div>
+          </section>
+
+          <section class="opv-card opv-detail-card opv-resource-card">
+            <div class="opv-card__header">
+              <div>
+                <p class="opv-eyebrow">Resource view</p>
+                <h2>LOD-style facts</h2>
+              </div>
+              <button id="describeResourceButton" type="button" class="opv-icon-button" title="Describe with SPARQL" aria-label="Describe resource with SPARQL">↯</button>
+            </div>
+            <div id="resourceFacts" class="opv-resource-facts"></div>
+          </section>
+
+          <section class="opv-card opv-detail-card">
+            <div class="opv-card__header">
+              <div>
+                <p class="opv-eyebrow">Connections</p>
+                <h2>Visible relations</h2>
+              </div>
+            </div>
+            <div id="connectionList" class="opv-connection-list"></div>
+          </section>
+
+          <section class="opv-card opv-detail-card">
+            <div class="opv-card__header">
+              <div>
+                <p class="opv-eyebrow">Search results</p>
+                <h2>Jump to class</h2>
+              </div>
+            </div>
+            <div id="searchResults" class="opv-search-results"></div>
+          </section>
+        </aside>
+      </main>
+
+      <div id="helpOverlay" class="opv-help-overlay" hidden>
+        <section class="opv-help-card" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+          <div class="opv-card__header">
+            <div>
+              <p class="opv-eyebrow">Shortcuts</p>
+              <h2 id="helpTitle">Explore faster</h2>
+            </div>
+            <button id="closeHelpButton" type="button" class="opv-icon-button" aria-label="Close shortcuts">×</button>
+          </div>
+          <div class="opv-shortcut-grid">
+            <div><kbd>/</kbd><span>Search classes</span></div>
+            <div><kbd>F</kbd><span>Fit graph</span></div>
+            <div><kbd>1–6</kbd><span>Switch views</span></div>
+            <div><kbd>S</kbd><span>Add selected node</span></div>
+            <div><kbd>P</kbd><span>Print current view</span></div>
+            <div><kbd>U</kbd><span>UML cards layout</span></div>
+            <div><kbd>+</kbd><span>Zoom in</span></div>
+            <div><kbd>Esc</kbd><span>Close overlays</span></div>
+          </div>
+          <p class="opv-help-copy">Double-click a class to refocus. Shift-click or press S to add nodes to the printable subset. Atlas mode turns the whole ontology into a giant draggable map; use the minimap frame like a small cutout window.</p>
+        </section>
+      </div>
+    </div>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>

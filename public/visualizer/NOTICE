@@ -1,0 +1,4 @@
+OntoPortal BioMixer Visualizer
+Copyright 2026 OntoPortal
+
+This is a new standalone visualizer that replaces the legacy BioMixer embed while retaining compatible integration parameters. The legacy project is available at https://github.com/thechiselgroup/biomixer.

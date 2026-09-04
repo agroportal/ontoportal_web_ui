@@ -149,6 +149,11 @@ require 'log'
 $BIOMIXER_URL = ENV['BIOMIXER_URL']
 $BIOMIXER_APIKEY = ENV['BIOMIXER_APIKEY']
 
+# Where the Visualization tab loads the OntoPortal BioMixer Visualizer from.
+# Unset means the copy vendored under public/visualizer; set this to serve a
+# separately hosted one instead, e.g. "https://visualizer.example.org".
+$VISUALIZER_URL = ENV['VISUALIZER_URL']
+
 ##
 # Custom Ontology Details
 # Custom details can be added on a per ontology basis using a key/value pair as columns of the details table

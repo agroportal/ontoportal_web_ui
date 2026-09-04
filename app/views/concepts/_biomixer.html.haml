@@ -1,47 +1,11 @@
 = render_in_modal do
-    - require 'cgi'
-    - user_api_key = (session[:user].try(:apikey) || $BIOMIXER_APIKEY).to_s
-    - rest_domain = $REST_URL.sub(/https?:\/\//, "")
-    - src_url = "#{$BIOMIXER_URL}/?mode=embed&embed_mode=paths_to_root&ontology_acronym=#{CGI.escape(@ontology.acronym)}&full_concept_id=#{CGI.escape(@concept.fullId)}&userapikey=#{user_api_key}&restURLPrefix=#{rest_domain}"
-    - original_src = src_url
-
-    :javascript
-        jQuery(document).data().bp.biomixer_fullscreen = {};
-        jQuery(document).data().bp.biomixer_fullscreen.enabled = false;
-        jQuery(document).data().bp.biomixer_fullscreen.bd_container_h = jQuery("#bd_content .cls-info-container").css("height");
-        jQuery(document).data().bp.biomixer_fullscreen.bd_contents_h = jQuery("#bd .bd_content .cls-info-container #contents").css("max-height");
-        jQuery(document).data().bp.biomixer_fullscreen.bio_container_h = jQuery("#biomixer_container").css("height");
-        jQuery(document).data().bp.biomixer_fullscreen.bd_container_w = jQuery("#bd_content .cls-info-container").css("width");
-        jQuery(document).data().bp.biomixer_fullscreen.bio_container_w = jQuery("#biomixer_container").css("width");
-
-        jQuery(document).data().bp.biomixer_fullscreen = {
-            maximize: 'hide',
-            minimize: 'show'
-        };
-
-        jQuery(document).data().bp.biomixer_fullscreen.toggle = function(toggle) {
-            jQuery("#bd_content .sidebar")[toggle]();
-            jQuery("#bd_content .gutter")[toggle]();
-            jQuery("#bd_content .cls-info-container .tabs")[toggle]();
-            jQuery(document).data().bp.biomixer_fullscreen.heights(toggle === 'show');
-        }
-
-        jQuery(document).data().bp.biomixer_fullscreen.heights = function(original) {
-            var height;
-            if (original) {
-            jQuery("#bd_content .cls-info-container").css("height", jQuery(document).data().bp.biomixer_fullscreen.bd_container_h);
-            jQuery("#bd .bd_content .cls-info-container #contents").css("max-height", jQuery(document).data().bp.biomixer_fullscreen.bd_contents_h);
-            jQuery("#biomixer_container").css("height", jQuery(document).data().bp.biomixer_fullscreen.bio_container_h);
-            jQuery("#bd_content .cls-info-container").css("width", jQuery(document).data().bp.biomixer_fullscreen.bd_container_w);
-            jQuery("#biomixer_container").css("padding", 0).css("width", jQuery(document).data().bp.biomixer_fullscreen.bio_container_w);
-            jQuery("#bd_content").trigger('resize');
-            } else {
-            height = jQuery(window).height() - jQuery("#bd_content .cls-info-container").offset().top - 50;
-            jQuery("#bd_content .cls-info-container").css("width", "100%").css("height", height);
-            jQuery("#bd .bd_content .cls-info-container #contents").css("max-height", height);
-            jQuery("#biomixer_container").css("padding", 0).css("width", "100%").css("height", height);
-            }
-        }
-
-    #biomixer_container(style="padding-left: .5%; width: 99.5%; height: 900px;")
-        %iframe#biomixer_iframe(src=original_src data-src=src_url style="min-height: 700px;" height="100%" width="100%" frameborder="0")
+  -# Visualization tab: the OntoPortal BioMixer Visualizer, embedded in an iframe
+  -# (see visualizer_embed_url). It draws its own chrome and drives its own
+  -# fullscreen through the Fullscreen API — which an iframe may only use when the
+  -# embedder allows it — so `allow` replaces the resize glue the legacy BioMixer
+  -# embed needed from the portal.
+  .visualizer-embed
+    %iframe{src: visualizer_embed_url(@ontology, @concept),
+            title: t('concepts.visualization'),
+            allow: 'fullscreen', allowfullscreen: true,
+            frameborder: 0, width: '100%', height: '100%'}
