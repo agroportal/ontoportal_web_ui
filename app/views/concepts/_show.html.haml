@@ -20,6 +20,17 @@
         - tab_item_component(container_tabs: c, title: t('concepts.visualization'), path: '#visualization') do
           = render :partial =>'/concepts/biomixer'
 
+        -# Graph: a node-link diagram of the class's is-a ancestors and asserted
+        -# relationships. loading:'lazy' so the (expensive, many-API-call) graph build
+        -# only runs when this tab is actually shown — not on every class select while
+        -# you're on Details. The pane needs its `id` so the stylesheet can give the
+        -# absolutely-positioned canvas a height (see entity_graph.scss).
+        - tab_item_component(container_tabs: c, id: 'concept-graph', title: t('concepts.entity_graph'), path: '#graph') do
+          -# Pass the active language so the graph's labels (and its cache key) match
+          -# the class page's language on multilingual ontologies.
+          = render TurboFrameComponent.new(id: 'concept_entity_graph', loading: 'lazy',
+          src: "/ajax/entity_graph?ontologyid=#{@ontology.acronym}&conceptid=#{CGI.escape(@concept.id)}&language=#{CGI.escape(request_lang.to_s)}")
+
 
         - count_span = content_tag(:span, "#{t('concepts.notes')} (#{content_tag(:span, @notes.length, id: 'note_count')})".html_safe)
         - notes_link = api_button_link_and_target("#{baseClassUrl}/notes")[0]

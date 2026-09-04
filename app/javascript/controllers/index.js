@@ -129,3 +129,6 @@ application.register("password-toggle", PasswordToggleController)
 
 import RorSearchController from "./ror_search_controller.js"
 application.register("ror-search", RorSearchController)
+
+import ConceptGraphController from "./concept_graph_controller"
+application.register("concept-graph", ConceptGraphController)

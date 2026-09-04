@@ -8,6 +8,10 @@ class ConceptsController < ApplicationController
 
   layout 'ontology'
 
+  # A class's built graph goes stale only when the ontology is re-uploaded, which we
+  # don't detect here (see #entity_graph) — an hour bounds how long a stale graph lives.
+  ENTITY_GRAPH_CACHE_TTL = 1.hour
+
   def show
     params[:id] = params[:id] ? params[:id] : params[:conceptid]
 
@@ -171,6 +175,32 @@ class ConceptsController < ApplicationController
     concept_not_found(params[:conceptid]) if @concept.nil? || @concept.errors
 
     render partial: "biomixer", layout: false
+  end
+
+  # Entity-graph data for a class: the selected class and its full is-a ancestor
+  # chain up to the ontology root(s), plus its asserted relationships, as a
+  # node-link graph. Mirrors the WebProtege entity graph (selected entity at the
+  # bottom, superclasses rising to the top). Rendered into the Graph tab; the graph
+  # itself is drawn client-side (concept-graph Stimulus controller).
+  def entity_graph
+    @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontologyid]).first
+    return ontology_not_found(params[:ontologyid]) if @ontology.nil? || @ontology.errors
+
+    @submission = get_ontology_submission_ready(@ontology)
+    @concept = @ontology.explore.single_class({ full: true, language: request_lang }, params[:conceptid])
+    return concept_not_found(params[:conceptid]) if @concept.nil? || @concept.errors
+
+    # Building the graph fans out to many API calls, but the result is a pure
+    # function of (ontology, class, language) — so cache it. A TTL (not the
+    # submission id) handles invalidation, since reading the submission id would
+    # itself cost an API call on every request, including cache hits. A re-upload is
+    # reflected once the TTL lapses.
+    cache_key = "entity_graph/#{@ontology.acronym}/#{request_lang}/#{Digest::MD5.hexdigest(@concept.id.to_s)}"
+    @graph = Rails.cache.fetch(cache_key, expires_in: ENTITY_GRAPH_CACHE_TTL) do
+      EntityGraphService.call(@ontology, @concept, helpers: helpers, lang: request_lang)
+    end
+
+    render partial: 'entity_graph', layout: false
   end
 
   private

@@ -480,6 +480,13 @@ fr:
     date_sorted_list_error: Les classes ou concepts ne fournissent pas de dates de
       <strong>création</strong> (dc:created) ou de <strong>modification</strong> (cd:modified).
     details: Détails
+    entity_graph: Graphe
+    entity_graph_empty: Cette classe est au sommet de la hiérarchie — elle n'a aucune
+      super-classe à représenter.
+    entity_graph_large_hint: Il comporte %{count} connexions, ce qui peut être lent
+      ou difficile à lire.
+    entity_graph_large_title: Ce graphe est volumineux
+    entity_graph_show_anyway: Afficher quand même le graphe
     error_valid_concept: 'Erreur : Vous devez fournir un identifiant de concept valide'
     instances: Instances
     list_error: La collection ne contient aucun membre

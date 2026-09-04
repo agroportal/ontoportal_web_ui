@@ -468,6 +468,13 @@ en:
     date_sorted_list_error: Classes or concepts do not provide <strong>creation</strong>
       (dc:created) or <strong>modification</strong> (dc:modified) dates.
     details: Details
+    entity_graph: Graph
+    entity_graph_empty: This class is at the top of the hierarchy — it has no superclasses
+      to graph.
+    entity_graph_large_hint: It has %{count} connections, which may be slow or hard
+      to read.
+    entity_graph_large_title: This graph is large
+    entity_graph_show_anyway: Show graph anyway
     error_valid_concept: 'Error: You must provide a valid concept id'
     instances: Instances
     list_error: The Collection didn't define any member

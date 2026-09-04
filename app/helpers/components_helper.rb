@@ -11,8 +11,8 @@ module ComponentsHelper
     render FederatedPortalButtonComponent.new(name: name, color: color, link: link, tooltip: tooltip, light_color: light_color)
   end
 
-  def tab_item_component(container_tabs:, title:, path:, selected: false, json_link: "", &content)
-    container_tabs.item(title: title.html_safe, path: path, selected: selected, json_link: json_link)
+  def tab_item_component(container_tabs:, title:, path:, id: nil, selected: false, json_link: "", &content)
+    container_tabs.item(id: id, title: title.html_safe, path: path, selected: selected, json_link: json_link)
     container_tabs.item_content { capture(&content) }
   end
 
