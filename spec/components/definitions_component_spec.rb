@@ -303,4 +303,57 @@ RSpec.describe DefinitionsComponent, type: :component do
       expect(result.css("a.definition-raw-data")).to be_empty
     end
   end
+
+  # A page of results reads a hundred and fifty resources at once, and wants of
+  # each only the sentence. Which node a sentence came from is a click away on
+  # the resource's own page, so a node the row already reads is dropped where it
+  # stands rather than resolved.
+  describe "a reified node under the summary lookup" do
+    let(:concept) { "http://opendata.inrae.fr/thesaurusINRAE/c_10180" }
+    let(:node)    { "http://opendata.inrae.fr/thesaurusINRAE/note_101800en" }
+    let(:text)    { "The action of reducing to smaller fragments by pressure or impact." }
+
+    def render_summary(definitions, **opts)
+      render_component(definitions, acronym: "INRAETHES", parent_uri: concept, lang: "en",
+                                    lookup: DefinitionsComponent::LOOKUP_SUMMARY, **opts)
+    end
+
+    it "drops the URI of a node beside a definition already written out" do
+      result = render_summary([node, text])
+
+      expect(result.css(".definition-uri")).to be_empty
+      expect(result.css(".definition-text").map(&:text).map(&:strip)).to eq([text])
+    end
+
+    it "does so without a lookup" do
+      expect(ResourceLookupService).not_to receive(:values)
+
+      render_summary([node, text])
+    end
+
+    # Nothing else in the row: the node's text is the only definition there is,
+    # and worth the one request it takes to read it.
+    it "resolves a node that would otherwise leave the row empty" do
+      allow(ResourceLookupService).to receive(:values).and_return([{ text: text, lang: "en" }])
+      result = render_summary([node])
+
+      expect(result.css(".definition-uri")).to be_empty
+      expect(result.css(".definition-text").first.text.strip).to eq(text)
+    end
+
+    # A URI is not a sentence whichever ontology it came from, and dropping one
+    # the row already reads needs no ontology to resolve it against.
+    it "drops a redundant URI with no ontology to resolve it against" do
+      result = render_component([node, text], lookup: DefinitionsComponent::LOOKUP_SUMMARY)
+
+      expect(result.css(".definition-uri")).to be_empty
+      expect(result.css(".definition-text").map(&:text).map(&:strip)).to eq([text])
+    end
+
+    it "keeps the identifier of a node that is all the row has" do
+      allow(ResourceLookupService).to receive(:values).and_return(nil)
+
+      expect(render_summary([node]).css(".definition-uri").first.text.strip).to eq(node)
+    end
+  end
 end

@@ -27,6 +27,15 @@
   margin: 3px 0;
 }
 
+.search-result-component .definitions-component{
+  font-size: 14px;
+  margin: 3px 0;
+}
+
+.search-result-component.sub-component .definitions-component{
+  font-size: 12px;
+}
+
 .search-result-component .actions{
   display: flex;
   margin-top: 10px;

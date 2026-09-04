@@ -80,7 +80,8 @@ module SearchAggregator
 
   def search_result_elem(class_object, ontology_id, title)
     label = search_concept_label(class_object.prefLabel)
-    request_lang = helpers.request_lang&.eql?("ALL") ? '' : "&language=#{helpers.request_lang}"
+    lang = helpers.request_lang
+    request_lang = lang&.eql?("ALL") ? '' : "&language=#{lang}"
     ontology_acronym = link_last_part(ontology_id)
     result = {
       uri: class_object.id.to_s,
@@ -88,6 +89,7 @@ module SearchAggregator
       ontology_id: ontology_id,
       link: "/ontologies/#{ontology_acronym}?p=classes&conceptid=#{escape(class_object.id)}#{request_lang}",
       definition: class_object.definition,
+      lang: lang,
     }
 
     result.merge!(class_federation_configuration(class_object)) if federated_request?

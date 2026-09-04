@@ -7,8 +7,7 @@
     - if @uri
         .uri
             = @uri
-    - if @definition
-        = display_in_multiple_languages(@definition)
+    = render definitions_component
     .actions
         - unless external_class?
             = details_button
