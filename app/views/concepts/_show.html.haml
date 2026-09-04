@@ -27,7 +27,11 @@
               data: { show_modal_title_value: t('concepts.visualization'), show_modal_size_value: 'modal-graph' } }) do
               %i.fas.fa-expand.mr-1
               = t('concepts.visualization_expand')
-          = render :partial =>'/concepts/biomixer'
+          -# visualizer-embed condenses the visualizer's chrome into one bar and two
+          -# edge drawers so the pane goes to the graph; the modal above keeps the
+          -# full layout. On the wrapper, not in the partial, which the modal shares.
+          %div{data: {controller: 'visualizer-embed'}}
+            = render :partial =>'/concepts/biomixer'
 
         -# Graph: a node-link diagram of the class's is-a ancestors and asserted
         -# relationships. loading:'lazy' so the (expensive, many-API-call) graph build

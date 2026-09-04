@@ -132,3 +132,6 @@ application.register("ror-search", RorSearchController)
 
 import ConceptGraphController from "./concept_graph_controller"
 application.register("concept-graph", ConceptGraphController)
+
+import VisualizerEmbedController from "./visualizer_embed_controller"
+application.register("visualizer-embed", VisualizerEmbedController)
