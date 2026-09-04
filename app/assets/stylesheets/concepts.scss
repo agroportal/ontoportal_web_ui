@@ -192,6 +192,31 @@ div.synonym-change-request button {
   }
 }
 
+// Expanded Visualization tab: the embed's fullscreen button asks the page for
+// room (see visualizer_expand_controller) and the page answers by dropping the
+// class tree, the splitter gutter and the tab bar. Split.js writes the widths as
+// inline styles, so taking the freed 30% back needs !important.
+#bd_content.is-visualizer-expanded {
+  .sidebar,
+  .gutter,
+  .tabs-container {
+    display: none;
+  }
+
+  #concept_content {
+    flex-basis: 100% !important;
+  }
+
+  // Exactly one viewport, so the page is always tall enough to scroll the embed
+  // flush to the top — whatever the header and breadcrumbs above it measure.
+  // dvh keeps that true under a mobile browser's collapsing toolbars.
+  .visualizer-embed {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+  }
+}
+
 // Bootstrap 4 stops at modal-xl (1140px), and the tab column is narrower still,
 // which leaves the visualizer's own chrome almost no room for the graph. This
 // size class hands it the viewport instead; show-modal#setSize just swaps the

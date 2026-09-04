@@ -1,11 +1,16 @@
 = render_in_modal do
-  -# Visualization tab: the OntoPortal BioMixer Visualizer, embedded in an iframe
-  -# (see visualizer_embed_url). It draws its own chrome and drives its own
-  -# fullscreen through the Fullscreen API — which an iframe may only use when the
-  -# embedder allows it — so `allow` replaces the resize glue the legacy BioMixer
-  -# embed needed from the portal.
+  -# The OntoPortal BioMixer Visualizer, embedded in an iframe. Two hosts, and a
+  -# vendored build each (see visualizer_embed_url):
+  -#
+  -#   :tab   — the narrow Visualization tab, on the canvas-first build. Its
+  -#            fullscreen button clears the page around it by posting
+  -#            `biomixer_full_screen_request` (see visualizer_expand_controller),
+  -#            so the Fullscreen API is withheld to keep the two from both firing.
+  -#   :modal — the larger view, on the classic build, with room for its flat
+  -#            layout and for the Fullscreen API the visualizer drives itself.
+  - variant = local_assigns.fetch(:variant, :modal)
   .visualizer-embed
-    %iframe{src: visualizer_embed_url(@ontology, @concept),
+    %iframe{src: visualizer_embed_url(@ontology, @concept, variant: variant),
             title: t('concepts.visualization'),
-            allow: 'fullscreen', allowfullscreen: true,
+            allow: ('fullscreen' if variant == :modal), allowfullscreen: variant == :modal,
             frameborder: 0, width: '100%', height: '100%'}

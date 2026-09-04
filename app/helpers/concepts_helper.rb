@@ -198,20 +198,32 @@ module ConceptsHelper
     form.select :qualifier, options_for_select(options, 0), {}, { class: 'form-control' }
   end
 
-  # The Visualization tab embeds the OntoPortal BioMixer Visualizer
+  # The class page embeds the OntoPortal BioMixer Visualizer
   # (https://github.com/ontoportal/biomixer-visualizer), which replaces the legacy
-  # BioMixer GWT app while keeping its query-parameter contract. A copy is vendored
-  # under public/visualizer so the tab needs no extra deployment; $VISUALIZER_URL
-  # points at a separately hosted instance instead.
-  VENDORED_VISUALIZER_PATH = '/visualizer'
+  # BioMixer GWT app while keeping its query-parameter contract. Two builds are
+  # vendored, so neither host needs a deployment of its own:
+  #
+  #   :tab   — public/visualizer, the canvas-first build. Its menu bar and
+  #            collapsible drawers fit the narrow column the class tree leaves.
+  #   :modal — public/visualizer-classic, upstream unpatched. The flat layout the
+  #            larger view has always shown, which has the room for it.
+  #
+  # $VISUALIZER_URL overrides both with a separately hosted instance.
+  VENDORED_VISUALIZER_PATHS = { tab: '/visualizer', modal: '/visualizer-classic' }.freeze
 
-  # Embed URL for `concept`. `embed_mode` picks the opening view — paths_to_root,
-  # term_neighborhood, mappings_neighborhood, ontology_mapping_overview, uml,
-  # diagram or print; the visualizer's own tabs switch between them afterwards.
-  def visualizer_embed_url(ontology, concept, embed_mode: 'paths_to_root')
+  # Opening view per host. The classic build keeps the legacy BioMixer's
+  # paths-to-root; the tab opens the neighbourhood, since paths-to-root draws the
+  # focus class alone on a SKOS thesaurus.
+  VISUALIZER_EMBED_MODES = { tab: 'term_neighborhood', modal: 'paths_to_root' }.freeze
+
+  # Embed URL for `concept` in `variant`'s build. `embed_mode` overrides the
+  # opening view — paths_to_root, term_neighborhood, mappings_neighborhood,
+  # ontology_mapping_overview, uml, diagram or print; the visualizer switches
+  # between them from its own controls afterwards.
+  def visualizer_embed_url(ontology, concept, variant: :tab, embed_mode: nil)
     params = {
       mode: 'embed',
-      embed_mode: embed_mode,
+      embed_mode: embed_mode || VISUALIZER_EMBED_MODES.fetch(variant),
       ontology_acronym: ontology.acronym,
       full_concept_id: concept.fullId,
       userapikey: visualizer_apikey,
@@ -219,7 +231,7 @@ module ConceptsHelper
       sparql_endpoint: $SPARQL_ENDPOINT_URL
     }.compact_blank
 
-    base = ($VISUALIZER_URL.presence || VENDORED_VISUALIZER_PATH).chomp('/')
+    base = ($VISUALIZER_URL.presence || VENDORED_VISUALIZER_PATHS.fetch(variant)).chomp('/')
     "#{base}/index.html?#{params.to_query}"
   end
 

@@ -133,8 +133,8 @@ application.register("ror-search", RorSearchController)
 import ConceptGraphController from "./concept_graph_controller"
 application.register("concept-graph", ConceptGraphController)
 
-import VisualizerEmbedController from "./visualizer_embed_controller"
-application.register("visualizer-embed", VisualizerEmbedController)
+import VisualizerExpandController from "./visualizer_expand_controller"
+application.register("visualizer-expand", VisualizerExpandController)
 
 import OntologyPlaygroundController from "./ontology_playground_controller"
 application.register("ontology-playground", OntologyPlaygroundController)

@@ -7,22 +7,9 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>OntoPanel Visualizer</title>
     <link rel="stylesheet" href="./styles.css" />
-    <style>
-      .opv-shell.is-embed { padding: 8px !important; background: #fff !important; }
-      .opv-shell.is-embed .opv-brand { display: none !important; }
-      .opv-shell.is-embed .opv-topbar { grid-template-columns: auto minmax(220px, 1fr) !important; min-height: 44px !important; padding: 5px 7px !important; border-radius: 8px !important; box-shadow: none !important; }
-      .opv-shell.is-embed .opv-main { padding-top: 8px !important; }
-      .opv-shell.is-embed .opv-stage { border-radius: 10px !important; }
-      .opv-shell.is-embed .opv-left-panel,
-      .opv-shell.is-embed .opv-detail-panel { border-radius: 8px !important; }
-      .opv-shell.is-embed .opv-card,
-      .opv-shell.is-embed .opv-detail-card { border-radius: 8px !important; }
-    </style>
   </head>
   <body>
-    <div id="app" class="opv-shell left-panel-collapsed right-panel-collapsed" data-state="booting" data-view="paths">
-      <button id="floatingToggleLeft" class="opv-floating-toggle opv-floating-toggle--left" type="button" aria-label="Toggle tools drawer" title="Toggle tools drawer" aria-expanded="false"></button>
-      <button id="floatingToggleRight" class="opv-floating-toggle opv-floating-toggle--right" type="button" aria-label="Toggle details drawer" title="Toggle details drawer" aria-expanded="false"></button>
+    <div id="app" class="opv-shell" data-state="booting" data-view="paths">
       <header class="opv-topbar" aria-label="Ontology visualizer controls">
         <div class="opv-brand">
           <div class="opv-logo" aria-hidden="true">
@@ -33,53 +20,28 @@
           <div class="opv-brand-copy">
             <p class="opv-eyebrow">OntoPanel Visualizer · OntoPortal</p>
             <h1 id="workspaceTitle">Ontology graph</h1>
-            <p class="opv-subtitle"><span id="viewSubtitle">Explore ontology graph</span><span id="selectionSubtitle">0 selected for diagram</span></p>
+            <p class="opv-subtitle"><span id="viewSubtitle">Explore ontology structure</span><span id="selectionSubtitle">0 selected for diagram</span></p>
           </div>
         </div>
 
-        <nav class="opv-menubar" aria-label="Visualizer menu bar">
-          <details class="opv-menu opv-view-menu">
-            <summary>Visualization</summary>
-            <nav class="opv-menu-panel opv-view-tabs" aria-label="Visualization modes">
-              <button type="button" data-view="overview"><span>Overview</span></button>
-              <button type="button" data-view="atlas"><span>Atlas</span></button>
-              <button type="button" data-view="diagram"><span>Diagram</span></button>
-              <button type="button" data-view="paths" class="is-active"><span>Paths</span></button>
-              <button type="button" data-view="neighborhood"><span>Neighborhood</span></button>
-              <button type="button" data-view="mappings"><span>Mappings</span></button>
-            </nav>
-          </details>
-          <details class="opv-menu opv-download-menu">
-            <summary>Download</summary>
-            <div class="opv-menu-panel opv-export-menu" aria-label="Download and export options">
-              <button id="exportSvgButton" type="button" class="opv-secondary-button">Download SVG</button>
-              <button id="exportDrawioButton" type="button" class="opv-secondary-button">Download diagrams.net XML</button>
-              <button id="exportPlantUmlButton" type="button" class="opv-secondary-button">Download PlantUML source</button>
-              <button id="printButton" type="button" class="opv-secondary-button">Print view</button>
-            </div>
-          </details>
-          <details class="opv-menu opv-actions-menu">
-            <summary>Actions</summary>
-            <div class="opv-menu-panel opv-action-menu" aria-label="Graph actions">
-              <button id="fitButton" type="button" class="opv-secondary-button">Fit graph</button>
-              <button id="themeButton" type="button" class="opv-secondary-button">Toggle theme</button>
-              <button id="helpButton" type="button" class="opv-secondary-button">Shortcuts</button>
-              <button id="fullscreenButton" type="button" class="opv-secondary-button">Fullscreen</button>
-            </div>
-          </details>
-          <div class="opv-menubar-status" aria-live="polite">
-            <div id="statusPill" class="opv-status opv-status--idle"><span></span><strong>Starting</strong></div>
-            <span id="nodeMetric">0 nodes</span>
-            <span id="edgeMetric">0 edges</span>
-            <span id="layoutMetric">semantic layout</span>
-          </div>
+        <nav class="opv-view-tabs" aria-label="Visualization modes">
+          <button type="button" data-view="paths" class="is-active"><span>Paths</span></button>
+          <button type="button" data-view="neighborhood"><span>Neighborhood</span></button>
+          <button type="button" data-view="mappings"><span>Mappings</span></button>
+          <button type="button" data-view="overview"><span>Overview</span></button>
+          <button type="button" data-view="atlas"><span>Atlas</span></button>
+          <button type="button" data-view="diagram"><span>UML / Print</span></button>
         </nav>
 
-        <div class="opv-top-actions opv-search-only">
+        <div class="opv-top-actions">
           <label class="opv-search" aria-label="Search ontology classes">
             <span class="opv-search__icon" aria-hidden="true">⌕</span>
             <input id="globalSearch" type="search" placeholder="Search classes…" autocomplete="off" />
           </label>
+          <button id="fitButton" type="button" class="opv-icon-button" title="Fit graph (F)" aria-label="Fit graph">⌘</button>
+          <button id="themeButton" type="button" class="opv-icon-button" title="Toggle theme" aria-label="Toggle theme">◐</button>
+          <button id="helpButton" type="button" class="opv-icon-button" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
+          <button id="fullscreenButton" type="button" class="opv-icon-button" title="Toggle fullscreen" aria-label="Toggle fullscreen">⤢</button>
         </div>
       </header>
 
@@ -116,7 +78,7 @@
               <option value="radial">Radial map</option>
               <option value="layers">Layered hierarchy</option>
               <option value="compact">Compact graph</option>
-              <option value="uml">Diagram cards</option>
+              <option value="uml">UML cards</option>
             </select>
             <div class="opv-toggle-grid" aria-label="Edge filters">
               <label><input type="checkbox" data-edge-filter="inheritance" checked /> Inheritance</label>
@@ -163,12 +125,12 @@
           <section class="opv-card opv-card--compact opv-selection-card">
             <div class="opv-card__header">
               <div>
-                <p class="opv-eyebrow">Build diagram</p>
-                <h2>Diagram selection</h2>
+                <p class="opv-eyebrow">Selection studio</p>
+                <h2>Printable subset</h2>
               </div>
               <span id="selectionMetric" class="opv-mini-badge">0 nodes</span>
             </div>
-            <p class="opv-card-note">Build a curated subset, then switch to Diagram for the browser class-diagram view. Downloads are available from the Download menu.</p>
+            <p class="opv-card-note">Build a curated subset, then switch to UML / Print for a clean class-diagram style page.</p>
             <div class="opv-action-grid opv-action-grid--wide">
               <button id="addSelectionButton" type="button">Add selected</button>
               <button id="addConnectedButton" type="button" class="opv-secondary-button">Add connected</button>
@@ -201,7 +163,7 @@
               <button id="fillSparqlButton" type="button" class="opv-secondary-button">Template</button>
               <button id="runSparqlButton" type="button">Run</button>
             </div>
-            <p id="sparqlStatus" class="opv-card-note">SELECT results can become part of the diagram selection. Triple-style results fill the resource inspector.</p>
+            <p id="sparqlStatus" class="opv-card-note">SELECT results can become a UML subset. Triple-style results fill the resource inspector.</p>
           </section>
 
           <section class="opv-card opv-card--compact opv-display-card">
@@ -232,13 +194,30 @@
         </aside>
 
         <section class="opv-stage" aria-label="Interactive ontology graph">
+          <div class="opv-stage-toolbar">
+            <div id="statusPill" class="opv-status opv-status--idle"><span></span><strong>Starting</strong></div>
+            <div class="opv-metrics" aria-live="polite">
+              <span id="nodeMetric">0 nodes</span>
+              <span id="edgeMetric">0 edges</span>
+              <span id="layoutMetric">semantic layout</span>
+            </div>
+            <div class="opv-export-menu" aria-label="Export options">
+              <button id="exportSvgButton" type="button" class="opv-secondary-button">Download SVG</button>
+              <button id="exportPngButton" type="button" class="opv-secondary-button">Download PNG</button>
+              <button id="exportJsonButton" type="button" class="opv-secondary-button">Download JSON</button>
+              <button id="exportDrawioButton" type="button" class="opv-secondary-button">Download diagrams.net file</button>
+              <button id="exportPlantUmlButton" type="button" class="opv-secondary-button">Download PlantUML source</button>
+              <button id="printButton" type="button" class="opv-secondary-button">Print view</button>
+            </div>
+          </div>
+
           <div id="canvasHost" class="opv-canvas-host">
             <div class="opv-paper-frame" aria-hidden="true">
               <span>A4 landscape print area</span>
             </div>
             <svg id="graphSvg" class="opv-graph" role="img" aria-labelledby="graphTitle graphDescription">
               <title id="graphTitle">Ontology graph</title>
-              <desc id="graphDescription">Interactive graph showing ontology classes, relations, mappings, browser diagrams, and exportable source files.</desc>
+              <desc id="graphDescription">Interactive graph showing ontology classes, relations, mappings, and UML-like selected diagrams.</desc>
               <defs>
                 <marker id="arrow-inheritance" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                   <path d="M 0 0 L 10 5 L 0 10 z"></path>
@@ -261,19 +240,10 @@
               </g>
             </svg>
 
-            <div id="diagramLayer" class="opv-diagram-layer" role="region" aria-label="Native diagram annotations"></div>
-            <div id="diagramHud" class="opv-diagram-hud" aria-label="Annotations">
-              <span class="opv-diagram-hud__label">Annotations</span>
-              <button id="diagramAddNoteButton" type="button" class="opv-secondary-button">Add note</button>
-              <button id="diagramAddGroupButton" type="button" class="opv-secondary-button">Add group box</button>
-              <button id="diagramClearButton" type="button" class="opv-secondary-button">Clear annotations</button>
-              <span class="opv-diagram-hud__hint">Local browser annotations added to this view. Use download options to save files.</span>
-            </div>
-
             <div id="graphStory" class="opv-graph-story" aria-live="polite">
               <p class="opv-eyebrow">Map reading</p>
               <h2 id="storyTitle">Follow the focus node</h2>
-              <p id="storyText">Use the visualization menu to switch between hierarchy, local neighborhood, mappings, overview, atlas, and browser diagrams.</p>
+              <p id="storyText">Use the tabs to switch between hierarchy, local neighborhood, mappings, overview, and printable UML-style diagrams.</p>
             </div>
             <div class="opv-graph-legend" aria-label="Graph legend">
               <span><i class="opv-dot opv-dot--focus"></i>Focus</span>
@@ -326,7 +296,7 @@
               </div>
             </dl>
             <div class="opv-detail-actions">
-              <button id="toggleSelectionButton" type="button" class="opv-secondary-button">Add to diagram</button>
+              <button id="toggleSelectionButton" type="button" class="opv-secondary-button">Add to printable subset</button>
               <button id="copyNodeJsonButton" type="button" class="opv-secondary-button">Copy node JSON</button>
               <button id="openClassButton" type="button" class="opv-secondary-button">Open API record</button>
               <button id="openResourceButton" type="button" class="opv-secondary-button">Open resource IRI</button>
@@ -381,96 +351,15 @@
             <div><kbd>1–6</kbd><span>Switch views</span></div>
             <div><kbd>S</kbd><span>Add selected node</span></div>
             <div><kbd>P</kbd><span>Print current view</span></div>
-            <div><kbd>U</kbd><span>Diagram cards layout</span></div>
+            <div><kbd>U</kbd><span>UML cards layout</span></div>
             <div><kbd>+</kbd><span>Zoom in</span></div>
             <div><kbd>Esc</kbd><span>Close overlays</span></div>
           </div>
-          <p class="opv-help-copy">Double-click a class to refocus. Shift-click or press S to add nodes to the diagram. Atlas mode turns the whole ontology into a draggable map; use the minimap frame as a navigation window.</p>
+          <p class="opv-help-copy">Double-click a class to refocus. Shift-click or press S to add nodes to the printable subset. Atlas mode turns the whole ontology into a giant draggable map; use the minimap frame like a small cutout window.</p>
         </section>
       </div>
     </div>
 
-    <script>
-      if (new URLSearchParams(window.location.search).get("hide_drawers")) {
-        try {
-          window.localStorage.removeItem("opv-left-panel-open");
-          window.localStorage.removeItem("opv-right-panel-open");
-        } catch (_) {}
-      }
-    </script>
     <script src="./app.js" defer></script>
-    <script>
-      window.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".opv-menu button").forEach(function (button) {
-          button.addEventListener("click", function () {
-            var menu = button.closest("details");
-            if (menu) window.setTimeout(function () { menu.open = false; }, 80);
-          });
-        });
-        document.addEventListener("click", function (event) {
-          document.querySelectorAll(".opv-menu[open]").forEach(function (menu) {
-            if (!menu.contains(event.target)) menu.open = false;
-          });
-        });
-      });
-    </script>
-
-    <script>
-      window.addEventListener("DOMContentLoaded", function () {
-        var params = new URLSearchParams(window.location.search);
-        var hasConcept = ["full_concept_id", "conceptid", "class_id", "class", "id"].some(function (key) {
-          return !!params.get(key);
-        });
-        if (!hasConcept) {
-          ["paths", "neighborhood", "mappings"].forEach(function (view) {
-            var button = document.querySelector('button[data-view="' + view + '"]');
-            if (button) {
-              button.disabled = true;
-              button.title = "Select a class from search before using this class-level view";
-              button.setAttribute("aria-disabled", "true");
-            }
-          });
-        }
-        var svg = document.querySelector("#graphSvg, .opv-graph");
-        if (!svg) { return; }
-        var lastDistance = 0;
-        var center = function (touches) {
-          return {
-            x: (touches[0].clientX + touches[1].clientX) / 2,
-            y: (touches[0].clientY + touches[1].clientY) / 2
-          };
-        };
-        svg.addEventListener("touchstart", function (event) {
-          if (event.touches.length === 2) {
-            var dx = event.touches[0].clientX - event.touches[1].clientX;
-            var dy = event.touches[0].clientY - event.touches[1].clientY;
-            lastDistance = Math.hypot(dx, dy);
-            event.preventDefault();
-          }
-        }, { passive: false });
-        svg.addEventListener("touchmove", function (event) {
-          if (event.touches.length !== 2 || !lastDistance) { return; }
-          var dx = event.touches[0].clientX - event.touches[1].clientX;
-          var dy = event.touches[0].clientY - event.touches[1].clientY;
-          var nextDistance = Math.hypot(dx, dy);
-          var ratio = nextDistance / lastDistance;
-          if (Math.abs(ratio - 1) > 0.015) {
-            var c = center(event.touches);
-            svg.dispatchEvent(new WheelEvent("wheel", {
-              bubbles: true,
-              cancelable: true,
-              clientX: c.x,
-              clientY: c.y,
-              deltaY: ratio > 1 ? -90 : 90
-            }));
-            lastDistance = nextDistance;
-          }
-          event.preventDefault();
-        }, { passive: false });
-        svg.addEventListener("touchend", function (event) {
-          if (event.touches.length < 2) { lastDistance = 0; }
-        }, { passive: true });
-      });
-    </script>
   </body>
 </html>

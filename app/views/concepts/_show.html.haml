@@ -18,20 +18,23 @@
 
 
         - tab_item_component(container_tabs: c, title: t('concepts.visualization'), path: '#visualization') do
-          -# The class tree takes a third of the page, so the tab column leaves the
-          -# visualizer's own chrome (view tabs, search, side panels) little room for
-          -# the graph itself. Offer the same embed in a near-viewport modal.
-          .d-flex.justify-content-end.mb-2
-            = link_to_modal(nil, "/ajax/biomixer?ontology=#{@ontology.acronym}&conceptid=#{CGI.escape(@concept.id)}",
-              { class: 'btn btn-sm btn-outline-primary',
-              data: { show_modal_title_value: t('concepts.visualization'), show_modal_size_value: 'modal-graph' } }) do
-              %i.fas.fa-expand.mr-1
-              = t('concepts.visualization_expand')
-          -# visualizer-embed condenses the visualizer's chrome into one bar and two
-          -# edge drawers so the pane goes to the graph; the modal above keeps the
-          -# full layout. On the wrapper, not in the partial, which the modal shares.
-          %div{data: {controller: 'visualizer-embed'}}
-            = render :partial =>'/concepts/biomixer'
+          -# The class tree takes a third of the page, so the tab gets the embed with
+          -# its side drawers collapsed. Offer the standalone layout, drawers open,
+          -# in a near-viewport modal.
+          -#
+          -# visualizer-expand serves both routes to more room: it moves the link
+          -# below into the visualizer's own top bar, and lets the embed's fullscreen
+          -# button clear the class tree and the tab bar out of its way.
+          -# On the wrapper, not in the partial, which the modal shares.
+          %div{data: {controller: 'visualizer-expand',
+            'visualizer-expand-label-value': t('concepts.visualization_expand')}}
+            .text-right.mb-2{data: {'visualizer-expand-target': 'trigger'}}
+              = link_to_modal(nil, "/ajax/biomixer?ontology=#{@ontology.acronym}&conceptid=#{CGI.escape(@concept.id)}",
+                { class: 'btn btn-sm btn-outline-primary',
+                data: { show_modal_title_value: t('concepts.visualization'), show_modal_size_value: 'modal-graph' } }) do
+                %i.fas.fa-expand.mr-1
+                = t('concepts.visualization_expand')
+            = render partial: '/concepts/biomixer', locals: { variant: :tab }
 
         -# Graph: a node-link diagram of the class's is-a ancestors and asserted
         -# relationships. loading:'lazy' so the (expensive, many-API-call) graph build
