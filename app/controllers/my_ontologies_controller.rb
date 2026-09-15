@@ -93,7 +93,8 @@ class MyOntologiesController < ApplicationController
   # --- Filters ---
   def ontology_filters_init
     ## formats and sorts_options is for the filters in the search bar
-    @formats = [[t("submissions.filter.all_formats"), '']] + ONTOLOGY_FORMATS
+    @formats = [[t("submissions.filter.all_formats"), '']] +
+               ONTOLOGY_FORMATS.map { |f| [helpers.ontology_format_label(f), f] }
     @sorts_options = [
       [t("submissions.filter.sort"), ''],
       [t("submissions.filter.sort_by_name"), 'ontology_name'],

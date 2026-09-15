@@ -94,6 +94,12 @@ module ApplicationHelper
     omniauth_provider_info(strategy.to_sym).keys.first
   end
 
+  ONTOLOGY_FORMAT_LABELS = { 'XLSX' => 'TDv5' }.freeze
+
+  def ontology_format_label(format, fallback = nil)
+    ONTOLOGY_FORMAT_LABELS[format.to_s] || fallback || format
+  end
+
   def current_user
     # Safely return session[:user] or nil if no session context
     return nil unless respond_to?(:session) && session

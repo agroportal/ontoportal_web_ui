@@ -422,14 +422,12 @@ module SubmissionInputsHelper
                value: attr.values, helper_text: nil)
   end
 
-  FORMAT_VALUE_LABELS = { 'XLSX' => 'Trait Dictionary template v5' }.freeze
-
   def generate_select_input(attr, multiple: false, help_text: nil)
     name = attr.name
     label = attr_header_label(attr)
     metadata_values, select_values = selected_values(attr, enforced_values(attr))
     if attr.attr_key.to_s == 'hasOntologyLanguage'
-      select_values = select_values.map { |lbl, val| [FORMAT_VALUE_LABELS[val] || lbl, val] }
+      select_values = select_values.map { |lbl, val| [ontology_format_label(val, lbl), val] }
     end
 
     if !multiple && !attr.required?
