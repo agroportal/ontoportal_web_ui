@@ -422,9 +422,7 @@ module SubmissionInputsHelper
                value: attr.values, helper_text: nil)
   end
 
-  # Display-only override: the "XLSX" format is shown as "TDv5" in the UI.
-  # The submitted value stays "XLSX" (unchanged backend format acronym).
-  FORMAT_VALUE_LABELS = { 'XLSX' => 'TDv5' }.freeze
+  FORMAT_VALUE_LABELS = { 'XLSX' => 'Trait Dictionary template v5' }.freeze
 
   def generate_select_input(attr, multiple: false, help_text: nil)
     name = attr.name
