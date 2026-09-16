@@ -232,7 +232,7 @@ module SubmissionInputsHelper
   end
 
   def has_ontology_language_input(submission = @submission)
-    render(Layout::RevealComponent.new(possible_values: %w[SKOS OBO UMLS OWL XLSX], selected: submission.hasOntologyLanguage)) do |c|
+    render(Layout::RevealComponent.new(possible_values: %w[SKOS OBO UMLS OWL TDv5], selected: submission.hasOntologyLanguage)) do |c|
       c.button do
         attribute_input("hasOntologyLanguage", label: t('submission_inputs.hasOntologyLanguage'))
       end
@@ -426,9 +426,6 @@ module SubmissionInputsHelper
     name = attr.name
     label = attr_header_label(attr)
     metadata_values, select_values = selected_values(attr, enforced_values(attr))
-    if attr.attr_key.to_s == 'hasOntologyLanguage'
-      select_values = select_values.map { |lbl, val| [ontology_format_label(val, lbl), val] }
-    end
 
     if !multiple && !attr.required?
       select_values << ['', '']

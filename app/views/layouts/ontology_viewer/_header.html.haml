@@ -30,7 +30,7 @@
             = render ChipButtonComponent.new(class: 'chip_button_small mr-1') do
               = private_ontology_icon(@ontology.private?)
           - if @submission_latest&.hasOntologyLanguage
-            = render ChipButtonComponent.new(class: 'chip_button_small mr-1', text: ontology_format_label(@submission_latest.hasOntologyLanguage))
+            = render ChipButtonComponent.new(class: 'chip_button_small mr-1', text: @submission_latest.hasOntologyLanguage)
           = ontology_retired_badge(@submission_latest, small: true, clickable: false)
           = ontology_license_badge(@ontology.acronym, @submission_latest)
 

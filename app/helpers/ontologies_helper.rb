@@ -177,9 +177,7 @@ module OntologiesHelper
     else
       uri = submission.id + "/download"
       href, target = api_button_link_and_target(uri, allow_annonymous = true)
-      links << { href: href,
-                 label: ontology_format_label(submission.hasOntologyLanguage, submission.pretty_format),
-                 target: target }
+      links << { href: href, label: submission.pretty_format, target: target }
       if submission_ready?(submission)
         uri = "#{ontology.id}/download?download_format=csv"
         href, target = api_button_link_and_target(uri, allow_annonymous = true)

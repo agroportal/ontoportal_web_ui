@@ -7,7 +7,7 @@ module SubmissionFilter
                        'contact', 'released', 'naturalLanguage', 'hasOntologyLanguage',
                        'hasFormalityLevel', 'isOfType', 'deprecated', 'status', 'metrics']
 
-  ONTOLOGY_FORMATS = %w[OBO OWL SKOS UMLS XLSX].freeze
+  ONTOLOGY_FORMATS = %w[OBO OWL SKOS UMLS TDv5].freeze
 
   def init_filters(params)
     @show_views = params[:show_views]&.eql?('true')
@@ -321,8 +321,7 @@ module SubmissionFilter
       { 'id' => id, 'name' => helpers.link_last_part(id), 'acronym' => name, 'value' => helpers.link_last_part(id) }
     end
 
-    @formats = [[t("submissions.filter.all_formats"), '']] +
-               ONTOLOGY_FORMATS.map { |f| [helpers.ontology_format_label(f), f] }
+    @formats = [[t("submissions.filter.all_formats"), '']] + ONTOLOGY_FORMATS
     @sorts_options = [
       [t("submissions.filter.sort"), ''],
       [t("submissions.filter.sort_by_name"), 'ontology_name'],
