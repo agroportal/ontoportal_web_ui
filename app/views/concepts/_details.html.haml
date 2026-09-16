@@ -14,7 +14,9 @@
       - t.add_row({th: t('ontology_details.concept.id')}, {td:link_to_with_actions(@concept.id, acronym: @ontology.acronym)})
       - t.add_row({th: t('ontology_details.concept.preferred_name')}) do |h|
         - h.td do
-          = display_in_multiple_languages(@concept.prefLabel)
+          -# Styled only when present, so the missing-name alert keeps its look
+          %div{class: ('concept-pref-label' if @concept.prefLabel.present?)}
+            = display_in_multiple_languages(@concept.prefLabel)
 
       - unless @concept.synonym.nil? || @concept.synonym.empty?
         - t.add_row({th: t('ontology_details.concept.synonyms')}) do |h|

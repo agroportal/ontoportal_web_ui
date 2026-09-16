@@ -11,3 +11,10 @@
 .concept_details_component td, .concept_details_component th{
   max-width: 200px;
 }
+
+// Preferred name outranks the synonym chips below it: size carries the
+// hierarchy, weight reinforces it.
+.concept_details_component .concept-pref-label {
+  font-size: 1.15em;
+  font-weight: 600;
+}
