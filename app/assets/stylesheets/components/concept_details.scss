@@ -10,6 +10,7 @@
 
 .concept_details_component td, .concept_details_component th{
   max-width: 200px;
+  overflow-wrap: anywhere;
 }
 
 // Preferred name outranks the synonym chips below it: size carries the
