@@ -543,6 +543,7 @@ fr:
     fairness_unreachable_warning: Problème d'accès au service d'évaluation du niveau
       de FAIRness
     foops_unreachable_warning: Problème d'accès au service d'évaluation FOOPS!
+    foops_private_ontology_warning: FOOPS! est un service externe à %{portal_name}. Rendez votre ontologie publique pour obtenir le score d'évaluation.
     foops_description: 'Score d''évaluation FAIR calculé avec l''outil FOOPS! (Ontology
       Pitfall Scanner for FAIR) à partir du fichier déposé dans le portail. Plus de détails
       ici : https://foops.linkeddata.es/'
