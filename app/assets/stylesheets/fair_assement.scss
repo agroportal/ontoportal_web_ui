@@ -179,6 +179,11 @@ $non_applicable_color :  rgba(176, 190, 197, 0.4);
 
 #foops-summary .browse-empty-illustration {
   margin: 24px 0;
+
+  svg {
+    width: 72px;
+    height: 72px;
+  }
 }
 
 @media (max-width: 767.98px) {
