@@ -7,7 +7,7 @@ module SubmissionFilter
                        'contact', 'released', 'naturalLanguage', 'hasOntologyLanguage',
                        'hasFormalityLevel', 'isOfType', 'deprecated', 'status', 'metrics']
 
-  ONTOLOGY_FORMATS = %w[OBO OWL SKOS UMLS XLSX].freeze
+  ONTOLOGY_FORMATS = %w[OBO OWL SKOS UMLS TDV5].freeze
 
   def init_filters(params)
     @show_views = params[:show_views]&.eql?('true')

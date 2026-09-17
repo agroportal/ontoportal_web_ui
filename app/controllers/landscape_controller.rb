@@ -41,7 +41,7 @@ class LandscapeController < ApplicationController
 
     ontology_relations_array = []
 
-    ontologyFormatsCount = {"OWL" => 0, "SKOS" => 0, "UMLS" => 0, "OBO" => 0}
+    ontologyFormatsCount = Hash.new(0).merge({"OWL" => 0, "SKOS" => 0, "UMLS" => 0, "OBO" => 0, "TDV5" => 0})
 
     @metrics_average = [{attr: "classes", label: t('landscape.classes'), array: []},
                         {attr: "individuals", label: t('landscape.individuals'), array: []},

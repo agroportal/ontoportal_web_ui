@@ -226,13 +226,14 @@ module SubmissionInputsHelper
 
   def ontology_xlsx_language_help
     content_tag(:div, class: 'upload-ontology-desc has_ontology_language_input') do
-      text = t('submission_inputs.ontology_xlsx_language_help', portal_name: portal_name)
+      link = link_to(t('submission_inputs.ontology_xlsx_language_link'), "https://cgspace.cgiar.org/items/af4f3a25-8d7a-4afa-b5f3-998a556b1593", target: "_blank")
+      text = t('submission_inputs.ontology_xlsx_language_help', portal_name: portal_name, link: link)
       text.html_safe
     end
   end
 
   def has_ontology_language_input(submission = @submission)
-    render(Layout::RevealComponent.new(possible_values: %w[SKOS OBO UMLS OWL XLSX], selected: submission.hasOntologyLanguage)) do |c|
+    render(Layout::RevealComponent.new(possible_values: %w[SKOS OBO UMLS OWL TDV5], selected: submission.hasOntologyLanguage)) do |c|
       c.button do
         attribute_input("hasOntologyLanguage", label: t('submission_inputs.hasOntologyLanguage'))
       end
@@ -422,17 +423,10 @@ module SubmissionInputsHelper
                value: attr.values, helper_text: nil)
   end
 
-  # Display-only override: the "XLSX" format is shown as "TDv5" in the UI.
-  # The submitted value stays "XLSX" (unchanged backend format acronym).
-  FORMAT_VALUE_LABELS = { 'XLSX' => 'TDv5' }.freeze
-
   def generate_select_input(attr, multiple: false, help_text: nil)
     name = attr.name
     label = attr_header_label(attr)
     metadata_values, select_values = selected_values(attr, enforced_values(attr))
-    if attr.attr_key.to_s == 'hasOntologyLanguage'
-      select_values = select_values.map { |lbl, val| [FORMAT_VALUE_LABELS[val] || lbl, val] }
-    end
 
     if !multiple && !attr.required?
       select_values << ['', '']
