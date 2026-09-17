@@ -226,7 +226,8 @@ module SubmissionInputsHelper
 
   def ontology_xlsx_language_help
     content_tag(:div, class: 'upload-ontology-desc has_ontology_language_input') do
-      text = t('submission_inputs.ontology_xlsx_language_help', portal_name: portal_name)
+      link = link_to(t('submission_inputs.ontology_xlsx_language_link'), "https://cgspace.cgiar.org/items/af4f3a25-8d7a-4afa-b5f3-998a556b1593", target: "_blank")
+      text = t('submission_inputs.ontology_xlsx_language_help', portal_name: portal_name, link: link)
       text.html_safe
     end
   end
