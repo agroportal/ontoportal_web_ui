@@ -13,6 +13,14 @@ module FairScoreHelper
     Flipper.enabled?('FOOPS', user) && $FOOPS_URL.present?
   end
 
+  def foops_assessable?(ontology)
+    !ontology.private?
+  end
+
+  def foops_private_ontology_message
+    t('fair_score.foops_private_ontology_warning', portal_name: $SITE)
+  end
+
   def get_fairness_service_url(apikey = user_apikey)
     "#{$FAIRNESS_URL}?portal=#{$HOSTNAME.split('.')[0]}#{apikey.nil? || apikey.empty? ? '' : "&apikey=#{apikey}"}"
   end
@@ -129,6 +137,7 @@ module FairScoreHelper
 
   def get_foops_score(ontology)
     return {} unless foops_enabled?
+    return { 'error' => foops_private_ontology_message } unless foops_assessable?(ontology)
 
     ontology_uri = "#{$UI_URL}/ontologies/#{ontology.acronym}"
     cache_key = "foops-#{ontology.acronym}"
