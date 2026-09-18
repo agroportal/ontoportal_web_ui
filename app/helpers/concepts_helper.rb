@@ -235,6 +235,50 @@ module ConceptsHelper
     "#{base}/index.html?#{params.to_query}"
   end
 
+  # Vendored WebVOWL (public/webvowl), and the route that builds the VOWL it reads.
+  VENDORED_WEBVOWL_PATH = '/webvowl'.freeze
+  WEBVOWL_DATA_PATH = '/ajax/webvowl_data'.freeze
+
+  # Parameter with nothing in it, there to catch the ".json" WebVOWL appends.
+  WEBVOWL_EXTENSION_PARAM = 'ext'.freeze
+
+  # Options WebVOWL reads out of the first hash token. The side panel starts
+  # collapsed — the tab is too narrow for it, and its own toggle brings it back.
+  # The trailing ';' is not decoration: WebVOWL parses the token by dropping its
+  # last character.
+  #
+  # Nothing here widens a node to fit its label: WebVOWL truncates to the circle's
+  # diameter (RoundNode#textWidth), so a portal label longer than its default
+  # radius allows reads "05.03 CELL ..." on the canvas, in full on hover and in the
+  # side panel. Its mode_dynamic option does not change that.
+  WEBVOWL_EMBED_OPTIONS = 'opts=sidebar=0;'.freeze
+
+  # Embed URL for `concept`'s neighbourhood, as VOWL.
+  #
+  # The second hash token names the ontology for WebVOWL to show, and its only
+  # server-free way in is the one it uses for the ontologies it ships: it fetches
+  # "./data/<name>.json", relative to its own directory. Its other loaders (url=,
+  # iri=) go through the OWL2VOWL Java service, which we do not deploy.
+  #
+  # So the name walks back out of the vendored directory to the route that builds
+  # the VOWL, and ends on a parameter with nothing in it for the ".json" WebVOWL
+  # appends to land in:
+  #
+  #   /webvowl/index.html#opts=...;#../../ajax/webvowl_data?...&ext=
+  #     -> fetches ./data/../../ajax/webvowl_data?...&ext=.json
+  #     -> GET /ajax/webvowl_data?...&ext=.json
+  #
+  # The class IRI is escaped because WebVOWL splits the fragment on '#', which an
+  # IRI may well contain.
+  def vowl_embed_url(ontology, concept, language)
+    query = { ontologyid: ontology.acronym, conceptid: concept.id, language: language }.to_query
+
+    # to_query sorts its keys, so the empty parameter is appended by hand to keep it
+    # last — it only exists to catch the extension.
+    data_path = "../..#{WEBVOWL_DATA_PATH}?#{query}&#{WEBVOWL_EXTENSION_PARAM}="
+    "#{VENDORED_WEBVOWL_PATH}/index.html##{WEBVOWL_EMBED_OPTIONS}##{data_path}"
+  end
+
   private
 
   # The signed-in user's own key, else the dedicated BioMixer key when the

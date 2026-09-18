@@ -136,5 +136,5 @@ application.register("concept-graph", ConceptGraphController)
 import VisualizerExpandController from "./visualizer_expand_controller"
 application.register("visualizer-expand", VisualizerExpandController)
 
-import OntologyPlaygroundController from "./ontology_playground_controller"
-application.register("ontology-playground", OntologyPlaygroundController)
+import WebvowlController from "./webvowl_controller"
+application.register("webvowl", WebvowlController)

@@ -188,19 +188,30 @@ class ConceptsController < ApplicationController
     render partial: 'entity_graph', layout: false
   end
 
-  # The same neighbourhood, handed to the vendored Ontology Playground viewer
-  # (public/ontology-embed) instead of drawn by us. Reads the cache the Graph tab
-  # fills, so opening both tabs costs one build.
-  def ontology_playground
+  # The VOWL tab's body: a frame onto the vendored WebVOWL app (public/webvowl).
+  # Nothing but the frame — WebVOWL fetches the graph itself, from #webvowl_data.
+  def webvowl
+    @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontologyid]).first
+    return ontology_not_found(params[:ontologyid]) if @ontology.nil? || @ontology.errors
+
+    @concept = @ontology.explore.single_class({ language: request_lang }, params[:conceptid])
+    return concept_not_found(params[:conceptid]) if @concept.nil? || @concept.errors
+
+    render partial: 'webvowl', layout: false
+  end
+
+  # The same neighbourhood as VOWL, for WebVOWL to draw. Reads the cache the Graph
+  # tab fills, so opening both tabs costs one build.
+  def webvowl_data
     return unless load_entity_graph
 
-    @playground_ontology = PlaygroundOntologyService.call(
+    render json: VowlOntologyService.call(
       @graph,
-      name: "#{@ontology.acronym} — #{helpers.main_language_label(@concept.prefLabel)}",
-      description: t('concepts.playground_description', acronym: @ontology.acronym)
+      iri: @concept.id,
+      title: "#{@ontology.acronym} — #{helpers.main_language_label(@concept.prefLabel)}",
+      description: t('concepts.vowl_description', acronym: @ontology.acronym),
+      language: request_lang
     )
-
-    render partial: 'ontology_playground', layout: false
   end
 
   private

@@ -47,12 +47,12 @@
           = render TurboFrameComponent.new(id: 'concept_entity_graph', loading: 'lazy',
           src: "/ajax/entity_graph?ontologyid=#{@ontology.acronym}&conceptid=#{CGI.escape(@concept.id)}&language=#{CGI.escape(request_lang.to_s)}")
 
-        -# Playground: the same neighbourhood rendered by the vendored Ontology
-        -# Playground viewer, which also serves it back as RDF/XML. Lazy for the same
-        -# reason as the Graph tab, and because its script is 780 KB.
-        - tab_item_component(container_tabs: c, id: 'concept-playground', title: t('concepts.playground'), path: '#playground') do
-          = render TurboFrameComponent.new(id: 'concept_ontology_playground', loading: 'lazy',
-          src: "/ajax/ontology_playground?ontologyid=#{@ontology.acronym}&conceptid=#{CGI.escape(@concept.id)}&language=#{CGI.escape(request_lang.to_s)}")
+        -# VOWL: the same neighbourhood in the VOWL notation, drawn by the vendored
+        -# WebVOWL app. Lazy for the same reason as the Graph tab, and because
+        -# the app is 1.3 MB.
+        - tab_item_component(container_tabs: c, id: 'concept-vowl', title: t('concepts.vowl'), path: '#vowl') do
+          = render TurboFrameComponent.new(id: 'concept_webvowl', loading: 'lazy',
+          src: "/ajax/webvowl?ontologyid=#{@ontology.acronym}&conceptid=#{CGI.escape(@concept.id)}&language=#{CGI.escape(request_lang.to_s)}")
 
 
         - count_span = content_tag(:span, "#{t('concepts.notes')} (#{content_tag(:span, @notes.length, id: 'note_count')})".html_safe)

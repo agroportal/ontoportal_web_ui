@@ -234,15 +234,16 @@ div.synonym-change-request button {
   }
 }
 
-// Playground tab: the vendored Ontology Playground viewer. It sizes itself to
-// data-height, which is 100% — so the height has to come from here, and .ontology-
-// embed has to pass it down: the widget mounts a div INSIDE that element rather
-// than styling it.
-.playground-embed {
+// VOWL tab: the vendored WebVOWL app in an iframe. It sizes its canvas off the
+// frame's own viewport, so the frame needs a real height to fill.
+.webvowl-embed {
   height: 75vh;
   min-height: 600px;
 
-  .ontology-embed {
+  iframe {
+    display: block;
+    width: 100%;
     height: 100%;
+    border: 0;
   }
 }

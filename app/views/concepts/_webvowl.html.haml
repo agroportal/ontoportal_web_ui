@@ -1,0 +1,13 @@
+-# VOWL tab body. WebVOWL (vendored under public/webvowl) is a whole application
+-# welded to its own index.html, not a widget that mounts into a div, so it goes in
+-# an iframe rather than on the page — which also keeps its d3 v3 global out of the
+-# portal's way. It fetches the neighbourhood itself from /ajax/webvowl_data; see
+-# vowl_embed_url for how it is pointed there.
+-# Wrapped in the matching turbo-frame so the lazy frame in _show.html.haml resolves
+-# the response (same pattern as Mappings).
+= turbo_frame_tag 'concept_webvowl' do
+  .webvowl-embed{data: {controller: 'webvowl'}}
+    %iframe{src: vowl_embed_url(@ontology, @concept, request_lang),
+            title: t('concepts.vowl'),
+            data: {'webvowl-target': 'frame'},
+            frameborder: 0, width: '100%', height: '100%'}
