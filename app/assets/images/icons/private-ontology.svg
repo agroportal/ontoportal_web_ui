@@ -1,0 +1,12 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="25" cy="31" r="20" fill="var(--primary-color)" opacity="0.08"/>
+<rect x="9" y="7" width="30" height="46" rx="3" stroke="var(--primary-color)" stroke-width="2.5" opacity="0.4"/>
+<path d="M15 17H33" stroke="var(--primary-color)" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+<path d="M15 24H33" stroke="var(--primary-color)" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+<path d="M15 31H27" stroke="var(--primary-color)" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+<path d="M38.5 38V34C38.5 30.41 41.41 27.5 45 27.5C48.59 27.5 51.5 30.41 51.5 34V38" stroke="var(--primary-color)" stroke-width="3" stroke-linecap="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M37 38H53C54.66 38 56 39.34 56 41V53C56 54.66 54.66 56 53 56H37C35.34 56 34 54.66 34 53V41C34 39.34 35.34 38 37 38ZM45 42.5C43.62 42.5 42.5 43.62 42.5 45C42.5 45.93 43.01 46.74 43.76 47.17V50C43.76 50.69 44.32 51.25 45 51.25C45.68 51.25 46.24 50.69 46.24 50V47.17C46.99 46.74 47.5 45.93 47.5 45C47.5 43.62 46.38 42.5 45 42.5Z" fill="var(--primary-color)"/>
+<path d="M55 30L59.5 27.5" stroke="var(--primary-color)" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M52.5 25.5L55.5 21.5" stroke="var(--primary-color)" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M47.5 22.5L48.5 18" stroke="var(--primary-color)" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

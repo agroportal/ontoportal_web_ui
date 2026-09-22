@@ -17,8 +17,16 @@ module FairScoreHelper
     !ontology.private?
   end
 
-  def foops_private_ontology_message
+  def foops_private_ontology_title
     t('fair_score.foops_private_ontology_warning', portal_name: $SITE)
+  end
+
+  def foops_private_ontology_hint
+    t('fair_score.foops_private_ontology_hint')
+  end
+
+  def foops_private_ontology_message
+    "#{foops_private_ontology_title} #{foops_private_ontology_hint}"
   end
 
   def get_fairness_service_url(apikey = user_apikey)

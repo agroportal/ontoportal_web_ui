@@ -34,6 +34,7 @@
         = render partial: "fairs_score", locals: { id_prefix: "ont-foops", stimulus_controller: "foops-score-summary", scores_data: @foops_scores_data }
     - else
       .browse-empty-illustration
-        = inline_svg_tag('icons/hide.svg')
-        %p{style: "text-align: center;"}= foops_private_ontology_message
+        = inline_svg_tag('icons/private-ontology.svg')
+        %p.foops-empty-title= foops_private_ontology_title
+        %p.foops-empty-hint= foops_private_ontology_hint
     .account-page-card-sub-container

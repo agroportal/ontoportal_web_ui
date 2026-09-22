@@ -184,6 +184,22 @@ $non_applicable_color :  rgba(176, 190, 197, 0.4);
     width: 72px;
     height: 72px;
   }
+
+  .foops-empty-title {
+    margin: 16px 0 4px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-color);
+    text-align: center;
+  }
+
+  .foops-empty-hint {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--gray-color);
+    text-align: center;
+  }
 }
 
 @media (max-width: 767.98px) {
