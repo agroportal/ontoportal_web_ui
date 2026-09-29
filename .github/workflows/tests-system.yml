@@ -7,9 +7,12 @@
 name: "Run system tests CI"
 
 on:
+  # docker-image.yml runs these tests itself on the branches it builds
   push:
+    branches-ignore: [ master, development, stage, test ]
   pull_request:
     types: [ opened, reopened ]
+  workflow_call:
 env:
   API_URL: http://localhost:9393
   REMOTE_API_KEY: 8b5b7825-538d-40e0-9e9e-5ab9274a9aeb

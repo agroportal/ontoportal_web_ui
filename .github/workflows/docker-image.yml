@@ -10,8 +10,18 @@ on:
   release:
     types: [published]
 jobs:
+  # Build only from commits that pass both test suites
+  tests:
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
+
+  system_tests:
+    uses: ./.github/workflows/tests-system.yml
+    secrets: inherit
+
   push_to_registry:
     name: Push Docker branch image to Docker Hub
+    needs: [ tests, system_tests ]
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
