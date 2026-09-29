@@ -1,0 +1,36 @@
+# Cut a release from the Conventional Commits since the last tag.
+# Run by hand (Actions > Release > Run workflow) to keep releases batched.
+# Run it on a maintenance branch (e.g. 3.6.x) to release a hotfix.
+
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+        persist-credentials: false
+
+    - name: Setup Node
+      uses: actions/setup-node@v7
+      with:
+        node-version: 24
+
+    # RELEASE_TOKEN, not GITHUB_TOKEN: a release published with GITHUB_TOKEN
+    # doesn't trigger docker-image.yml, so no release image would be built.
+    # It needs Contents: write only; .releaserc.json turns off PR comments
+    # and labels.
+    - name: Release
+      run: npx --yes -p semantic-release@25 -p conventional-changelog-conventionalcommits@9 semantic-release
+      env:
+        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
