@@ -1,0 +1,29 @@
+# Enforce Conventional Commits on PR titles (see CONTRIBUTING.md).
+# A squash merge takes the PR title, or the commit subject when the PR has
+# a single commit, so both are checked.
+
+name: PR Title
+
+# pull_request_target also covers fork PRs; safe since nothing is checked out
+on:
+  pull_request_target:
+    types: [ opened, edited, synchronize, reopened ]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  pr-title:
+    name: Conventional Commits
+    runs-on: ubuntu-latest
+    steps:
+    - uses: amannn/action-semantic-pull-request@v6
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        # Lowercase start, no trailing period: "fix: hide retired portals"
+        subjectPattern: ^(?![A-Z]).+[^.]$
+        subjectPatternError: |
+          The subject "{subject}" in "{title}" must start lowercase and not
+          end with a period.
+        validateSingleCommit: true
