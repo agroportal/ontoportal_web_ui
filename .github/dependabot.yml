@@ -1,0 +1,14 @@
+# Keep workflow actions on supported majors; one grouped PR a month.
+# The "ci" prefix makes PR titles pass pr-title.yml.
+
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
+    groups:
+      github-actions:
+        patterns: [ "*" ]
