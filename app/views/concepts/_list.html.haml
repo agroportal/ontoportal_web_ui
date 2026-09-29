@@ -5,10 +5,11 @@
                                     auto_click: @auto_click) do |c|
   - concepts = c.collection.sort_by{|concept| [concept.prefLabel&.capitalize || concept.id]}
   - if concepts && !concepts.empty?
+    - selected_id = c.auto_click? ? concepts.first.id : params[:conceptid]
     - concepts.each do  |concept|
       - children_link, data, href = concept_tree_data(@ontology.acronym, concept, request_lang, [])
       = render TreeLinkComponent.new(child: concept, href: href,
-          children_href: '#', selected: concept.id.eql?(concepts.first.id) && c.auto_click?,
+          children_href: '#', selected: concept.id.eql?(selected_id),
           target_frame: 'concept_show', data: data, is_reused: concept_reused?(submission: @submission, concept_id: concept.id))
 
   - c.error do

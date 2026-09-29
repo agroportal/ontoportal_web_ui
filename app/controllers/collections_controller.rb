@@ -60,7 +60,8 @@ class CollectionsController < ApplicationController
     ontology_not_found(params[:ontology_id] || params[:ontology]) if @ontology.nil? || @ontology.errors
     @submission = @ontology.explore.latest_submission(include: 'uriRegexPattern,preferredNamespaceUri,naturalLanguage')
     page = params[:page] || '1'
-    @auto_click = page.to_s.eql?('1')
+    # A requested concept is already displayed: select it, don't click it
+    @auto_click = page.to_s.eql?('1') && !helpers.concept_id_param_exist?(params)
     @collection = get_request_collection(@ontology)
 
     if @collection

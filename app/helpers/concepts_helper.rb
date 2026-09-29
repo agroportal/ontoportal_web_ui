@@ -148,8 +148,10 @@ module ConceptsHelper
     raw out
   end
 
-  def concept_list_url(page = 1, collection_id, acronym)
-    "/ajax/classes/list?ontology_id=#{acronym}&collectionid=#{collection_id}&page=#{page}"
+  def concept_list_url(page = 1, collection_id, acronym, concept_id: nil)
+    out = "/ajax/classes/list?ontology_id=#{acronym}&collectionid=#{collection_id}&page=#{page}&language=#{request_lang}"
+    out += "&conceptid=#{escape(concept_id)}" if concept_id
+    out
   end
 
 
