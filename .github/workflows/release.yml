@@ -6,6 +6,12 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump; auto follows the commits
+        type: choice
+        options: [ auto, patch, minor, major ]
+        default: auto
 
 permissions:
   contents: read
@@ -28,9 +34,10 @@ jobs:
 
     # RELEASE_TOKEN, not GITHUB_TOKEN: a release published with GITHUB_TOKEN
     # doesn't trigger docker-image.yml, so no release image would be built.
-    # It needs Contents: write only; .releaserc.json turns off PR comments
+    # It needs Contents: write only; release.config.mjs turns off PR comments
     # and labels.
     - name: Release
       run: npx --yes -p semantic-release@25 -p conventional-changelog-conventionalcommits@9 semantic-release
       env:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        RELEASE_BUMP: ${{ inputs.bump }}
