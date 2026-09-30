@@ -1,5 +1,11 @@
 module FairScoreHelper
 
+  # Why FOOPS! can't download an ontology => hint shown instead of the score
+  FOOPS_BLOCKER_HINTS = {
+    private: 'fair_score.foops_private_ontology_hint',
+    no_file: 'fair_score.foops_no_file_hint'
+  }.freeze
+
   def user_apikey
     session[:user].nil? ? '' : session[:user].apikey
   end
@@ -14,19 +20,19 @@ module FairScoreHelper
   end
 
   def foops_assessable?(ontology)
-    !ontology.private?
+    foops_blocker(ontology).nil?
   end
 
-  def foops_private_ontology_title
+  def foops_blocked_title
     t('fair_score.foops_private_ontology_warning', portal_name: $SITE)
   end
 
-  def foops_private_ontology_hint
-    t('fair_score.foops_private_ontology_hint')
+  def foops_blocked_hint(ontology)
+    t(FOOPS_BLOCKER_HINTS.fetch(foops_blocker(ontology)))
   end
 
-  def foops_private_ontology_message
-    "#{foops_private_ontology_title} #{foops_private_ontology_hint}"
+  def foops_blocked_message(ontology)
+    "#{foops_blocked_title} #{foops_blocked_hint(ontology)}"
   end
 
   def get_fairness_service_url(apikey = user_apikey)
@@ -145,7 +151,7 @@ module FairScoreHelper
 
   def get_foops_score(ontology)
     return {} unless foops_enabled?
-    return { 'error' => foops_private_ontology_message } unless foops_assessable?(ontology)
+    return { 'error' => foops_blocked_message(ontology) } unless foops_assessable?(ontology)
 
     ontology_uri = "#{$UI_URL}/ontologies/#{ontology.acronym}"
     cache_key = "foops-#{ontology.acronym}"
@@ -427,6 +433,16 @@ module FairScoreHelper
 
     # Decompress data
     Zlib::Inflate.inflate(data)
+  end
+
+  # FOOPS! downloads the ontology anonymously from its public URL and
+  # scores whatever comes back, e.g. a login page or a 404.
+  # Name what stands in the way, nil when nothing does.
+  def foops_blocker(ontology)
+    return :private if ontology.private?
+    return :no_file if ontology.summaryOnly || $NOT_DOWNLOADABLE.include?(ontology.acronym)
+
+    nil
   end
 
 end

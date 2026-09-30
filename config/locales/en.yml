@@ -532,6 +532,7 @@ en:
     foops_unreachable_warning: FOOPS! assessment service unreachable
     foops_private_ontology_warning: FOOPS! is an external service to %{portal_name}.
     foops_private_ontology_hint: This ontology would need to be public to enable the assessment.
+    foops_no_file_hint: This ontology would need a downloadable file to enable the assessment.
     foops_description: 'FAIRness assessment score computed with the FOOPS! tool (Ontology
       Pitfall Scanner for FAIR) based on the file loaded in the portal. More details
       here: https://foops.linkeddata.es/'

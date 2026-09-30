@@ -545,6 +545,7 @@ fr:
     foops_unreachable_warning: Problème d'accès au service d'évaluation FOOPS!
     foops_private_ontology_warning: FOOPS! est un service externe à %{portal_name}.
     foops_private_ontology_hint: Cette ontologie devrait être publique pour permettre l'évaluation.
+    foops_no_file_hint: Cette ontologie devrait avoir un fichier téléchargeable pour permettre l'évaluation.
     foops_description: 'Score d''évaluation FAIR calculé avec l''outil FOOPS! (Ontology
       Pitfall Scanner for FAIR) à partir du fichier déposé dans le portail. Plus de détails
       ici : https://foops.linkeddata.es/'
