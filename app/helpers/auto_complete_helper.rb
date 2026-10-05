@@ -34,8 +34,8 @@ module AutoCompleteHelper
   # buried the sections below it. Overflow is what the action links are for.
   def content_autocomplete_sections
     [
-      { key: 'ontologies', label: t('search.autocomplete.ontologies'), limit: 2 },
-      { key: 'concepts',   label: t('search.autocomplete.concepts'),   limit: 4 },
+      { key: 'ontologies', label: t('search.autocomplete.ontologies'), limit: 3 },
+      { key: 'concepts',   label: t('search.autocomplete.content'),    limit: 5 },
       { key: 'agents',     label: t('search.autocomplete.agents'),     limit: 5 }
     ]
   end

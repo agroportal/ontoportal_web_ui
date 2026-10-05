@@ -1538,7 +1538,7 @@ en:
   search:
     autocomplete:
       agents: Agents
-      concepts: Concepts
+      content: Content
       ontologies: Ontologies
     advanced_options:
       include_in_search_title: Include in search
