@@ -153,7 +153,6 @@ module FairScoreHelper
     return {} unless foops_enabled?
     return { 'error' => foops_blocked_message(ontology) } unless foops_assessable?(ontology)
 
-    ontology_uri = "#{$UI_URL}/ontologies/#{ontology.acronym}"
     cache_key = "foops-#{ontology.acronym}"
     fail_cache_key = "#{cache_key}-fail"
 
@@ -164,6 +163,7 @@ module FairScoreHelper
     else
       out = '{}'
       begin
+        ontology_uri = foops_ontology_uri(ontology)
         time = Benchmark.realtime do
           conn = Faraday.new do |f|
             f.options.timeout = 30
@@ -433,6 +433,18 @@ module FairScoreHelper
 
     # Decompress data
     Zlib::Inflate.inflate(data)
+  end
+
+  # FOOPS! expects the ontology URI: the persistent identifier declared by
+  # the submission (omv:URI), which is content-negotiated and identical to
+  # the URI used inside the artefact, so check URI2 can pass. Falls back to
+  # the file URL (pullLocation), then to the portal ontology URI.
+  def foops_ontology_uri(ontology)
+    submission = ontology.explore.latest_submission(include: 'URI,pullLocation')
+    uri = [submission&.URI, submission&.pullLocation].flatten.compact_blank.first
+    uri || "#{$UI_URL}/ontologies/#{ontology.acronym}"
+  rescue StandardError
+    "#{$UI_URL}/ontologies/#{ontology.acronym}"
   end
 
   # FOOPS! downloads the ontology anonymously from its public URL and
