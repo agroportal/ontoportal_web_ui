@@ -78,6 +78,33 @@ module ConceptsHelper
     "active show" if default_sub_menu?
   end
 
+  ENTITY_GRAPH_FEATURE = 'ENTITY_GRAPH'.freeze
+  # `view` param value that opens a class page on its Graph tab
+  ENTITY_GRAPH_VIEW = 'concept-graph'.freeze
+
+  def entity_graph_enabled?
+    user = session[:user] rescue nil
+    Flipper.enabled?(ENTITY_GRAPH_FEATURE, user)
+  end
+
+  # Double-clicking a graph node reloads the page on the clicked class; keep
+  # the user on the Graph tab instead of falling back to Details
+  def entity_graph_view?
+    entity_graph_enabled? && params[:view].eql?(ENTITY_GRAPH_VIEW)
+  end
+
+  # Page of a class, opened on its Graph tab; the graph appends `conceptid`
+  def entity_graph_class_url(ontology_acronym, language)
+    "/ontologies/#{ontology_acronym}?p=classes&view=#{ENTITY_GRAPH_VIEW}&language=#{language}"
+  end
+
+  # UI strings of the concept-graph Stimulus controller. I18n.t, not t: t
+  # can't return a subtree once $RESOURCE_TERM is set, and "upper ontology"
+  # must stay as is
+  def entity_graph_i18n
+    I18n.t('concepts.entity_graph.ui')
+  end
+
   def concept_label(ont_id, cls_id)
     @ontology = LinkedData::Client::Models::Ontology.find(ont_id)
     @ontology ||= LinkedData::Client::Models::Ontology.find_by_acronym(ont_id).first

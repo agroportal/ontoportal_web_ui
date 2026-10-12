@@ -7,7 +7,7 @@
       = ontology_object_tabs_component(ontology_id: @ontology.acronym, objects_title: "classes", object_id: @concept.id) do |c|
         - baseClassUrl = "#{@ontology.id}/classes/#{escape(@concept.id)}"
         - detail_link = api_button_link_and_target("#{baseClassUrl}?display=all")[0]
-        - tab_item_component(container_tabs: c, title: t('concepts.details'), path: '#details', selected: true, json_link: detail_link) do
+        - tab_item_component(container_tabs: c, title: t('concepts.details'), path: '#details', selected: !entity_graph_view?, json_link: detail_link) do
           = render :partial =>'/concepts/details'
 
         - unless skos?
@@ -19,6 +19,13 @@
 
         - tab_item_component(container_tabs: c, title: t('concepts.visualization'), path: '#visualization') do
           = render :partial =>'/concepts/biomixer'
+
+        -# Lazy: the graph build costs dozens of API calls, so it only runs
+        -# once the tab is shown, not on every class select
+        - if entity_graph_enabled?
+          - tab_item_component(container_tabs: c, id: 'concept-graph', title: t('concepts.entity_graph.tab'), path: '#graph', selected: entity_graph_view?) do
+            = render TurboFrameComponent.new(id: 'concept_entity_graph', loading: 'lazy',
+              src: "/ajax/entity_graph?ontology=#{@ontology.acronym}&conceptid=#{CGI.escape(@concept.id)}&language=#{CGI.escape(request_lang.to_s)}")
 
 
         - count_span = content_tag(:span, "#{t('concepts.notes')} (#{content_tag(:span, @notes.length, id: 'note_count')})".html_safe)

@@ -1,5 +1,6 @@
 class ApplicationService
-  def self.call(*args, &block)
-    new(*args, &block).call
+  # `...` forwards keyword arguments too, which `*args` would turn into a hash
+  def self.call(...)
+    new(...).call
   end
 end

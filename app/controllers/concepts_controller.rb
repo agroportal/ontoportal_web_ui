@@ -8,6 +8,10 @@ class ConceptsController < ApplicationController
 
   layout 'ontology'
 
+  # A graph build fans out to dozens of API calls; a re-uploaded ontology shows
+  # up once this lapses
+  ENTITY_GRAPH_CACHE_TTL = 1.hour
+
   def show
     params[:id] = params[:id] ? params[:id] : params[:conceptid]
 
@@ -173,7 +177,32 @@ class ConceptsController < ApplicationController
     render partial: "biomixer", layout: false
   end
 
+  # Graph tab body: the class, its is-a ancestors and relationships, drawn
+  # client-side by the concept-graph Stimulus controller
+  def entity_graph
+    return head :not_found unless entity_graph_enabled?
+
+    @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology]).first
+    ontology_not_found(params[:ontology]) if @ontology.nil?
+
+    # Fetched on every request, cache hit or not: it is what checks the user
+    # may read this ontology before a cached graph is served
+    @concept = @ontology.explore.single_class({ display: 'prefLabel,definition,synonym,properties', language: request_lang },
+                                              params[:conceptid])
+    concept_not_found(params[:conceptid]) if @concept.nil? || @concept.errors
+
+    @graph = Rails.cache.fetch(entity_graph_cache_key, expires_in: ENTITY_GRAPH_CACHE_TTL) do
+      EntityGraphService.call(@ontology, @concept, helpers: helpers, lang: request_lang)
+    end
+    render partial: 'entity_graph', layout: false
+  end
+
   private
+
+  # Class IRIs can be long; hash them to fit memcached's 250-byte key limit
+  def entity_graph_cache_key
+    "entity_graph/#{@ontology.acronym}/#{request_lang}/#{Digest::MD5.hexdigest(@concept.id.to_s)}"
+  end
 
   def filter_concept_with_no_date(concepts)
     concepts.present? ? concepts.filter { |c| !concept_date(c).nil? } : []

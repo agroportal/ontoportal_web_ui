@@ -1,0 +1,28 @@
+-# Graph tab body: the graph is emitted as JSON and drawn client-side by the
+-# concept-graph Stimulus controller. Wrapped in the frame the lazy
+-# TurboFrameComponent of concepts/_show waits for.
+= turbo_frame_tag 'concept_entity_graph' do
+  .entity-graph{data: {controller: 'concept-graph',
+                       'concept-graph-graph-value': @graph.to_json,
+                       'concept-graph-ontology-value': @ontology.acronym,
+                       'concept-graph-large-value': @graph[:large].to_s,
+                       'concept-graph-class-url-value': entity_graph_class_url(@ontology.acronym, request_lang),
+                       'concept-graph-i18n-value': entity_graph_i18n.to_json}}
+
+    -# Large neighbourhoods ask before rendering an unreadable graph
+    .entity-graph__gate.d-none{data: {'concept-graph-target': 'gate'}}
+      .text-center.py-5
+        %p.mb-2
+          %b= t('concepts.entity_graph.large_title')
+        %p.text-muted.mb-3
+          = t('concepts.entity_graph.large_text', count: @graph[:edge_count])
+        .d-inline-block{data: {action: 'click->concept-graph#renderAnyway'}}
+          = render Buttons::RegularButtonComponent.new(id: 'entity-graph-render-anyway', value: t('concepts.entity_graph.render_anyway'), size: 'slim', state: 'regular')
+
+    -# The controller injects the SVG here
+    .entity-graph__canvas{data: {'concept-graph-target': 'canvas'}}
+
+    -# A root class has nothing above it to graph
+    .entity-graph__empty.d-none{data: {'concept-graph-target': 'empty'}}
+      .text-center.py-5.text-muted
+        = t('concepts.entity_graph.empty')

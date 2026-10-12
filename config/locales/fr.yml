@@ -481,6 +481,108 @@ fr:
     date_sorted_list_error: Les classes ou concepts ne fournissent pas de dates de
       <strong>création</strong> (dc:created) ou de <strong>modification</strong> (cd:modified).
     details: Détails
+    entity_graph:
+      tab: Graphe
+      large_title: Ce graphe est volumineux
+      large_text: Il compte %{count} liens, son affichage peut être lent ou difficile à lire.
+      render_anyway: Afficher le graphe quand même
+      empty: Cette classe est au sommet de la hiérarchie — elle n'a aucune superclasse à afficher.
+      ui:
+        all: Toutes
+        choose_relationships: Choisir les relations
+        choose_relationships_hidden: Choisir les relations (%{count} masquées)
+        close: Fermer
+        copied: 'Copié : %{text}'
+        copied_png: Graphe copié (PNG)
+        copied_svg: Graphe copié (SVG)
+        copy_graph: Copier le graphe
+        copy_png: Copier en image (PNG)
+        copy_svg: Copier en SVG (vectoriel)
+        dismiss: Fermer
+        display_options: Options d'affichage
+        display_options_why: Options d'affichage (%{reason})
+        downloaded_png: Graphe téléchargé (PNG)
+        downloaded_svg: Graphe téléchargé (SVG)
+        exit_full_window: Quitter le plein écran
+        filter_placeholder: Filtrer…
+        fit_view: Ajuster à la vue
+        help_title: Légende et raccourcis
+        hidden_in: Masqué dans %{ontology}
+        hidden_nodes: Nœuds masqués
+        hide_map: Masquer la carte
+        isa_only_active: is-a uniquement — relations masquées
+        legend_class: classe
+        legend_hint: Cliquez sur un nœud pour surligner son chemin vers la racine · double-cliquez pour l'ouvrir · faites défiler ou glissez pour vous déplacer · ⌘/Ctrl+défilement pour zoomer · F pour cadrer le surlignage
+        legend_isa: is-a (sous-classe)
+        legend_rel: relation
+        legend_source: ● = extrémité source
+        legend_upper_edge: vers l'ontologie de haut niveau
+        legend_upper_node: ontologie de haut niveau (estompée)
+        map: Carte
+        menu_clear: Effacer le surlignage
+        menu_copy_id: Copier %{id}
+        menu_copy_iri: Copier l'IRI
+        menu_copy_short_id: Copier l'identifiant court
+        menu_fit_graph: Cadrer tout le graphe
+        menu_fit_highlight: Cadrer le surlignage (F)
+        menu_highlight: Surligner le chemin vers la racine
+        menu_never_show: Ne jamais afficher dans %{ontology}
+        menu_open: Ouvrir la classe
+        menu_remove: Retirer du graphe
+        menu_restore_removed: Restaurer les nœuds retirés (%{count})
+        menu_show_hidden: Afficher les nœuds toujours masqués (%{count})
+        none: Aucune
+        open_full_window: Ouvrir en plein écran
+        opt_acronym: Afficher l'acronyme de l'ontologie
+        opt_acronym_help: Étiquette chaque nœud avec l'acronyme de son ontologie source (ex. UBERON, PATO).
+        opt_isa_only: Afficher uniquement is-a
+        opt_isa_only_help: Masque toutes les relations pour ne garder que la hiérarchie is-a (sous-classes).
+        opt_pills: Afficher les identifiants courts
+        opt_pills_help: Affiche l'identifiant court de chaque classe (ex. GO:0005634) dans sa boîte.
+        opt_simplify: Simplifier les liens is-a
+        opt_simplify_help: 'Ne trace que les liens is-a vers les parents directs : retire les liens redondants vers un ancêtre déjà atteint par une chaîne is-a plus longue.'
+        opt_upper_info: Utiliser les informations de référence BFO/COB
+        opt_upper_info_help: Pour une classe BFO/COB, préfère le libellé et la définition de l'ontologie de haut niveau à ceux, souvent incomplets, de l'import.
+        relationships: Relations
+        relationships_panel: Relations et nœuds masqués
+        removed: Retiré du graphe
+        seg_fade: Estomper
+        seg_hide: Masquer
+        seg_show: Afficher
+        show_all: Tout afficher
+        show_map: Afficher la carte
+        show_node: Afficher %{label}
+        show_node_again: Afficher à nouveau ce nœud
+        this_ontology: cette ontologie
+        tip_definition: Définition
+        tip_definition_help: Affiche la définition de la classe dans l'infobulle.
+        tip_example_label: Exemple
+        tip_examples: Exemples d'usage
+        tip_examples_help: Affiche les phrases « exemple d'usage » de la classe dans l'infobulle.
+        tip_examples_label: Exemples
+        tip_from: de %{source}
+        tip_hidden: · masqué
+        tip_isa: Parents is-a
+        tip_isa_help: Affiche les parents is-a directs de la classe dans l'infobulle.
+        tip_isa_label: is-a
+        tip_more: '+%{count} de plus'
+        tip_no_parents: aucun parent is-a
+        tip_synonym_label: Synonyme
+        tip_synonyms: Synonymes
+        tip_synonyms_help: Affiche les synonymes de la classe dans l'infobulle.
+        tip_synonyms_label: Synonymes
+        tooltip_section: Infobulle
+        tooltip_section_help: Choisissez ce qu'affiche l'infobulle d'une classe. Le nom et l'identifiant court sont toujours affichés.
+        truncated: Ce graphe est volumineux et a été tronqué — certains ancêtres ne sont pas affichés.
+        unlabelled: (sans libellé)
+        unreachable: Inaccessible depuis la classe sélectionnée — affichage de son chemin vers la racine
+        upper_hidden_active: ontologie de haut niveau masquée
+        upper_section: Ontologie de haut niveau (BFO / COB)
+        upper_section_help: BFO et COB sont les classes abstraites de haut niveau (continuant, occurrent, qualité…) au-dessus des termes du domaine. Ces options règlent leur affichage.
+        zoom_in: Zoomer
+        zoom_in_hint: Zoomer (%{key}+défilement)
+        zoom_out: Dézoomer
+        zoom_out_hint: Dézoomer (%{key}+défilement)
     error_valid_concept: 'Erreur : Vous devez fournir un identifiant de concept valide'
     instances: Instances
     list_error: La collection ne contient aucun membre

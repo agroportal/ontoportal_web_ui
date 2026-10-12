@@ -469,6 +469,108 @@ en:
     date_sorted_list_error: Classes or concepts do not provide <strong>creation</strong>
       (dc:created) or <strong>modification</strong> (dc:modified) dates.
     details: Details
+    entity_graph:
+      tab: Graph
+      large_title: This graph is large
+      large_text: It has %{count} connections, which may be slow or hard to read.
+      render_anyway: Show graph anyway
+      empty: This class is at the top of the hierarchy — it has no superclasses to graph.
+      ui:
+        all: All
+        choose_relationships: Choose relationships
+        choose_relationships_hidden: Choose relationships (%{count} hidden)
+        close: Close
+        copied: Copied %{text}
+        copied_png: Copied graph (PNG)
+        copied_svg: Copied graph (SVG)
+        copy_graph: Copy graph
+        copy_png: Copy as image (PNG)
+        copy_svg: Copy as SVG (vector)
+        dismiss: Dismiss
+        display_options: Display options
+        display_options_why: Display options (%{reason})
+        downloaded_png: Downloaded graph (PNG)
+        downloaded_svg: Downloaded graph (SVG)
+        exit_full_window: Exit full window
+        filter_placeholder: Filter…
+        fit_view: Fit to view
+        help_title: Graph key & shortcuts
+        hidden_in: Hidden in %{ontology}
+        hidden_nodes: Hidden nodes
+        hide_map: Hide map
+        isa_only_active: showing is-a only — relationships hidden
+        legend_class: class
+        legend_hint: Click a node to highlight its path to the root · double-click to open it · scroll or drag to pan · ⌘/Ctrl+scroll to zoom · F to fit highlight
+        legend_isa: is-a (subclass)
+        legend_rel: relationship
+        legend_source: ● = source end
+        legend_upper_edge: to upper ontology
+        legend_upper_node: upper ontology (faded)
+        map: Map
+        menu_clear: Clear highlight
+        menu_copy_id: Copy %{id}
+        menu_copy_iri: Copy IRI
+        menu_copy_short_id: Copy short-id
+        menu_fit_graph: Fit whole graph
+        menu_fit_highlight: Fit to highlight (F)
+        menu_highlight: Highlight path to root
+        menu_never_show: Never show in %{ontology}
+        menu_open: Open class
+        menu_remove: Remove from graph
+        menu_restore_removed: Restore removed nodes (%{count})
+        menu_show_hidden: Show always-hidden nodes (%{count})
+        none: None
+        open_full_window: Open in full window
+        opt_acronym: Show ontology acronym
+        opt_acronym_help: Tag each node with its source ontology’s acronym (e.g. UBERON, PATO).
+        opt_isa_only: Only show is-a
+        opt_isa_only_help: Hide all relationship edges, showing just the is-a (subclass) hierarchy.
+        opt_pills: Show short-id pills
+        opt_pills_help: Show each class’s short identifier (e.g. GO:0005634) as a chip inside its box.
+        opt_simplify: Simplify is-a links
+        opt_simplify_help: 'Draw only direct-parent is-a links: drop the redundant edges to an ancestor that’s already reachable through a longer is-a chain.'
+        opt_upper_info: Use authoritative BFO/COB info
+        opt_upper_info_help: Prefer the upper ontology’s own label and definition for a BFO/COB class over the (often stub) imported one.
+        relationships: Relationships
+        relationships_panel: Relationships & hidden nodes
+        removed: Removed from graph
+        seg_fade: Fade
+        seg_hide: Hide
+        seg_show: Show
+        show_all: Show all
+        show_map: Show map
+        show_node: Show %{label}
+        show_node_again: Show this node again
+        this_ontology: this ontology
+        tip_definition: Definition
+        tip_definition_help: Show the class definition in the tooltip.
+        tip_example_label: Example
+        tip_examples: Examples of usage
+        tip_examples_help: Show the class’s “example of usage” sentences in the tooltip.
+        tip_examples_label: Examples
+        tip_from: from %{source}
+        tip_hidden: · hidden
+        tip_isa: is-a parents
+        tip_isa_help: Show the class’s direct is-a parents in the tooltip.
+        tip_isa_label: is-a
+        tip_more: '+%{count} more'
+        tip_no_parents: no is-a parents
+        tip_synonym_label: Synonym
+        tip_synonyms: Synonyms
+        tip_synonyms_help: Show the class’s synonyms in the tooltip.
+        tip_synonyms_label: Synonyms
+        tooltip_section: Tooltip
+        tooltip_section_help: Choose what the hover popup shows for a class. The name and short id are always shown.
+        truncated: This graph is large and has been truncated — some ancestors are not shown.
+        unlabelled: (unlabelled)
+        unreachable: Not reachable from the selected class — showing its path to the root
+        upper_hidden_active: upper ontology hidden
+        upper_section: Upper ontology (BFO / COB)
+        upper_section_help: BFO and COB are the abstract upper-ontology classes (continuant, occurrent, quality…) that sit above the domain terms. These control how they appear.
+        zoom_in: Zoom in
+        zoom_in_hint: Zoom in (%{key}+scroll)
+        zoom_out: Zoom out
+        zoom_out_hint: Zoom out (%{key}+scroll)
     error_valid_concept: 'Error: You must provide a valid concept id'
     instances: Instances
     list_error: The Collection didn't define any member

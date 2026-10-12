@@ -18,7 +18,8 @@ Flipper::UI.configure do |config|
   config.descriptions_source = ->(keys) do
     {
       "SPARQL" => "Enables the SPARQL endpoint feature. Requires SPARQL_ENDPOINT_URL environment variable to be configured.",
-      "FOOPS" => "Enables the FOOPS! FAIRness assessment on the ontology summary page. Requires the FOOPS_URL environment variable (defaults to the public FOOPS! service)."
+      "FOOPS" => "Enables the FOOPS! FAIRness assessment on the ontology summary page. Requires the FOOPS_URL environment variable (defaults to the public FOOPS! service).",
+      "ENTITY_GRAPH" => "Adds a Graph tab to the class page: the is-a ancestors and relationships of the selected class. Off by default; each graph costs dozens of API calls on a cache miss."
     }
   end
 

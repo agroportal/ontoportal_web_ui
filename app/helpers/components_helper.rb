@@ -11,8 +11,9 @@ module ComponentsHelper
     render FederatedPortalButtonComponent.new(name: name, color: color, link: link, tooltip: tooltip, light_color: light_color)
   end
 
-  def tab_item_component(container_tabs:, title:, path:, selected: false, json_link: "", &content)
-    container_tabs.item(title: title.html_safe, path: path, selected: selected, json_link: json_link)
+  # `id` defaults to the title, which makes the tab pane id change with the locale
+  def tab_item_component(container_tabs:, title:, path:, selected: false, json_link: "", id: nil, &content)
+    container_tabs.item(id: id, title: title.html_safe, path: path, selected: selected, json_link: json_link)
     container_tabs.item_content { capture(&content) }
   end
 
