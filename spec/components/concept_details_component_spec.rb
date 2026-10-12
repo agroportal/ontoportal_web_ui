@@ -147,4 +147,17 @@ RSpec.describe ConceptDetailsComponent, type: :component do
       expect(row_name).to eq("IAO_0000115")
     end
   end
+
+  # A collection orders none of its rows last, and still has rows to show.
+  describe "raw rows" do
+    it "are listed when no row is ordered last" do
+      rendered = render_inline(
+        described_class.new(id: "collection-label", acronym: "BIODIVTHES", concept_id: concept, bottom_keys: [],
+                            properties: OpenStruct.new("http://purl.org/iso25964/skos-thes#superGroup" =>
+                                                         ["http://data.loterre.fr/ark:/67375/BLH-MDI"]))
+      )
+
+      expect(rendered.css("th").map { |th| th.text.strip }).to include("superGroup")
+    end
+  end
 end

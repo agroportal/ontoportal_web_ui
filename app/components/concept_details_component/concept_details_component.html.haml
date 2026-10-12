@@ -5,7 +5,7 @@
   %div.raw-table
     = render DropdownContainerComponent.new(title: 'Raw data', id: "accordion-#{@id}") do
       = render TableComponent.new(stripped: true) do |t|
-        - if @bottom_keys.present?
+        - if @concept_properties.present?
           - top_set, leftover_set, bottom_set = filter_properties(@top_keys, @bottom_keys, @exclude_keys, prefix_properties(@concept_properties))
           - leftover_set = convert_dates(leftover_set)
           - row_hash_properties(top_set, @acronym).each do |row|
