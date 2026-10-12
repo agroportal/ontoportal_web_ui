@@ -24,7 +24,7 @@ module FairScoreHelper
   end
 
   def foops_blocked_title
-    t('fair_score.foops_private_ontology_warning', portal_name: $SITE)
+    t('fair_score.foops_private_ontology_warning')
   end
 
   def foops_blocked_hint(ontology)
@@ -153,6 +153,41 @@ module FairScoreHelper
     return {} unless foops_enabled?
     return { 'error' => foops_blocked_message(ontology) } unless foops_assessable?(ontology)
 
+    stored = get_stored_foops_score(ontology)
+    return stored unless stored.empty?
+
+    live = get_live_foops_score(ontology)
+    return {} unless foops_assessment_usable?(live, ontology.acronym)
+
+    live
+  end
+
+  def get_stored_foops_score(ontology)
+    conn = Faraday.new do |f|
+      f.options.timeout = 10
+      f.options.open_timeout = 5
+      f.headers['Authorization'] = "apikey token=#{get_apikey}"
+    end
+    response = conn.get("#{rest_url}/ontologies/#{ontology.acronym}/foops")
+    return {} unless response.status.eql?(200)
+
+    MultiJson.load(response.body.force_encoding('UTF-8'))
+  rescue StandardError => e
+    Rails.logger.warn "Stored FOOPS report unavailable for #{ontology.acronym}: #{e.message}"
+    {}
+  end
+
+  def foops_assessment_usable?(report, acronym)
+    return false if report.blank?
+
+    rdf1 = Array(report['checks']).find { |c| c['abbreviation'].eql?('RDF1') }
+    return true if rdf1 && rdf1['status'].eql?('ok')
+
+    Rails.logger.warn "Discarding FOOPS score for #{acronym}: RDF1 did not pass, the report describes an error page"
+    false
+  end
+
+  def get_live_foops_score(ontology)
     ontology_uri = "#{$UI_URL}/ontologies/#{ontology.acronym}"
     cache_key = "foops-#{ontology.acronym}"
     fail_cache_key = "#{cache_key}-fail"
