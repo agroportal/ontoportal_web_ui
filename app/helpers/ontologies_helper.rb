@@ -199,6 +199,12 @@ module OntologiesHelper
 
 
 
+  def documentation_link(ontology = nil)
+    ontology ||= @ontology
+    href, target = api_button_link_and_target("#{ontology.id}/documentation/", allow_annonymous = true)
+    { href: href, label: t('submissions.documentation'), target: target }
+  end
+
   def mappings_link(ontology, count)
     return '0' if ontology.summaryOnly || count.nil? || count.zero?
 
@@ -232,7 +238,7 @@ module OntologiesHelper
     # Strip the URI prefix from the status codes (works even if they are not URIs)
     # The order of the codes must be assumed to be random, it is not an entirely
     # predictable sequence of ontology processing stages.
-    codes = data[:submissionStatus].map { |s| s.split('/').last }
+    codes = data[:submissionStatus].map { |s| s.split('/').last } - %w[DOCUMENTATION ERROR_DOCUMENTATION]
     errors = codes.select { |c| c.start_with? 'ERROR' }.map { |c| c.gsub("_", " ").split(/(\W)/).map(&:capitalize).join }.compact
     status = []
     status.push('Parsed') if (codes.include? 'RDF') && (codes.include? 'RDF_LABELS')
@@ -484,6 +490,12 @@ module OntologiesHelper
     sections
   end
 
+  def documentation_ready?(submission = @submission_latest)
+    Array(submission&.submissionStatus).include?('DOCUMENTATION')
+  end
+
+
+
   def not_ready_submission_alert(ontology: @ontology, submission: @submission, old_submission_ready: @old_submission_ready)
     if ontology.admin?(session[:user])
       status = status_string(submission)
@@ -644,6 +656,19 @@ module OntologiesHelper
         ontology_render_icon_dropdown(icon, attr, label, values)
       end
     end.join.html_safe
+  end
+
+  def ontology_widoco_documentation_link(ontology, submission_latest)
+    icon = 'icons/details'
+    label = t('submissions.documentation')
+
+    if documentation_ready?(submission_latest)
+      doc = documentation_link(ontology)
+      title = label + '<br>' + link_to(doc[:href], doc[:href], target: '_blank')
+      ontology_icon_button(icon, doc[:href], title, interactive: false, target: doc[:target])
+    else
+      ontology_icon_button(icon, "javascript:void(0);", label, class: 'disabled-icon', disabled: 'disabled')
+    end
   end
 
   def ontology_sparql_endpoint_link(submission_latest)
