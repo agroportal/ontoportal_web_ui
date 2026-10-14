@@ -1094,7 +1094,7 @@ fr:
         schema_card: "Une fiche du schéma : chaque graphe de métadonnées avec tous ses prédicats, l'organisation des graphes et des modèles de requêtes éprouvés."
         grounding: "Une recherche d'ontologies, pour qu'un nom ou un acronyme mène au vrai IRI et au contenu actuel plutôt qu'à une supposition."
         guardrails: "Une exécution encadrée. Les écritures sont refusées, la taille des résultats est plafonnée, et chaque échec ou résultat vide revient avec des conseils pour corriger la requête."
-      not_rag: "Pourquoi pas la recherche augmentée (RAG) ? Le vocabulaire utile, environ 200 prédicats répartis sur 11 graphes, tient dans le contexte de l'assistant, et une recherche sur ce qui tient déjà ne peut que perdre le prédicat nécessaire. Les erreurs réelles (prédicats inventés, mauvais graphe, requêtes trop coûteuses pour le point d'accès) se corrigent avec une liste complète des prédicats, la recherche d'ontologies, des garde-fous et une boucle de correction."
+      not_rag: "Pourquoi pas la recherche augmentée (RAG) ? Les données sont ici très structurées : des enregistrements typés dans des graphes nommés, reliés par un ensemble fixe de prédicats. Les questions qu'on leur pose se résolvent par des jointures, des filtres et des comptages exacts, que SPARQL calcule et qu'une recherche par similarité ne sait pas faire. Et le vocabulaire utile, environ 200 prédicats répartis sur 13 graphes, tient dans le contexte de l'assistant : une recherche sur ce qui tient déjà ne peut que perdre le prédicat nécessaire. Les erreurs réelles (prédicats inventés, mauvais graphe, requêtes trop coûteuses pour le point d'accès) se corrigent avec une liste complète des prédicats, la recherche d'ontologies, des garde-fous et une boucle de correction."
     tools:
       title: "Outils"
       get_schema_card: "Chaque graphe de métadonnées avec ses prédicats et leur nombre d'usages, l'organisation des graphes, les catégories, les groupes et des modèles de requêtes éprouvés."
@@ -1121,7 +1121,7 @@ fr:
         people: "Personnes et organisations"
         links: "Projets, avis et alignements"
         content: "Contenu et langues"
-        missing: "Données manquantes et questions pièges"
+        missing: "Données manquantes et versions en échec"
       plants_classes:
         question: "Quelles sont les 5 ontologies de la catégorie Plants qui ont le plus de classes, en ne comptant que leur version actuelle ?"
         note: "Les tailles sont dans le graphe Metrics, pas dans omv:numberOfClasses. Seule la version actuelle compte, et les valeurs doivent être triées comme des nombres."
@@ -1149,18 +1149,12 @@ fr:
       drip_irrigation:
         question: "Quel terme d'%{portal} désigne l'ensemble des techniques d'irrigation goutte-à-goutte ?"
         note: "Une recherche par le sens, en français, sans filtrer par langue."
-      french_descriptions:
-        question: "Combien d'ontologies ont une description rédigée uniquement en français ?"
-        note: "Les descriptions n'ont pas d'étiquette de langue. La réponse honnête est qu'on ne peut pas le savoir par l'étiquette."
       missing_license:
         question: "Quelles ontologies n'ont pas de licence dans leur version actuelle ?"
         note: "Un champ absent, sans reprendre la licence d'une version archivée."
       failed_parse:
         question: "Quelles ontologies ont une version dont l'analyse a échoué ?"
         note: "Le statut de version, que les modèles de requêtes couvrent à peine."
-      downloads:
-        question: "Combien de fois AGROVOC a-t-il été téléchargé en 2025 ?"
-        note: "Cette donnée n'est pas dans le point d'accès. La bonne réponse le dit au lieu de donner un chiffre."
   notes:
     change_property_value_proposal: Proposition de changement de valeur de propriété
     comment: Commentaire

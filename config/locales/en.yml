@@ -1064,7 +1064,7 @@ en:
         schema_card: "A schema card: every metadata graph with all its predicates, the graph layout and worked query patterns."
         grounding: "Ontology lookup, so a name or acronym resolves to the real IRI and current content instead of a guess."
         guardrails: "Guarded execution. Writes are refused, result sizes are capped, and every failure or empty result comes back with advice on how to repair the query."
-      not_rag: "Why not retrieval (RAG)? The vocabulary that matters, about 200 predicates across 11 graphs, fits in the assistant's context, and retrieval over something that already fits can only lose the predicate it needed. The mistakes that actually happen (invented predicates, the wrong graph, queries too expensive for the endpoint) are fixed by a complete predicate list, ontology lookup, guardrails and a repair loop."
+      not_rag: "Why not retrieval (RAG)? The data here is highly structured: typed records in named graphs, linked by a fixed set of predicates. Questions about it are answered by exact joins, filters and counts, which SPARQL computes and similarity search cannot. And the vocabulary that matters, about 200 predicates across 13 graphs, fits in the assistant's context: retrieval over something that already fits can only lose the predicate it needed. The mistakes that actually happen (invented predicates, the wrong graph, queries too expensive for the endpoint) are fixed by a complete predicate list, ontology lookup, guardrails and a repair loop."
     tools:
       title: "Tools"
       get_schema_card: "Every metadata graph with its predicates and usage counts, the graph layout, categories, groups and worked query patterns."
@@ -1091,7 +1091,7 @@ en:
         people: "People and organizations"
         links: "Projects, reviews and mappings"
         content: "Content and languages"
-        missing: "Missing data and trick questions"
+        missing: "Missing data and failed versions"
       plants_classes:
         question: "Which 5 ontologies in the Plants category have the most classes, counting only their current version?"
         note: "Sizes live in the Metrics graph, not in omv:numberOfClasses. Only the current version counts, and metric values must be sorted as numbers."
@@ -1119,18 +1119,12 @@ en:
       drip_irrigation:
         question: "Quel terme d'%{portal} désigne l'ensemble des techniques d'irrigation goutte-à-goutte ?"
         note: "A lookup by meaning, in French, without filtering by language."
-      french_descriptions:
-        question: "How many ontologies have a description written only in French?"
-        note: "Descriptions carry no language tag. The honest answer is that it can't be told by tag."
       missing_license:
         question: "Which ontologies have no license in their current version?"
         note: "An absent field, without borrowing an archived version's license."
       failed_parse:
         question: "Which ontologies have a version that failed to parse?"
         note: "The version status, which the worked query patterns barely cover."
-      downloads:
-        question: "How many times was AGROVOC downloaded in 2025?"
-        note: "That data is not in the endpoint. The right answer says so instead of giving a number."
   notes:
     change_property_value_proposal: Change property value proposal
     comment: Comment

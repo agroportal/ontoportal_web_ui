@@ -7,8 +7,8 @@ module McpHelper
     size: %w[plants_classes largest_in_group],
     people: %w[orcid_creators ror_organizations],
     links: %w[shared_projects reviews agrovoc_mappings],
-    content: %w[maize_labels drip_irrigation french_descriptions],
-    missing: %w[missing_license failed_parse downloads]
+    content: %w[maize_labels drip_irrigation],
+    missing: %w[missing_license failed_parse]
   }.freeze
 
   TOOLS = %w[get_schema_card resolve_ontology run_sparql list_terms].freeze
