@@ -1091,7 +1091,7 @@ en:
         catalogue: "Categories, groups and licenses"
         people: "People and organizations"
         links: "Projects"
-        content: "Content and languages"
+        content: "Content"
         missing: "Missing data and failed versions"
       plants_classes:
         question: "Which 5 ontologies in the Plants category have the most classes, counting only their current version?"
