@@ -1123,37 +1123,37 @@ fr:
         content: "Contenu"
         missing: "Données manquantes et versions en échec"
       plants_classes:
-        question: "Quelles sont les 5 ontologies de la catégorie Plants qui ont le plus de classes, en ne comptant que leur version actuelle ?"
+        question: "Sur %{portal}, quelles sont les 5 ontologies de la catégorie Plants qui ont le plus de classes, en ne comptant que leur version actuelle ?"
         note: "Les tailles sont dans le graphe Metrics, pas dans omv:numberOfClasses. Seule la version actuelle compte, et les valeurs doivent être triées comme des nombres."
       largest_in_group:
-        question: "Quelle est la plus grande ontologie du groupe INRAE, et combien de propriétés a-t-elle ?"
+        question: "Sur %{portal}, quelle est la plus grande ontologie du groupe INRAE, et combien de propriétés a-t-elle ?"
         note: "Relie un groupe aux tailles, et demande une autre taille que le nombre de classes."
       soil_inrae:
-        question: "Quelles ontologies de la catégorie Sol font aussi partie du groupe INRAE ?"
+        question: "Sur %{portal}, quelles ontologies de la catégorie Sol font aussi partie du groupe INRAE ?"
         note: "Une catégorie et un groupe sur la même fiche : deux vocabulaires d'IRI, reliés par deux prédicats différents."
       wheat_licenses:
-        question: "Quelles ontologies du groupe Wheat Data Interoperability sont sous licence CC BY 4.0 ?"
+        question: "Sur %{portal}, quelles ontologies du groupe Wheat Data Interoperability sont sous licence CC BY 4.0 ?"
         note: "La licence est portée par la version actuelle, écrite comme un IRI de deux façons (http et https) : une correspondance exacte n'en trouve que la moitié."
       ror_organizations:
-        question: "Quelles organisations sont liées au plus grand nombre d'ontologies, et quels sont leurs identifiants ROR ?"
+        question: "Sur %{portal}, quelles organisations sont liées au plus grand nombre d'ontologies, et quels sont leurs identifiants ROR ?"
         note: "Organisations ou personnes, créateurs ou contributeurs."
       shared_projects:
-        question: "Quels projets utilisent à la fois AGROVOC et une ontologie du groupe Crop Ontology ?"
+        question: "Sur %{portal}, quels projets utilisent à la fois AGROVOC et une ontologie du groupe Crop Ontology ?"
         note: "Les projets pointent vers les ontologies, pas l'inverse, et il faut une double jointure."
       maize_labels:
-        question: "Quels sont les libellés français et espagnols du concept AGROVOC « maïs » ?"
+        question: "Sur %{portal}, quels sont les libellés français et espagnols du concept AGROVOC « maïs » ?"
         note: "Lit le contenu propre de l'ontologie et ses étiquettes de langue."
       crushing_definition:
-        question: "Quel terme désigne « l'action de réduire en fragments plus petits par pression ou chocs » ?"
+        question: "Sur %{portal}, quel terme désigne « l'action de réduire en fragments plus petits par pression ou chocs » ?"
         note: "Une recherche par le sens, en français. La définition exacte existe, donc une paraphrase est une mauvaise réponse."
       milling_narrower:
-        question: "Quels concepts sont plus spécifiques que « milling » dans le thésaurus INRAE ?"
+        question: "Sur %{portal}, quels concepts sont plus spécifiques que « milling » dans le thésaurus INRAE ?"
         note: "« milling » n'est qu'un libellé alternatif de broyage : une recherche sur les libellés préférés ne trouve rien. Puis un pas vers le bas de la hiérarchie, pas vers le haut."
       missing_license:
-        question: "Quelles ontologies n'ont pas de licence dans leur version actuelle ?"
+        question: "Sur %{portal}, quelles ontologies n'ont pas de licence dans leur version actuelle ?"
         note: "Un champ absent, sans reprendre la licence d'une version archivée."
       failed_parse:
-        question: "Quelles ontologies ont une version dont l'analyse a échoué ?"
+        question: "Sur %{portal}, quelles ontologies ont une version dont l'analyse a échoué ?"
         note: "Le statut de version, que les modèles de requêtes couvrent à peine."
   notes:
     change_property_value_proposal: Proposition de changement de valeur de propriété

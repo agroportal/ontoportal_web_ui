@@ -1093,37 +1093,37 @@ en:
         content: "Content"
         missing: "Missing data and failed versions"
       plants_classes:
-        question: "Which 5 ontologies in the Plants category have the most classes, counting only their current version?"
+        question: "In %{portal}, which 5 ontologies in the Plants category have the most classes, counting only their current version?"
         note: "Sizes live in the Metrics graph, not in omv:numberOfClasses. Only the current version counts, and metric values must be sorted as numbers."
       largest_in_group:
-        question: "Which ontology in the INRAE group is the largest, and how many properties does it have?"
+        question: "In %{portal}, which ontology in the INRAE group is the largest, and how many properties does it have?"
         note: "Joins a group to sizes, and asks for a size other than classes."
       soil_inrae:
-        question: "Which ontologies in the Soil category also belong to the INRAE group?"
+        question: "In %{portal}, which ontologies in the Soil category also belong to the INRAE group?"
         note: "A category and a group on the same record: two vocabularies of IRIs, linked by two different predicates."
       wheat_licenses:
-        question: "Which ontologies of the Wheat Data Interoperability group are licensed under CC BY 4.0?"
+        question: "In %{portal}, which ontologies of the Wheat Data Interoperability group are licensed under CC BY 4.0?"
         note: "The license sits on the current version, written as an IRI in two ways (http and https): an exact match finds only half."
       ror_organizations:
-        question: "Which organizations are linked to the most ontologies, and what are their ROR iDs?"
+        question: "In %{portal}, which organizations are linked to the most ontologies, and what are their ROR iDs?"
         note: "Organizations versus people, creators versus contributors."
       shared_projects:
-        question: "Which projects use both AGROVOC and an ontology from the Crop Ontology group?"
+        question: "In %{portal}, which projects use both AGROVOC and an ontology from the Crop Ontology group?"
         note: "Projects point to ontologies, not the other way round, and it takes a double join."
       maize_labels:
-        question: "What are the French and Spanish labels of the AGROVOC concept \"maize\"?"
+        question: "In %{portal}, what are the French and Spanish labels of the AGROVOC concept \"maize\"?"
         note: "Reads the ontology's own content and its language tags."
       crushing_definition:
-        question: "Quel terme désigne « l'action de réduire en fragments plus petits par pression ou chocs » ?"
+        question: "Sur %{portal}, quel terme désigne « l'action de réduire en fragments plus petits par pression ou chocs » ?"
         note: "A lookup by meaning, in French. The exact definition exists, so a paraphrase is the wrong answer."
       milling_narrower:
-        question: "Which concepts are narrower than \"milling\" in the INRAE thesaurus?"
+        question: "In %{portal}, which concepts are narrower than \"milling\" in the INRAE thesaurus?"
         note: "\"milling\" is only an alternative label of broyage, so a search on preferred labels finds nothing. Then one step down the hierarchy, not up."
       missing_license:
-        question: "Which ontologies have no license in their current version?"
+        question: "In %{portal}, which ontologies have no license in their current version?"
         note: "An absent field, without borrowing an archived version's license."
       failed_parse:
-        question: "Which ontologies have a version that failed to parse?"
+        question: "In %{portal}, which ontologies have a version that failed to parse?"
         note: "The version status, which the worked query patterns barely cover."
   notes:
     change_property_value_proposal: Change property value proposal
