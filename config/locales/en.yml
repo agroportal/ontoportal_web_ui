@@ -1045,7 +1045,6 @@ en:
   mcp:
     title: "MCP server"
     description: "Ask %{portal} questions in plain language from your AI assistant. It answers by querying the SPARQL endpoint live."
-    unavailable: "The MCP server is not available on this portal."
     url:
       title: "Server URL"
       note: "Streamable HTTP transport. No account or API key needed."

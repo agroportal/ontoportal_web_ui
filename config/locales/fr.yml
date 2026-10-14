@@ -1075,7 +1075,6 @@ fr:
   mcp:
     title: "Serveur MCP"
     description: "Interrogez %{portal} en langage naturel depuis votre assistant IA. Il répond en interrogeant le point d'accès SPARQL en direct."
-    unavailable: "Le serveur MCP n'est pas disponible sur ce portail."
     url:
       title: "URL du serveur"
       note: "Transport Streamable HTTP. Aucun compte ni clé d'API requis."

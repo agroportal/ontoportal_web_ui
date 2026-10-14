@@ -56,9 +56,8 @@
             - if sparql_enabled?
               - s.item do
                 = link_to(t("layout.header.sparql_editor"), "/sparql")
-            - if mcp_enabled?
-              - s.item do
-                = link_to(t("layout.header.mcp_server"), mcp_path)
+            - s.item do
+              = link_to(t("layout.header.mcp_server"), mcp_path)
             -# - s.item do
             -#   = link_to(t("statistics.ontology_visits"), "/visits")
             - s.item do

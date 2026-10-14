@@ -17,8 +17,12 @@ module McpHelper
   # The server name clients show in their tool lists.
   CLIENT_SERVER_NAME = 'agroportal'
 
-  def mcp_enabled?
-    $MCP_URL.present?
+  # AgroPortal's server. Deployed portals keep their own config file, so the page
+  # must work when it never mentions $MCP_URL; setting it points the page elsewhere.
+  DEFAULT_URL = 'https://mcp.agroportal.eu/'
+
+  def mcp_url
+    $MCP_URL.presence || DEFAULT_URL
   end
 
   # One setup snippet per client. Commands and config files are not translated.
