@@ -1119,7 +1119,7 @@ fr:
       groups:
         size: "Taille et version actuelle"
         people: "Personnes et organisations"
-        links: "Projets et alignements"
+        links: "Projets"
         content: "Contenu et langues"
         missing: "Données manquantes et versions en échec"
       plants_classes:
@@ -1134,9 +1134,6 @@ fr:
       shared_projects:
         question: "Quels projets utilisent à la fois AGROVOC et une ontologie du groupe Crop Ontology ?"
         note: "Les projets pointent vers les ontologies, pas l'inverse, et il faut une double jointure."
-      agrovoc_mappings:
-        question: "Quelle ontologie a le plus d'alignements vers AGROVOC ?"
-        note: "Des centaines de milliers d'alignements. Le point d'accès peut refuser la requête évidente, jugée trop coûteuse."
       maize_labels:
         question: "Quels sont les libellés français et espagnols du concept AGROVOC « maïs » ?"
         note: "Lit le contenu propre de l'ontologie et ses étiquettes de langue."

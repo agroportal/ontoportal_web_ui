@@ -6,7 +6,7 @@ module McpHelper
   EXAMPLES = {
     size: %w[plants_classes largest_in_group],
     people: %w[ror_organizations],
-    links: %w[shared_projects agrovoc_mappings],
+    links: %w[shared_projects],
     content: %w[maize_labels drip_irrigation],
     missing: %w[missing_license failed_parse]
   }.freeze

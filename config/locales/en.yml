@@ -1089,7 +1089,7 @@ en:
       groups:
         size: "Size and the current version"
         people: "People and organizations"
-        links: "Projects and mappings"
+        links: "Projects"
         content: "Content and languages"
         missing: "Missing data and failed versions"
       plants_classes:
@@ -1104,9 +1104,6 @@ en:
       shared_projects:
         question: "Which projects use both AGROVOC and an ontology from the Crop Ontology group?"
         note: "Projects point to ontologies, not the other way round, and it takes a double join."
-      agrovoc_mappings:
-        question: "Which ontology has the most mappings to AGROVOC?"
-        note: "Hundreds of thousands of mappings. The endpoint may refuse the obvious query as too expensive."
       maize_labels:
         question: "What are the French and Spanish labels of the AGROVOC concept \"maize\"?"
         note: "Reads the ontology's own content and its language tags."
