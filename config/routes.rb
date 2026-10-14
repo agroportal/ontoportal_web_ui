@@ -160,6 +160,9 @@ Rails.application.routes.draw do
   get 'sparql', to: 'sparql_endpoint#index', as: 'sparql_endpoint'
   get 'sparql/edit_sample_queries', to: 'sparql_endpoint#edit_sample_queries', as: 'edit_sample_queries'
 
+  # MCP
+  get 'mcp', to: 'mcp#index', as: 'mcp'
+
 
 
   # Top-level pages

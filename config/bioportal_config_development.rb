@@ -38,6 +38,7 @@ $API_KEY = ENV['API_KEY']
 $REST_URL = ENV['API_URL']
 
 $SPARQL_ENDPOINT_URL = ENV['SPARQL_ENDPOINT_URL'] || nil
+$MCP_URL = ENV['MCP_URL'] || nil
 
 $SIDEKIQ_UI_URL = ENV['SIDEKIQ_UI_URL'] || $REST_URL + "sidekiq"
 # Annotator REST service address

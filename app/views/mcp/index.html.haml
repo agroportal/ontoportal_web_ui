@@ -1,0 +1,63 @@
+.mcp-page
+  .mcp-page-header
+    = render PageHeaderComponent.new(title: t('mcp.title'), description: t('mcp.description', portal: portal_name))
+
+  -# Same grid as the ontology summary: a wide column for the story, a narrow one for what to copy.
+  .summary-page-center
+    .summary-page-first-row
+      -# The approach: why the assistant writes SPARQL itself, and what the server adds.
+      = render SummarySectionComponent.new(title: t('mcp.approach.title')) do
+        .mcp-card-body
+          %p= t('mcp.approach.intro', portal: portal_name)
+          .mcp-flow
+            - %w[assistant server endpoint].each_with_index do |step, index|
+              - if index.positive?
+                .mcp-flow-arrow →
+              .mcp-flow-step
+                %strong= t("mcp.approach.flow.#{step}")
+                %span= t("mcp.approach.flow.#{step}_detail", portal: portal_name)
+          %p= t('mcp.approach.pitfalls', portal: portal_name)
+          %ul
+            - %w[schema_card grounding guardrails].each do |aid|
+              %li= t("mcp.approach.aids.#{aid}")
+          %p.mb-0= t('mcp.approach.not_rag')
+
+      -# Questions to try, one frame per mistake they provoke.
+      = render SummarySectionComponent.new(title: t('mcp.examples.title'), show_card: false) do
+        %p.mcp-muted= t('mcp.examples.intro', portal: portal_name)
+        - McpHelper::EXAMPLES.each do |group, examples|
+          = render Layout::CardComponent.new do |c|
+            - c.header(text: t("mcp.examples.groups.#{group}"))
+            - examples.each do |example|
+              .mcp-row
+                = render ClipboardComponent.new(message: t("mcp.examples.#{example}.question", portal: portal_name))
+                .mcp-muted= t("mcp.examples.#{example}.note")
+
+    .summary-page-second-row
+      -# Where to connect: most visitors come for the URL.
+      = render SummarySectionComponent.new(title: t('mcp.url.title')) do
+        .mcp-card-body
+          = render partial: 'snippet', locals: { code: @mcp_url }
+          .mcp-muted= t('mcp.url.note')
+
+      -# Setup, one row per client.
+      = render SummarySectionComponent.new(title: t('mcp.setup.title')) do
+        .mcp-card-body.mcp-muted= t('mcp.setup.intro')
+        - mcp_client_setups(@mcp_url).each do |setup|
+          .mcp-row
+            .mcp-row-title= t("mcp.setup.clients.#{setup[:client]}")
+            = render partial: 'snippet', locals: { code: setup[:code] }
+        .mcp-row
+          .mcp-row-title= t('mcp.setup.clients.claude_app')
+          = t('mcp.setup.claude_app_steps')
+        .mcp-row
+          .mcp-row-title= t('mcp.setup.clients.other')
+          = t('mcp.setup.other_steps')
+
+      -# The four tools the server exposes.
+      = render SummarySectionComponent.new(title: t('mcp.tools.title')) do
+        - McpHelper::TOOLS.each do |tool|
+          .mcp-row
+            %code.mcp-row-title= tool
+            = t("mcp.tools.#{tool}")
+        .mcp-row.mcp-muted= t('mcp.privacy')

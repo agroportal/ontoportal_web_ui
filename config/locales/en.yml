@@ -907,6 +907,7 @@ en:
       support: Support
       agents : Agents
       sparql_editor: SPARQL Editor
+      mcp_server: "MCP Server"
       explore: Explore
     notices:
       at: at
@@ -1041,6 +1042,95 @@ en:
       skos: Mappings based on SKOS relationships, (e.g. skos:exactMatch or skos:closeMatch)
     upload_mappings: Upload mappings
   no_result_was_found: No result was found
+  mcp:
+    title: "MCP server"
+    description: "Ask %{portal} questions in plain language from your AI assistant. It answers by querying the SPARQL endpoint live."
+    unavailable: "The MCP server is not available on this portal."
+    url:
+      title: "Server URL"
+      note: "Streamable HTTP transport. No account or API key needed."
+    approach:
+      title: "The approach: MCP over SPARQL"
+      intro: "The Model Context Protocol (MCP) lets an AI assistant call tools on a server. This server gives the assistant read-only access to the %{portal} SPARQL endpoint: it writes the queries itself and answers from live data, not from what it remembers."
+      flow:
+        assistant: "Your AI assistant"
+        assistant_detail: "Writes SPARQL, reads the advice, retries"
+        server: "MCP server"
+        server_detail: "Schema card, ontology lookup, guardrails"
+        endpoint: "SPARQL endpoint"
+        endpoint_detail: "Live %{portal} data"
+      pitfalls: "SPARQL against %{portal} is easy to get wrong: fields that look like Dublin Core are OMV here, metadata is split across named graphs, and a query against the wrong graph returns zero rows with no error. So the server does more than pass queries through. It gives the assistant:"
+      aids:
+        schema_card: "A schema card: every metadata graph with all its predicates, the graph layout and worked query patterns."
+        grounding: "Ontology lookup, so a name or acronym resolves to the real IRI and current content instead of a guess."
+        guardrails: "Guarded execution. Writes are refused, result sizes are capped, and every failure or empty result comes back with advice on how to repair the query."
+      not_rag: "Why not retrieval (RAG)? The vocabulary that matters, about 200 predicates across 11 graphs, fits in the assistant's context, and retrieval over something that already fits can only lose the predicate it needed. The mistakes that actually happen (invented predicates, the wrong graph, queries too expensive for the endpoint) are fixed by a complete predicate list, ontology lookup, guardrails and a repair loop."
+    tools:
+      title: "Tools"
+      get_schema_card: "Every metadata graph with its predicates and usage counts, the graph layout, categories, groups and worked query patterns."
+      resolve_ontology: "An ontology name or acronym → its IRI and the named graph holding its current content."
+      run_sparql: "Read-only, guarded execution. Returns rows, or a failure with repair advice."
+      list_terms: "The subject categories or groups, with their IRIs."
+    privacy: "Each tool call, including the query, is logged to improve the service. No IP address or account is recorded."
+    setup:
+      title: "Set it up"
+      intro: "Add the server URL to your MCP client. Clients that load servers at startup need a restart."
+      clients:
+        claude_code: "Claude Code"
+        opencode: "opencode"
+        vscode: "VS Code, in .vscode/mcp.json"
+        claude_app: "Claude (web and desktop apps)"
+        other: "Other clients"
+      claude_app_steps: "Settings → Connectors → Add custom connector, then paste the server URL."
+      other_steps: "Any client that supports the Streamable HTTP transport works. Use the server URL, with no authentication."
+    examples:
+      title: "Questions to try"
+      intro: "Each one targets a mistake AI assistants commonly make on %{portal}."
+      groups:
+        size: "Size and the current version"
+        people: "People and organizations"
+        links: "Projects, reviews and mappings"
+        content: "Content and languages"
+        missing: "Missing data and trick questions"
+      plants_classes:
+        question: "Which 5 ontologies in the Plants category have the most classes, counting only their current version?"
+        note: "Sizes live in the Metrics graph, not in omv:numberOfClasses. Only the current version counts, and metric values must be sorted as numbers."
+      largest_in_group:
+        question: "Which ontology in the D2KAB group is the largest, and how many properties does it have?"
+        note: "Joins a group to sizes, and asks for a size other than classes."
+      orcid_creators:
+        question: "Which people with an ORCID iD created more than one ontology? Give their ORCID."
+        note: "Three hops: creator, agent, identifier. Then filtering by type and counting."
+      ror_organizations:
+        question: "Which organizations are linked to the most ontologies, and what are their ROR iDs?"
+        note: "Organizations versus people, creators versus contributors."
+      shared_projects:
+        question: "Which projects use both AGROVOC and an ontology from the Crop Ontology group?"
+        note: "Projects point to ontologies, not the other way round, and it takes a double join."
+      reviews:
+        question: "Which ontologies have user reviews, and what ratings did they get?"
+        note: "A tiny graph, where an empty-looking result is easy to misread."
+      agrovoc_mappings:
+        question: "Which ontology has the most mappings to AGROVOC?"
+        note: "Hundreds of thousands of mappings. The endpoint may refuse the obvious query as too expensive."
+      maize_labels:
+        question: "What are the French and Spanish labels of the AGROVOC concept \"maize\"?"
+        note: "Reads the ontology's own content and its language tags."
+      drip_irrigation:
+        question: "Quel terme d'%{portal} désigne l'ensemble des techniques d'irrigation goutte-à-goutte ?"
+        note: "A lookup by meaning, in French, without filtering by language."
+      french_descriptions:
+        question: "How many ontologies have a description written only in French?"
+        note: "Descriptions carry no language tag. The honest answer is that it can't be told by tag."
+      missing_license:
+        question: "Which ontologies have no license in their current version?"
+        note: "An absent field, without borrowing an archived version's license."
+      failed_parse:
+        question: "Which ontologies have a version that failed to parse?"
+        note: "The version status, which the worked query patterns barely cover."
+      downloads:
+        question: "How many times was AGROVOC downloaded in 2025?"
+        note: "That data is not in the endpoint. The right answer says so instead of giving a number."
   notes:
     change_property_value_proposal: Change property value proposal
     comment: Comment

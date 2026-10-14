@@ -15,6 +15,7 @@ $FAIRNESS_URL = ENV['FAIRNESS_URL']
 $FOOPS_URL = ENV['FOOPS_URL'] || 'https://foops.linkeddata.es/assessOntology'
 $AGENTS_ENABLED = ENV["AGENTS_ENABLED"].to_s.downcase == "true"
 $SPARQL_ENDPOINT_URL = ENV['SPARQL_ENDPOINT_URL'] || nil
+$MCP_URL = ENV['MCP_URL'] || nil
 
 # Resource term
 $RESOURCE_TERM = ENV['RESOURCE_TERM'] || 'ontology'

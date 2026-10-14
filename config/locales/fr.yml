@@ -931,6 +931,7 @@ fr:
       support: Support
       agents : Agents
       sparql_editor: Editeur SPARQL
+      mcp_server: "Serveur MCP"
       explore: Explorer
     notices:
       at: à
@@ -1071,6 +1072,95 @@ fr:
         skos:closeMatch)
     upload_mappings: Charger des mappings
   no_result_was_found: Aucun résultat n'a été trouvé
+  mcp:
+    title: "Serveur MCP"
+    description: "Interrogez %{portal} en langage naturel depuis votre assistant IA. Il répond en interrogeant le point d'accès SPARQL en direct."
+    unavailable: "Le serveur MCP n'est pas disponible sur ce portail."
+    url:
+      title: "URL du serveur"
+      note: "Transport Streamable HTTP. Aucun compte ni clé d'API requis."
+    approach:
+      title: "L'approche : MCP au-dessus de SPARQL"
+      intro: "Le Model Context Protocol (MCP) permet à un assistant IA d'appeler des outils sur un serveur. Ce serveur donne à l'assistant un accès en lecture seule au point d'accès SPARQL de %{portal} : il écrit lui-même les requêtes et répond à partir des données en direct, pas de ce qu'il a mémorisé."
+      flow:
+        assistant: "Votre assistant IA"
+        assistant_detail: "Écrit le SPARQL, lit les conseils, réessaie"
+        server: "Serveur MCP"
+        server_detail: "Fiche du schéma, recherche d'ontologies, garde-fous"
+        endpoint: "Point d'accès SPARQL"
+        endpoint_detail: "Données %{portal} en direct"
+      pitfalls: "Il est facile de se tromper en SPARQL sur %{portal} : les champs qui ressemblent à du Dublin Core sont ici en OMV, les métadonnées sont réparties entre plusieurs graphes nommés, et une requête sur le mauvais graphe renvoie zéro résultat sans erreur. Le serveur ne se contente donc pas de transmettre les requêtes. Il fournit à l'assistant :"
+      aids:
+        schema_card: "Une fiche du schéma : chaque graphe de métadonnées avec tous ses prédicats, l'organisation des graphes et des modèles de requêtes éprouvés."
+        grounding: "Une recherche d'ontologies, pour qu'un nom ou un acronyme mène au vrai IRI et au contenu actuel plutôt qu'à une supposition."
+        guardrails: "Une exécution encadrée. Les écritures sont refusées, la taille des résultats est plafonnée, et chaque échec ou résultat vide revient avec des conseils pour corriger la requête."
+      not_rag: "Pourquoi pas la recherche augmentée (RAG) ? Le vocabulaire utile, environ 200 prédicats répartis sur 11 graphes, tient dans le contexte de l'assistant, et une recherche sur ce qui tient déjà ne peut que perdre le prédicat nécessaire. Les erreurs réelles (prédicats inventés, mauvais graphe, requêtes trop coûteuses pour le point d'accès) se corrigent avec une liste complète des prédicats, la recherche d'ontologies, des garde-fous et une boucle de correction."
+    tools:
+      title: "Outils"
+      get_schema_card: "Chaque graphe de métadonnées avec ses prédicats et leur nombre d'usages, l'organisation des graphes, les catégories, les groupes et des modèles de requêtes éprouvés."
+      resolve_ontology: "Un nom ou un acronyme d'ontologie → son IRI et le graphe nommé qui contient son contenu actuel."
+      run_sparql: "Exécution encadrée en lecture seule. Renvoie les résultats, ou un échec avec des conseils de correction."
+      list_terms: "Les catégories thématiques ou les groupes, avec leurs IRI."
+    privacy: "Chaque appel d'outil, requête comprise, est journalisé pour améliorer le service. Aucune adresse IP ni aucun compte n'est enregistré."
+    setup:
+      title: "Configuration"
+      intro: "Ajoutez l'URL du serveur à votre client MCP. Les clients qui chargent les serveurs au démarrage doivent être redémarrés."
+      clients:
+        claude_code: "Claude Code"
+        opencode: "opencode"
+        vscode: "VS Code, dans .vscode/mcp.json"
+        claude_app: "Claude (applications web et bureau)"
+        other: "Autres clients"
+      claude_app_steps: "Paramètres → Connecteurs → Ajouter un connecteur personnalisé, puis collez l'URL du serveur."
+      other_steps: "Tout client compatible avec le transport Streamable HTTP fonctionne. Utilisez l'URL du serveur, sans authentification."
+    examples:
+      title: "Questions à essayer"
+      intro: "Chacune cible une erreur fréquente des assistants IA sur %{portal}."
+      groups:
+        size: "Taille et version actuelle"
+        people: "Personnes et organisations"
+        links: "Projets, avis et alignements"
+        content: "Contenu et langues"
+        missing: "Données manquantes et questions pièges"
+      plants_classes:
+        question: "Quelles sont les 5 ontologies de la catégorie Plants qui ont le plus de classes, en ne comptant que leur version actuelle ?"
+        note: "Les tailles sont dans le graphe Metrics, pas dans omv:numberOfClasses. Seule la version actuelle compte, et les valeurs doivent être triées comme des nombres."
+      largest_in_group:
+        question: "Quelle est la plus grande ontologie du groupe D2KAB, et combien de propriétés a-t-elle ?"
+        note: "Relie un groupe aux tailles, et demande une autre taille que le nombre de classes."
+      orcid_creators:
+        question: "Quelles personnes ayant un identifiant ORCID ont créé plus d'une ontologie ? Donnez leur ORCID."
+        note: "Trois sauts : créateur, agent, identifiant. Puis un filtre par type et un comptage."
+      ror_organizations:
+        question: "Quelles organisations sont liées au plus grand nombre d'ontologies, et quels sont leurs identifiants ROR ?"
+        note: "Organisations ou personnes, créateurs ou contributeurs."
+      shared_projects:
+        question: "Quels projets utilisent à la fois AGROVOC et une ontologie du groupe Crop Ontology ?"
+        note: "Les projets pointent vers les ontologies, pas l'inverse, et il faut une double jointure."
+      reviews:
+        question: "Quelles ontologies ont des avis d'utilisateurs, et quelles notes ont-elles reçues ?"
+        note: "Un tout petit graphe, où un résultat qui semble vide est facile à mal interpréter."
+      agrovoc_mappings:
+        question: "Quelle ontologie a le plus d'alignements vers AGROVOC ?"
+        note: "Des centaines de milliers d'alignements. Le point d'accès peut refuser la requête évidente, jugée trop coûteuse."
+      maize_labels:
+        question: "Quels sont les libellés français et espagnols du concept AGROVOC « maïs » ?"
+        note: "Lit le contenu propre de l'ontologie et ses étiquettes de langue."
+      drip_irrigation:
+        question: "Quel terme d'%{portal} désigne l'ensemble des techniques d'irrigation goutte-à-goutte ?"
+        note: "Une recherche par le sens, en français, sans filtrer par langue."
+      french_descriptions:
+        question: "Combien d'ontologies ont une description rédigée uniquement en français ?"
+        note: "Les descriptions n'ont pas d'étiquette de langue. La réponse honnête est qu'on ne peut pas le savoir par l'étiquette."
+      missing_license:
+        question: "Quelles ontologies n'ont pas de licence dans leur version actuelle ?"
+        note: "Un champ absent, sans reprendre la licence d'une version archivée."
+      failed_parse:
+        question: "Quelles ontologies ont une version dont l'analyse a échoué ?"
+        note: "Le statut de version, que les modèles de requêtes couvrent à peine."
+      downloads:
+        question: "Combien de fois AGROVOC a-t-il été téléchargé en 2025 ?"
+        note: "Cette donnée n'est pas dans le point d'accès. La bonne réponse le dit au lieu de donner un chiffre."
   notes:
     change_property_value_proposal: Proposition de changement de valeur de propriété
     comment: Commentaire

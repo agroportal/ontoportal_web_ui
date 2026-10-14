@@ -1,0 +1,104 @@
+// Layout comes from the ontology summary (.summary-page-center and its two rows); this only styles the content.
+.mcp-page {
+  padding: 20px 0 40px;
+
+  // Aligned with the two summary columns below it: 670px + 20px gap + 450px.
+  .mcp-page-header {
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+
+  // Below this width the summary columns stack and gain side padding; follow them.
+  @media (max-width: 1288px) {
+    .mcp-page-header {
+      padding: 0 20px;
+    }
+  }
+
+  .mcp-muted {
+    color: var(--gray-color);
+    font-size: 14px;
+  }
+
+  .mcp-card-body {
+    padding: 16px 20px 20px;
+  }
+
+  // One entry in a card, divided from the previous one like the ontology property lists.
+  .mcp-row {
+    padding: 14px 20px;
+    border-top: 1px solid #dfdfdf;
+
+    &:first-child {
+      border-top: none;
+    }
+  }
+
+  .mcp-card-body + .mcp-row,
+  .header-component + .mcp-row {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .mcp-row-title {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 550;
+  }
+
+  // A copyable command or config file.
+  .mcp-snippet {
+    position: relative;
+    margin-bottom: 8px;
+    padding: 12px 44px 12px 14px;
+    background-color: var(--light-color);
+    border-radius: 5px;
+
+    pre {
+      margin: 0;
+      font-size: 13px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  }
+
+  .mcp-snippet-copy {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  // Assistant → MCP server → SPARQL endpoint.
+  .mcp-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    margin: 16px 0;
+  }
+
+  .mcp-flow-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px;
+    font-size: 14px;
+    background-color: var(--light-color);
+    border-radius: 5px;
+
+    strong {
+      color: var(--primary-color);
+    }
+  }
+
+  .mcp-flow-arrow {
+    align-self: center;
+    color: var(--primary-color);
+    font-size: 22px;
+  }
+
+  .clipboard {
+    justify-content: space-between;
+    gap: 12px;
+  }
+}
