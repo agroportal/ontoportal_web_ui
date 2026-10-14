@@ -1088,6 +1088,7 @@ en:
       intro: "Each one targets a mistake AI assistants commonly make on %{portal}."
       groups:
         size: "Size and the current version"
+        catalogue: "Categories, groups and licenses"
         people: "People and organizations"
         links: "Projects"
         content: "Content and languages"
@@ -1098,6 +1099,12 @@ en:
       largest_in_group:
         question: "Which ontology in the INRAE group is the largest, and how many properties does it have?"
         note: "Joins a group to sizes, and asks for a size other than classes."
+      soil_inrae:
+        question: "Which ontologies in the Soil category also belong to the INRAE group?"
+        note: "A category and a group on the same record: two vocabularies of IRIs, linked by two different predicates."
+      wheat_licenses:
+        question: "Which ontologies of the Wheat Data Interoperability group are licensed under CC BY 4.0?"
+        note: "The license sits on the current version, written as an IRI in two ways (http and https): an exact match finds only half."
       ror_organizations:
         question: "Which organizations are linked to the most ontologies, and what are their ROR iDs?"
         note: "Organizations versus people, creators versus contributors."
@@ -1107,9 +1114,12 @@ en:
       maize_labels:
         question: "What are the French and Spanish labels of the AGROVOC concept \"maize\"?"
         note: "Reads the ontology's own content and its language tags."
-      drip_irrigation:
-        question: "Quel terme d'%{portal} désigne l'ensemble des techniques d'irrigation goutte-à-goutte ?"
-        note: "A lookup by meaning, in French, without filtering by language."
+      crushing_definition:
+        question: "Quel terme désigne « l'action de réduire en fragments plus petits par pression ou chocs » ?"
+        note: "A lookup by meaning, in French. The exact definition exists, so a paraphrase is the wrong answer."
+      milling_narrower:
+        question: "Which concepts are narrower than \"milling\" in the INRAE thesaurus?"
+        note: "\"milling\" is only an alternative label of broyage, so a search on preferred labels finds nothing. Then one step down the hierarchy, not up."
       missing_license:
         question: "Which ontologies have no license in their current version?"
         note: "An absent field, without borrowing an archived version's license."

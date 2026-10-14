@@ -1118,6 +1118,7 @@ fr:
       intro: "Chacune cible une erreur fréquente des assistants IA sur %{portal}."
       groups:
         size: "Taille et version actuelle"
+        catalogue: "Catégories, groupes et licences"
         people: "Personnes et organisations"
         links: "Projets"
         content: "Contenu et langues"
@@ -1128,6 +1129,12 @@ fr:
       largest_in_group:
         question: "Quelle est la plus grande ontologie du groupe INRAE, et combien de propriétés a-t-elle ?"
         note: "Relie un groupe aux tailles, et demande une autre taille que le nombre de classes."
+      soil_inrae:
+        question: "Quelles ontologies de la catégorie Sol font aussi partie du groupe INRAE ?"
+        note: "Une catégorie et un groupe sur la même fiche : deux vocabulaires d'IRI, reliés par deux prédicats différents."
+      wheat_licenses:
+        question: "Quelles ontologies du groupe Wheat Data Interoperability sont sous licence CC BY 4.0 ?"
+        note: "La licence est portée par la version actuelle, écrite comme un IRI de deux façons (http et https) : une correspondance exacte n'en trouve que la moitié."
       ror_organizations:
         question: "Quelles organisations sont liées au plus grand nombre d'ontologies, et quels sont leurs identifiants ROR ?"
         note: "Organisations ou personnes, créateurs ou contributeurs."
@@ -1137,9 +1144,12 @@ fr:
       maize_labels:
         question: "Quels sont les libellés français et espagnols du concept AGROVOC « maïs » ?"
         note: "Lit le contenu propre de l'ontologie et ses étiquettes de langue."
-      drip_irrigation:
-        question: "Quel terme d'%{portal} désigne l'ensemble des techniques d'irrigation goutte-à-goutte ?"
-        note: "Une recherche par le sens, en français, sans filtrer par langue."
+      crushing_definition:
+        question: "Quel terme désigne « l'action de réduire en fragments plus petits par pression ou chocs » ?"
+        note: "Une recherche par le sens, en français. La définition exacte existe, donc une paraphrase est une mauvaise réponse."
+      milling_narrower:
+        question: "Quels concepts sont plus spécifiques que « milling » dans le thésaurus INRAE ?"
+        note: "« milling » n'est qu'un libellé alternatif de broyage : une recherche sur les libellés préférés ne trouve rien. Puis un pas vers le bas de la hiérarchie, pas vers le haut."
       missing_license:
         question: "Quelles ontologies n'ont pas de licence dans leur version actuelle ?"
         note: "Un champ absent, sans reprendre la licence d'une version archivée."
