@@ -1,8 +1,7 @@
 module FairScoreHelper
 
-  # Why FOOPS! can't download an ontology => hint shown instead of the score
+  # Why there is no file to assess => hint shown instead of the score
   FOOPS_BLOCKER_HINTS = {
-    private: 'fair_score.foops_private_ontology_hint',
     no_file: 'fair_score.foops_no_file_hint'
   }.freeze
 
@@ -24,7 +23,7 @@ module FairScoreHelper
   end
 
   def foops_blocked_title
-    t('fair_score.foops_private_ontology_warning')
+    t('fair_score.foops_no_assessment_warning')
   end
 
   def foops_blocked_hint(ontology)
@@ -474,7 +473,6 @@ module FairScoreHelper
   # scores whatever comes back, e.g. a login page or a 404.
   # Name what stands in the way, nil when nothing does.
   def foops_blocker(ontology)
-    return :private if ontology.private?
     return :no_file if ontology.summaryOnly || $NOT_DOWNLOADABLE.include?(ontology.acronym)
 
     nil

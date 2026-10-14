@@ -632,8 +632,7 @@ en:
   fair_score:
     fairness_unreachable_warning: FAIRness assessment service unreachable
     foops_unreachable_warning: FAIRness assessment not available for this ontology
-    foops_private_ontology_warning: FAIRness is assessed from the ontology's public address.
-    foops_private_ontology_hint: This ontology would need to be public to enable the assessment.
+    foops_no_assessment_warning: FAIRness could not be assessed for this ontology.
     foops_no_file_hint: This ontology would need a downloadable file to enable the assessment.
     foops_description: 'FAIRness assessment score computed with the FOOPS! tool (Ontology
       Pitfall Scanner for FAIR) based on the file loaded in the portal. More details

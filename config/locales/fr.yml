@@ -645,8 +645,7 @@ fr:
     fairness_unreachable_warning: Problème d'accès au service d'évaluation du niveau
       de FAIRness
     foops_unreachable_warning: Évaluation FAIR non disponible pour cette ontologie
-    foops_private_ontology_warning: L'évaluation FAIR se fait depuis l'adresse publique de l'ontologie.
-    foops_private_ontology_hint: Cette ontologie devrait être publique pour permettre l'évaluation.
+    foops_no_assessment_warning: L'évaluation FAIR n'a pas pu être faite pour cette ontologie.
     foops_no_file_hint: Cette ontologie devrait avoir un fichier téléchargeable pour permettre l'évaluation.
     foops_description: 'Score d''évaluation FAIR calculé avec l''outil FOOPS! (Ontology
       Pitfall Scanner for FAIR) à partir du fichier déposé dans le portail. Plus de détails

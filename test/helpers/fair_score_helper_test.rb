@@ -46,8 +46,8 @@ class FairScoreHelperTest < ActionView::TestCase
       'checks' => [{ 'abbreviation' => 'RDF1', 'status' => rdf1_status }] }
   end
 
-  test 'private ontologies cannot be assessed by FOOPS!' do
-    refute foops_assessable?(ontology('PRIV', 'private'))
+  test 'private ontologies are assessed like any other' do
+    assert foops_assessable?(ontology('PRIV', 'private'))
     assert foops_assessable?(ontology('PUB', 'public'))
   end
 
@@ -69,14 +69,13 @@ class FairScoreHelperTest < ActionView::TestCase
     assert_not_requested :post, $FOOPS_URL
   end
 
-  test 'does not call FOOPS! for a private ontology' do
-    stub_request(:post, $FOOPS_URL)
+  test 'reads the stored report of a private ontology' do
+    stub_request(:get, stored_report_url('PRIV'))
+      .to_return(status: 200, body: foops_report(0.42).to_json)
 
-    private_ontology = ontology('PRIV', 'private')
-    score = get_foops_score(private_ontology)
+    score = get_foops_score(ontology('PRIV', 'private'))
 
-    assert_equal({ 'error' => foops_blocked_message(private_ontology) }, score)
-    assert_not_requested :post, $FOOPS_URL
+    assert_equal 0.42, score['overall_score']
   end
 
   test 'reads the report stored by the backend instead of calling FOOPS!' do
