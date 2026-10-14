@@ -1098,9 +1098,6 @@ en:
       largest_in_group:
         question: "Which ontology in the INRAE group is the largest, and how many properties does it have?"
         note: "Joins a group to sizes, and asks for a size other than classes."
-      orcid_creators:
-        question: "Which people with an ORCID iD created more than one ontology? Give their ORCID."
-        note: "Three hops: creator, agent, identifier. Then filtering by type and counting."
       ror_organizations:
         question: "Which organizations are linked to the most ontologies, and what are their ROR iDs?"
         note: "Organizations versus people, creators versus contributors."

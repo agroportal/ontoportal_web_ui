@@ -5,7 +5,7 @@ module McpHelper
   # Example questions, grouped by the mistake they provoke. Texts live under mcp.examples in the locales.
   EXAMPLES = {
     size: %w[plants_classes largest_in_group],
-    people: %w[orcid_creators ror_organizations],
+    people: %w[ror_organizations],
     links: %w[shared_projects reviews agrovoc_mappings],
     content: %w[maize_labels drip_irrigation],
     missing: %w[missing_license failed_parse]
