@@ -1096,7 +1096,7 @@ en:
         question: "Which 5 ontologies in the Plants category have the most classes, counting only their current version?"
         note: "Sizes live in the Metrics graph, not in omv:numberOfClasses. Only the current version counts, and metric values must be sorted as numbers."
       largest_in_group:
-        question: "Which ontology in the D2KAB group is the largest, and how many properties does it have?"
+        question: "Which ontology in the INRAE group is the largest, and how many properties does it have?"
         note: "Joins a group to sizes, and asks for a size other than classes."
       orcid_creators:
         question: "Which people with an ORCID iD created more than one ontology? Give their ORCID."

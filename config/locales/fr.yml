@@ -1126,7 +1126,7 @@ fr:
         question: "Quelles sont les 5 ontologies de la catégorie Plants qui ont le plus de classes, en ne comptant que leur version actuelle ?"
         note: "Les tailles sont dans le graphe Metrics, pas dans omv:numberOfClasses. Seule la version actuelle compte, et les valeurs doivent être triées comme des nombres."
       largest_in_group:
-        question: "Quelle est la plus grande ontologie du groupe D2KAB, et combien de propriétés a-t-elle ?"
+        question: "Quelle est la plus grande ontologie du groupe INRAE, et combien de propriétés a-t-elle ?"
         note: "Relie un groupe aux tailles, et demande une autre taille que le nombre de classes."
       orcid_creators:
         question: "Quelles personnes ayant un identifiant ORCID ont créé plus d'une ontologie ? Donnez leur ORCID."
