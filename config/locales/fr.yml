@@ -1119,7 +1119,7 @@ fr:
       groups:
         size: "Taille et version actuelle"
         people: "Personnes et organisations"
-        links: "Projets, avis et alignements"
+        links: "Projets et alignements"
         content: "Contenu et langues"
         missing: "Données manquantes et versions en échec"
       plants_classes:
@@ -1134,9 +1134,6 @@ fr:
       shared_projects:
         question: "Quels projets utilisent à la fois AGROVOC et une ontologie du groupe Crop Ontology ?"
         note: "Les projets pointent vers les ontologies, pas l'inverse, et il faut une double jointure."
-      reviews:
-        question: "Quelles ontologies ont des avis d'utilisateurs, et quelles notes ont-elles reçues ?"
-        note: "Un tout petit graphe, où un résultat qui semble vide est facile à mal interpréter."
       agrovoc_mappings:
         question: "Quelle ontologie a le plus d'alignements vers AGROVOC ?"
         note: "Des centaines de milliers d'alignements. Le point d'accès peut refuser la requête évidente, jugée trop coûteuse."
