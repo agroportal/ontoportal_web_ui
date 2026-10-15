@@ -1148,6 +1148,9 @@ fr:
       milling_narrower:
         question: "Sur %{portal}, quels concepts sont plus spécifiques que « milling » dans le thésaurus INRAE ?"
         note: "« milling » n'est qu'un libellé alternatif de broyage : une recherche sur les libellés préférés ne trouve rien. Puis un pas vers le bas de la hiérarchie, pas vers le haut."
+      air_temperature_variables:
+        question: "Sur %{portal}, trouvez 10 variables décrivant la température de l'air, en indiquant l'ontologie source de chaque variable."
+        note: "Une recherche par libellé dans le contenu de toutes les ontologies. Un terme importé figure aussi dans chaque ontologie qui l'importe : la température de l'air de SAREF4AGRI est dans quatre ontologies, mais seule SAREF4AGRI la définit."
       missing_license:
         question: "Sur %{portal}, quelles ontologies n'ont pas de licence dans leur version actuelle ?"
         note: "Un champ absent, sans reprendre la licence d'une version archivée."

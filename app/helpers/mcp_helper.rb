@@ -4,7 +4,7 @@
 module McpHelper
   # Example questions, grouped by the mistake they provoke. Texts live under mcp.examples in the locales.
   EXAMPLES = {
-    content: %w[milling_narrower maize_labels crushing_definition],
+    content: %w[milling_narrower maize_labels crushing_definition air_temperature_variables],
     size: %w[plants_classes largest_in_group],
     catalogue: %w[soil_inrae wheat_licenses],
     people: %w[ror_organizations],

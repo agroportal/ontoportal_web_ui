@@ -1118,6 +1118,9 @@ en:
       milling_narrower:
         question: "In %{portal}, which concepts are narrower than \"milling\" in the INRAE thesaurus?"
         note: "\"milling\" is only an alternative label of broyage, so a search on preferred labels finds nothing. Then one step down the hierarchy, not up."
+      air_temperature_variables:
+        question: "In %{portal}, find 10 variables describing air temperature, indicating the source ontology of each variable."
+        note: "A label search across every ontology's content. Imported terms also appear in each ontology that imports them: SAREF4AGRI's air temperature is in four, but only SAREF4AGRI defines it."
       missing_license:
         question: "In %{portal}, which ontologies have no license in their current version?"
         note: "An absent field, without borrowing an archived version's license."
