@@ -23,6 +23,13 @@ class ActiveSupport::TestCase
   setup do
     FlipperSetup.test_configure!
   end
+
+  # Requests keep their session in the thread (ApplicationController#set_global_thread_values),
+  # where the API client reads the user's apikey. Clear it so a test cannot sign in the next one.
+  teardown do
+    Thread.current[:session] = nil
+    Thread.current[:request] = nil
+  end
 end
 
 # Define the fixtures helper method
