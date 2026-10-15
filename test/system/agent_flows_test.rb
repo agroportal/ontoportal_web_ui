@@ -38,6 +38,20 @@ class AgentFlowsTest < ApplicationSystemTestCase
 
   end
 
+  test "hide ROR results answered after the name field lost focus" do
+    visit agents_url
+    find("a", text: "Create agent", match: :first).click
+    wait_for_text "TYPE"
+
+    # Leave the name field before the debounced ROR search answers
+    choose "", option: 'organization', allow_label_click: true
+    fill_in 'name', with: @new_organization.name
+    fill_in 'acronym', with: @new_organization.acronym
+    sleep 3
+
+    refute_selector '.search-content'
+  end
+
   private
   def create_agent_flow(new_agent, person_count: , organization_count:)
     wait_for_text "Create agent"
