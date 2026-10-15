@@ -15,7 +15,7 @@ module FairScoreHelper
 
   def foops_enabled?
     user = session[:user] rescue nil
-    Flipper.enabled?('FOOPS', user) && $FOOPS_URL.present?
+    Flipper.enabled?('FOOPS', user)
   end
 
   def foops_assessable?(ontology)
@@ -152,13 +152,7 @@ module FairScoreHelper
     return {} unless foops_enabled?
     return { 'error' => foops_blocked_message(ontology) } unless foops_assessable?(ontology)
 
-    stored = get_stored_foops_score(ontology)
-    return stored unless stored.empty?
-
-    live = get_live_foops_score(ontology)
-    return {} unless foops_assessment_usable?(live, ontology.acronym)
-
-    live
+    get_stored_foops_score(ontology)
   end
 
   def get_stored_foops_score(ontology)
@@ -173,56 +167,6 @@ module FairScoreHelper
     MultiJson.load(response.body.force_encoding('UTF-8'))
   rescue StandardError => e
     Rails.logger.warn "Stored FOOPS report unavailable for #{ontology.acronym}: #{e.message}"
-    {}
-  end
-
-  def foops_assessment_usable?(report, acronym)
-    return false if report.blank?
-
-    rdf1 = Array(report['checks']).find { |c| c['abbreviation'].eql?('RDF1') }
-    return true if rdf1 && rdf1['status'].eql?('ok')
-
-    Rails.logger.warn "Discarding FOOPS score for #{acronym}: RDF1 did not pass, the report describes an error page"
-    false
-  end
-
-  def get_live_foops_score(ontology)
-    ontology_uri = "#{$UI_URL}/ontologies/#{ontology.acronym}"
-    cache_key = "foops-#{ontology.acronym}"
-    fail_cache_key = "#{cache_key}-fail"
-
-    return {} if Rails.cache.exist?(fail_cache_key)
-
-    if Rails.cache.exist?(cache_key)
-      out = read_large_data(cache_key)
-    else
-      out = '{}'
-      begin
-        time = Benchmark.realtime do
-          conn = Faraday.new do |f|
-            f.options.timeout = 30
-            f.options.open_timeout = 10
-            f.headers['Content-Type'] = 'application/json;charset=utf-8'
-          end
-          response = conn.post($FOOPS_URL, { ontologyUri: ontology_uri }.to_json)
-          if response.status.eql?(200)
-            out = response.body.force_encoding('UTF-8')
-            unless out.empty? || out.strip.eql?('{}')
-              cache_large_data(cache_key, out, expires_in: 24.hours)
-              Rails.cache.delete(fail_cache_key)
-            end
-          end
-        end
-        Rails.logger.info "Call FOOPS service for: #{ontology.acronym} (#{time}s)"
-      rescue StandardError => e
-        Rails.logger.warn "FOOPS unreachable: #{e.message}"
-        Rails.cache.write(fail_cache_key, true, expires_in: 10.minutes)
-        return {}
-      end
-    end
-    MultiJson.load(out)
-  rescue StandardError => e
-    Rails.logger.warn "FOOPS JSON parse error: #{e.message}"
     {}
   end
 
@@ -469,8 +413,7 @@ module FairScoreHelper
     Zlib::Inflate.inflate(data)
   end
 
-  # FOOPS! downloads the ontology anonymously from its public URL and
-  # scores whatever comes back, e.g. a login page or a 404.
+  # The backend assesses the ontology file; without one, no report exists.
   # Name what stands in the way, nil when nothing does.
   def foops_blocker(ontology)
     return :no_file if ontology.summaryOnly || $NOT_DOWNLOADABLE.include?(ontology.acronym)

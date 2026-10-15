@@ -40,10 +40,10 @@ class FairScoreHelperTest < ActionView::TestCase
     stub_request(:get, stored_report_url(acronym)).to_return(status: 404, body: '')
   end
 
-  # A report FOOPS! answers for an ontology it could actually download.
-  def foops_report(overall_score, rdf1_status: 'ok')
+  # A report as the backend stores it.
+  def foops_report(overall_score)
     { 'overall_score' => overall_score,
-      'checks' => [{ 'abbreviation' => 'RDF1', 'status' => rdf1_status }] }
+      'checks' => [{ 'abbreviation' => 'RDF1', 'status' => 'ok' }] }
   end
 
   test 'private ontologies are assessed like any other' do
@@ -60,13 +60,11 @@ class FairScoreHelperTest < ActionView::TestCase
     end
   end
 
-  test 'does not call FOOPS! for an ontology without a downloadable file' do
-    stub_request(:post, $FOOPS_URL)
-
+  test 'does not query the API for an ontology without a downloadable file' do
     score = get_foops_score(ontology('SUMMARY', 'public', summaryOnly: true))
 
     assert_includes score['error'], I18n.t('fair_score.foops_no_file_hint')
-    assert_not_requested :post, $FOOPS_URL
+    assert_not_requested :get, stored_report_url('SUMMARY')
   end
 
   test 'reads the stored report of a private ontology' do
@@ -78,32 +76,20 @@ class FairScoreHelperTest < ActionView::TestCase
     assert_equal 0.42, score['overall_score']
   end
 
-  test 'reads the report stored by the backend instead of calling FOOPS!' do
+  test 'reads the report stored by the backend' do
     stub_request(:get, stored_report_url('PUB'))
       .to_return(status: 200, body: +foops_report(0.8).to_json)
-    stub_request(:post, $FOOPS_URL)
 
     score = get_foops_score(ontology('PUB', 'public'))
 
     assert_equal 0.8, score['overall_score']
-    assert_not_requested :post, $FOOPS_URL
   end
 
-  test 'falls back to FOOPS! when the backend stores no report' do
+  # nil score data hides the FOOPS! tab on the summary page
+  test 'has no score data when the backend stores no report' do
     stub_no_stored_report('PUB')
-    stub_request(:post, $FOOPS_URL).to_return(status: 200, body: +foops_report(0.5).to_json)
-
-    score = get_foops_score(ontology('PUB', 'public'))
-
-    assert_equal 0.5, score['overall_score']
-    assert_requested :post, $FOOPS_URL, times: 1
-  end
-
-  test 'discards a live report whose RDF1 check did not pass' do
-    stub_no_stored_report('PUB')
-    stub_request(:post, $FOOPS_URL)
-      .to_return(status: 200, body: +foops_report(0.5, rdf1_status: 'error').to_json)
 
     assert_empty get_foops_score(ontology('PUB', 'public'))
+    assert_nil create_foops_raw_scores_data(get_foops_score(ontology('PUB', 'public')))
   end
 end

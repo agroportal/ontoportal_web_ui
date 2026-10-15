@@ -5,7 +5,7 @@
       = render partial: 'ontologies/sections/metadata/ontology_description_section'
       = render partial: 'ontologies/sections/metadata/ontology_metrics_section'
       - has_fairness = @fair_scores_data.present?
-      - has_foops = foops_enabled?
+      - has_foops = @foops_scores_data.present?
       - if has_fairness || has_foops
         .fairness-section{data: {controller: "fairness-carousel"}}
           %h2.card_title

@@ -344,8 +344,8 @@ class OntologiesController < ApplicationController
     tmp = fairness_service_enabled? ? get_fair_score(@ontology.acronym) : nil
     @fair_scores_data = create_fair_scores_data(tmp.values.first) unless tmp.nil?
 
-    # FOOPS! (technical) fairness score — loaded asynchronously by foops_score_summary_controller.js
-    # No synchronous call here to avoid blocking the page
+    # FOOPS! (technical) fairness score, as stored by the API; nil hides the FOOPS! tab
+    @foops_scores_data = create_foops_raw_scores_data(get_foops_score(@ontology))
 
     @views = get_views(@ontology)
     @view_decorators = @views.map { |view| ViewDecorator.new(view, view_context) }
