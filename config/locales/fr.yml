@@ -1378,6 +1378,7 @@ fr:
       soit %{outside}
     release_date: Date de publication
     sections:
+      visualization_unavailable: "Aucune visualisation n'a été générée pour la dernière soumission de cette ontologie."
       add_acronym_widgets: Ajouter des widgets web à votre site pour l'ontologie %{acronym}
       additional_parameters: Les paramètres supplémentaires sont documentés sur le
       autocomplete_widget_accesses: Le widget d'autocomplétion accède au contenu de
@@ -1594,6 +1595,7 @@ fr:
     metadata:
       additional_metadata: Métadonnées supplémentaires
     sections:
+      visualization: WebVOWL
       classes: Classes
       collections: Collections
       concepts: Concepts
@@ -1886,6 +1888,7 @@ fr:
     attributes:
       description: Description
   submissions:
+    vowl: "Visualiser l'ontologie (WebVOWL)"
     actions: Actions
     delete_submission_alert:
       content_1: Êtes-vous sûr de vouloir supprimer la soumission <span style='color:red;font-weight:bold;'>

@@ -30,7 +30,7 @@ class OntologiesController < ApplicationController
   before_action :authorize_read_only, :only => [:new, :create, :edit, :update, :destroy]
   before_action :authorize_ontology_admin, only: [:edit]
 
-  KNOWN_PAGES = Set.new(["terms", "classes", "mappings", "notes", "widgets", "summary", "properties", "instances", "schemes", "collections", "sparql"])
+  KNOWN_PAGES = Set.new(["terms", "classes", "mappings", "notes", "widgets", "summary", "properties", "instances", "schemes", "collections", "sparql", "visualization"])
   EXTERNAL_MAPPINGS_GRAPH = "http://data.bioontology.org/metadata/ExternalMappings"
   INTERPORTAL_MAPPINGS_GRAPH = "http://data.bioontology.org/metadata/InterportalMappings"
 
@@ -309,6 +309,8 @@ class OntologiesController < ApplicationController
       self.notes # rescue self.summary
     when 'widgets'
       self.widgets # rescue self.summary
+    when 'visualization'
+      self.visualization # rescue self.summary
     when 'properties'
       self.properties # rescue self.summary
     when 'summary'
@@ -414,6 +416,50 @@ class OntologiesController < ApplicationController
     else
       render partial: 'ontologies/sections/widgets', layout: 'ontology_viewer'
     end
+  end
+
+  def visualization
+    if request.xhr?
+      render partial: 'ontologies/sections/visualization', layout: false
+    else
+      render partial: 'ontologies/sections/visualization', layout: 'ontology_viewer'
+    end
+  end
+
+  skip_before_action :verify_authenticity_token, only: :vowl_proxy
+
+  VOWL_MIME = {
+    '.html' => 'text/html', '.css' => 'text/css', '.js' => 'application/javascript',
+    '.json' => 'application/json', '.ico' => 'image/x-icon', '.txt' => 'text/plain',
+    '.png' => 'image/png', '.svg' => 'image/svg+xml'
+  }.freeze
+
+  # The viewer is served from the API, which answers with X-Frame-Options
+  # SAMEORIGIN. Proxying it keeps the frame on the portal origin. The trailing
+  # slash matters: every asset is requested with a relative URL.
+  def vowl_proxy
+    acronym = params[:acronym]
+    path = params[:path].to_s
+    base = $REST_URL.to_s.chomp('/')
+    uri = URI.parse("#{base}/ontologies/#{acronym}/vowl/#{path}")
+    uri.query = URI.encode_www_form(apikey: get_apikey)
+
+    res = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme.eql?('https')) do |http|
+      http.get(uri.request_uri)
+    end
+
+    unless res.is_a?(Net::HTTPSuccess)
+      render plain: 'Visualization not available', status: :not_found
+      return
+    end
+
+    # The visualisation of a given submission never changes, so it can be
+    # cached: that is what makes prefetching it from the ontology page useful.
+    expires_in 1.hour, public: false
+
+    send_data res.body,
+              type: VOWL_MIME.fetch(File.extname(path).downcase, 'text/html'),
+              disposition: 'inline'
   end
 
   def show_licenses
