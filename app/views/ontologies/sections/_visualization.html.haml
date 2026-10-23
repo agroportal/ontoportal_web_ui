@@ -11,8 +11,6 @@
       (function () {
         var started = Date.now();
         var timer = setInterval(function () {
-          // Looked up on every tick: Turbo can replace these nodes after the
-          // script has run, and a captured reference would point at the old one.
           var frame = document.getElementById('webvowl_frame');
           var overlay = document.getElementById('webvowl_loading');
           if (!frame || !overlay) return;
@@ -23,8 +21,6 @@
           } catch (e) { drawn = 0; }
 
           if (drawn > 0 || Date.now() - started > 180000) {
-            // Removed rather than hidden: the Bootstrap utility class on it
-            // carries display: flex !important, which an inline style loses to.
             overlay.remove();
             clearInterval(timer);
           }

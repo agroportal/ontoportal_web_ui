@@ -434,9 +434,6 @@ class OntologiesController < ApplicationController
     '.png' => 'image/png', '.svg' => 'image/svg+xml'
   }.freeze
 
-  # The viewer is served from the API, which answers with X-Frame-Options
-  # SAMEORIGIN. Proxying it keeps the frame on the portal origin. The trailing
-  # slash matters: every asset is requested with a relative URL.
   def vowl_proxy
     acronym = params[:acronym]
     path = params[:path].to_s
@@ -453,8 +450,6 @@ class OntologiesController < ApplicationController
       return
     end
 
-    # The visualisation of a given submission never changes, so it can be
-    # cached: that is what makes prefetching it from the ontology page useful.
     expires_in 1.hour, public: false
 
     send_data res.body,

@@ -70,8 +70,6 @@
                 = render LinkFieldComponent.new(value: v)
   %hr.w-100.my-3
   - if vowl_ready?(@submission_latest)
-    -# Low priority hint: the browser fetches the visualisation data while the
-    -# user reads the page, so opening the Visualization tab feels instant.
     = tag.link rel: 'prefetch', as: 'fetch', href: "/ontologies/#{@ontology.acronym}/vowl/data/ontology.json", crossorigin: 'use-credentials'
   .icons_container
     = ontology_icon_links(@ontology_icon_links, @submission_latest)
