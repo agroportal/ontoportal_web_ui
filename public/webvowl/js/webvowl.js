@@ -6183,19 +6183,28 @@ webvowl =
 	  /** -- force-layout related functions                      -- **/
 	  /** --------------------------------------------------------- **/
 	  function storeLinksOnNodes( nodes, links ){
-	    for ( var i = 0, nodesLength = nodes.length; i < nodesLength; i++ ) {
-	      var node = nodes[i],
-	        connectedLinks = [];
+	    var linksByNode = new Map(), i, l;
+	    
+	    for ( i = 0, l = nodes.length; i < l; i++ ) {
+	      linksByNode.set(nodes[i], []);
+	    }
+	    
+	    // look for properties where this node is the domain or range
+	    for ( i = 0, l = links.length; i < l; i++ ) {
+	      var link = links[i],
+	        domainLinks = linksByNode.get(link.domain()),
+	        rangeLinks = linksByNode.get(link.range());
 	      
-	      // look for properties where this node is the domain or range
-	      for ( var j = 0, linksLength = links.length; j < linksLength; j++ ) {
-	        var link = links[j];
-	        
-	        if ( link.domain() === node || link.range() === node ) {
-	          connectedLinks.push(link);
-	        }
+	      if ( domainLinks ) {
+	        domainLinks.push(link);
 	      }
-	      node.links(connectedLinks);
+	      if ( rangeLinks && rangeLinks !== domainLinks ) {
+	        rangeLinks.push(link);
+	      }
+	    }
+	    
+	    for ( i = 0, l = nodes.length; i < l; i++ ) {
+	      nodes[i].links(linksByNode.get(nodes[i]));
 	    }
 	  }
 	  
@@ -12256,15 +12265,55 @@ webvowl =
 	  linkCreator.createLinks = function ( properties ){
 	    var links = groupPropertiesToLinks(properties);
 	    
-	    for ( var i = 0, l = links.length; i < l; i++ ) {
-	      var link = links[i];
-	      
-	      countAndSetLayers(link, links);
-	      countAndSetLoops(link, links);
-	    }
+	    setLayersAndLoops(links);
 	    
 	    return links;
 	  };
+	  
+	  /**
+	   * Groups the links by their pair of nodes (layers) and by their node for self loops
+	   * in a single pass, instead of comparing every link with every other link.
+	   */
+	  function setLayersAndLoops( links ){
+	    var nodeIds = new Map(),
+	      layersByPair = new Map(),
+	      loopsByNode = new Map();
+	    
+	    function nodeId( node ){
+	      if ( !nodeIds.has(node) ) {
+	        nodeIds.set(node, nodeIds.size);
+	      }
+	      return nodeIds.get(node);
+	    }
+	    
+	    for ( var i = 0, l = links.length; i < l; i++ ) {
+	      var link = links[i],
+	        domainId = nodeId(link.domain()),
+	        rangeId = nodeId(link.range()),
+	        // layers do not depend on the direction of the link
+	        pair = Math.min(domainId, rangeId) + "|" + Math.max(domainId, rangeId),
+	        layers = layersByPair.get(pair);
+	      
+	      if ( !layers ) {
+	        layers = [];
+	        layersByPair.set(pair, layers);
+	      }
+	      link.layerIndex(layers.length);
+	      link.layers(layers);
+	      layers.push(link);
+	      
+	      if ( domainId === rangeId ) {
+	        var loops = loopsByNode.get(domainId);
+	        if ( !loops ) {
+	          loops = [];
+	          loopsByNode.set(domainId, loops);
+	        }
+	        link.loopIndex(loops.length);
+	        link.loops(loops);
+	        loops.push(link);
+	      }
+	    }
+	  }
 	  
 	  /**
 	   * Creates links of properties and - if existing - their inverses.
@@ -12297,59 +12346,6 @@ webvowl =
 	    }
 	    
 	    return links;
-	  }
-	  
-	  function countAndSetLayers( link, allLinks ){
-	    var layer,
-	      layers,
-	      i, l;
-	    
-	    if ( typeof link.layers() === "undefined" ) {
-	      layers = [];
-	      
-	      // Search for other links that are another layer
-	      for ( i = 0, l = allLinks.length; i < l; i++ ) {
-	        var otherLink = allLinks[i];
-	        if ( link.domain() === otherLink.domain() && link.range() === otherLink.range() ||
-	          link.domain() === otherLink.range() && link.range() === otherLink.domain() ) {
-	          layers.push(otherLink);
-	        }
-	      }
-	      
-	      // Set the results on each of the layers
-	      for ( i = 0, l = layers.length; i < l; ++i ) {
-	        layer = layers[i];
-	        
-	        layer.layerIndex(i);
-	        layer.layers(layers);
-	      }
-	    }
-	  }
-	  
-	  function countAndSetLoops( link, allLinks ){
-	    var loop,
-	      loops,
-	      i, l;
-	    
-	    if ( typeof link.loops() === "undefined" ) {
-	      loops = [];
-	      
-	      // Search for other links that are also loops of the same node
-	      for ( i = 0, l = allLinks.length; i < l; i++ ) {
-	        var otherLink = allLinks[i];
-	        if ( link.domain() === otherLink.domain() && link.domain() === otherLink.range() ) {
-	          loops.push(otherLink);
-	        }
-	      }
-	      
-	      // Set the results on each of the loops
-	      for ( i = 0, l = loops.length; i < l; ++i ) {
-	        loop = loops[i];
-	        
-	        loop.loopIndex(i);
-	        loop.loops(loops);
-	      }
-	    }
 	  }
 	  
 	  function createLink( property ){
@@ -13458,9 +13454,26 @@ webvowl =
 	   * Combines the passed objects with its attributes and prototypes. This also applies
 	   * attributes defined in the base of the prototype.
 	   */
+	  /**
+	   * Indexes the attributes by id, keeping the first attribute found for each id.
+	   */
+	  function indexAttributesById( attributes ){
+	    var attributesById = new Map();
+	    
+	    if ( attributes ) {
+	      attributes.forEach(function ( attribute ){
+	        if ( !attributesById.has(attribute.id) ) {
+	          attributesById.set(attribute.id, attribute);
+	        }
+	      });
+	    }
+	    return attributesById;
+	  }
+	  
 	  function combineClasses( baseObjects, attributes ){
 	    var combinations = [];
 	    var prototypeMap = createLowerCasePrototypeMap(nodePrototypeMap);
+	    var attributesById = indexAttributesById(attributes);
 	    
 	    if ( baseObjects ) {
 	      baseObjects.forEach(function ( element ){
@@ -13468,13 +13481,7 @@ webvowl =
 	        
 	        if ( attributes ) {
 	          // Look for an attribute with the same id and merge them
-	          for ( var i = 0; i < attributes.length; i++ ) {
-	            var attribute = attributes[i];
-	            if ( element.id === attribute.id ) {
-	              matchingAttribute = attribute;
-	              break;
-	            }
-	          }
+	          matchingAttribute = attributesById.get(element.id);
 	          addAdditionalAttributes(element, matchingAttribute);
 	        }
 	        
@@ -13538,6 +13545,7 @@ webvowl =
 	  function combineProperties( baseObjects, attributes ){
 	    var combinations = [];
 	    var prototypeMap = createLowerCasePrototypeMap(propertyPrototypeMap);
+	    var attributesById = indexAttributesById(attributes);
 	    
 	    if ( baseObjects ) {
 	      baseObjects.forEach(function ( element ){
@@ -13545,13 +13553,7 @@ webvowl =
 	        
 	        if ( attributes ) {
 	          // Look for an attribute with the same id and merge them
-	          for ( var i = 0; i < attributes.length; i++ ) {
-	            var attribute = attributes[i];
-	            if ( element.id === attribute.id ) {
-	              matchingAttribute = attribute;
-	              break;
-	            }
-	          }
+	          matchingAttribute = attributesById.get(element.id);
 	          addAdditionalAttributes(element, matchingAttribute);
 	        }
 	        
@@ -13791,9 +13793,9 @@ webvowl =
 	        propertyWasRerouted = true;
 	      }
 	      // But there should not be two equal properties between the same domain and range
-	      var equalProperty = getOtherEqualProperty(rawProperties, property);
+	      var equalProperty = propertyWasRerouted && getOtherEqualProperty(rawProperties, property);
 	      
-	      if ( propertyWasRerouted && equalProperty ) {
+	      if ( equalProperty ) {
 	        property.visible(false);
 	        
 	        equalProperty.redundantProperties().push(property);
