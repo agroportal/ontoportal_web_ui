@@ -238,7 +238,7 @@ module OntologiesHelper
     # Strip the URI prefix from the status codes (works even if they are not URIs)
     # The order of the codes must be assumed to be random, it is not an entirely
     # predictable sequence of ontology processing stages.
-    codes = data[:submissionStatus].map { |s| s.split('/').last } - %w[DOCUMENTATION ERROR_DOCUMENTATION]
+    codes = data[:submissionStatus].map { |s| s.split('/').last }
     errors = codes.select { |c| c.start_with? 'ERROR' }.map { |c| c.gsub("_", " ").split(/(\W)/).map(&:capitalize).join }.compact
     status = []
     status.push('Parsed') if (codes.include? 'RDF') && (codes.include? 'RDF_LABELS')
