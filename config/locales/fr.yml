@@ -1233,6 +1233,15 @@ fr:
         loading: "Chargement du journal..."
         no_log: "Aucun journal disponible."
         parse_error: "Erreur lors de l'analyse du journal : %{message}"
+      oops:
+        title: "Rapport qualité (OOPS!)"
+        unavailable: "Aucun rapport OOPS! n'a été généré pour la dernière soumission de cette ontologie."
+        summary: "%{total} pièges détectés : %{critical} critiques, %{important} importants, %{minor} mineurs."
+        code: "Code"
+        pitfall: "Piège"
+        importance: "Importance"
+        affected: "Éléments concernés"
+        open: "Ouvrir le rapport brut"
       ontology:
         title: "Ontologie"
         warning: "Attention : La suppression de l'ontologie est irréversible. Toutes les soumissions et métadonnées seront perdues."
