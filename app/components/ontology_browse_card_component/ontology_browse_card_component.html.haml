@@ -10,7 +10,7 @@
               %div{class: "federated-icon-#{@portal_name&.downcase} d-inline"}
                 = render Display::InfoTooltipComponent.new(text: "Federated ontology from #{ontology[:sources].map{|x| link_to(x,x)}.join(', ')}", icon: 'external-link.svg')
             - if session[:user]&.admin? || ontology[:ontology][:administeredBy].include?(current_user&.id)
-              - ontology_status = status_string(ontology, exclude: OntologiesHelper::ALERT_IGNORED_STATUSES)
+              - ontology_status = status_string(ontology)
               = render Display::InfoTooltipComponent.new(text: ontology_status, icon: submission_status_icons(ontology_status))
         .browse-desc-container{data:{controller:"text-truncate", 'text-truncate-more-text-value': t('components.show_more') , 'text-truncate-less-text-value': t('components.show_less')}}
           %p.browse-desc-text{'data-text-truncate-target': 'content'}

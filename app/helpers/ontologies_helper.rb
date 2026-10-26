@@ -222,9 +222,7 @@ module OntologiesHelper
   end
 
 
-  ALERT_IGNORED_STATUSES = %w[FAIRNESS_FOOPS ERROR_FAIRNESS_FOOPS PITFALLS_OOPS ERROR_PITFALLS_OOPS].freeze
-
-  def submission_status2string(data, exclude: [])
+  def submission_status2string(data)
     return '' if data[:submissionStatus].nil?
 
     # Massage the submission status into a UI string
@@ -234,7 +232,7 @@ module OntologiesHelper
     # Strip the URI prefix from the status codes (works even if they are not URIs)
     # The order of the codes must be assumed to be random, it is not an entirely
     # predictable sequence of ontology processing stages.
-    codes = data[:submissionStatus].map { |s| s.split('/').last } - exclude
+    codes = data[:submissionStatus].map { |s| s.split('/').last }
     errors = codes.select { |c| c.start_with? 'ERROR' }.map { |c| c.gsub("_", " ").split(/(\W)/).map(&:capitalize).join }.compact
     status = []
     status.push('Parsed') if (codes.include? 'RDF') && (codes.include? 'RDF_LABELS')
@@ -250,10 +248,10 @@ module OntologiesHelper
     '(' + status.join(', ') + ')'
   end
 
-  def status_string(data, exclude: [])
+  def status_string(data)
     return '' unless data.present? && data[:submissionStatus].present?
 
-    submission_status2string(data, exclude: exclude)
+    submission_status2string(data)
   end
 
   def submission_status_ok?(status)
@@ -518,7 +516,7 @@ module OntologiesHelper
 
   def not_ready_submission_alert(ontology: @ontology, submission: @submission, old_submission_ready: @old_submission_ready)
     if ontology.admin?(session[:user])
-      status = status_string(submission, exclude: ALERT_IGNORED_STATUSES)
+      status = status_string(submission)
       type = nil
       message = nil
       if submission_status_error?(status)
