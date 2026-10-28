@@ -201,8 +201,8 @@ module OntologiesHelper
 
   def documentation_link(ontology = nil)
     ontology ||= @ontology
-    href, target = api_button_link_and_target("#{ontology.id}/documentation/", allow_annonymous = true)
-    { href: href, label: t('submissions.documentation'), target: target }
+    { href: "#{request.base_url}/ontologies/#{ontology.acronym}/documentation/",
+      label: t('submissions.documentation'), target: '_blank' }
   end
 
   def mappings_link(ontology, count)
@@ -659,7 +659,7 @@ module OntologiesHelper
   end
 
   def ontology_widoco_documentation_link(ontology, submission_latest)
-    icon = 'icons/details'
+    icon = 'icons/widoco'
     label = t('submissions.documentation')
 
     if documentation_ready?(submission_latest)
