@@ -12270,10 +12270,6 @@ webvowl =
 	    return links;
 	  };
 	  
-	  /**
-	   * Groups the links by their pair of nodes (layers) and by their node for self loops
-	   * in a single pass, instead of comparing every link with every other link.
-	   */
 	  function setLayersAndLoops( links ){
 	    var nodeIds = new Map(),
 	      layersByPair = new Map(),
@@ -12290,7 +12286,6 @@ webvowl =
 	      var link = links[i],
 	        domainId = nodeId(link.domain()),
 	        rangeId = nodeId(link.range()),
-	        // layers do not depend on the direction of the link
 	        pair = Math.min(domainId, rangeId) + "|" + Math.max(domainId, rangeId),
 	        layers = layersByPair.get(pair);
 	      
@@ -13450,13 +13445,6 @@ webvowl =
 	    return properties;
 	  };
 	  
-	  /**
-	   * Combines the passed objects with its attributes and prototypes. This also applies
-	   * attributes defined in the base of the prototype.
-	   */
-	  /**
-	   * Indexes the attributes by id, keeping the first attribute found for each id.
-	   */
 	  function indexAttributesById( attributes ){
 	    var attributesById = new Map();
 	    
@@ -13470,6 +13458,10 @@ webvowl =
 	    return attributesById;
 	  }
 	  
+	  /**
+	   * Combines the passed objects with its attributes and prototypes. This also applies
+	   * attributes defined in the base of the prototype.
+	   */
 	  function combineClasses( baseObjects, attributes ){
 	    var combinations = [];
 	    var prototypeMap = createLowerCasePrototypeMap(nodePrototypeMap);
@@ -16244,14 +16236,46 @@ webvowl =
 	  };
 	  
 	  function findAutoDefaultDegree( nodes, properties, maxDegree ){
+	    var nodeDegrees = nodes.map(function ( node ){
+	      return { node: node, id: String(node.id()), degree: filterOutDatatypes(node.links()).length };
+	    });
+	    var datatypeProperties = properties.filter(function ( property ){
+	      return elementTools.isDatatypeProperty(property);
+	    });
+
 	    for ( var degree = 0; degree < maxDegree; degree++ ) {
-	      var filteredData = filterByNodeDegree(nodes, properties, degree);
-	      
-	      if ( filteredData.nodes.length <= NODE_COUNT_LIMIT_FOR_AUTO_ENABLING ) {
+	      if ( countNodesWithDegree(nodeDegrees, datatypeProperties, degree) <= NODE_COUNT_LIMIT_FOR_AUTO_ENABLING ) {
 	        return degree;
 	      }
 	    }
 	    return 0;
+	  }
+
+	  function countNodesWithDegree( nodeDegrees, datatypeProperties, minDegree ){
+	    var removedIds = new Set(),
+	      keptOccurrences = new Map(),
+	      count = 0;
+
+	    nodeDegrees.forEach(function ( entry ){
+	      if ( entry.degree >= minDegree ) {
+	        count++;
+	        keptOccurrences.set(entry.node, (keptOccurrences.get(entry.node) || 0) + 1);
+	      } else {
+	        removedIds.add(entry.id);
+	      }
+	    });
+
+	    datatypeProperties.forEach(function ( property ){
+	      if ( removedIds.has(String(property.domain().id())) || removedIds.has(String(property.range().id())) ) {
+	        var occurrences = keptOccurrences.get(property.range());
+	        if ( occurrences > 0 ) {
+	          keptOccurrences.set(property.range(), occurrences - 1);
+	          count--;
+	        }
+	      }
+	    });
+
+	    return count;
 	  }
 	  
 	  function findDefaultDegree( maxDegree ){
