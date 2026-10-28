@@ -504,6 +504,49 @@
 
     </main>
     <script src="js/d3.min.js"></script>
+    <script>
+        if ( location.pathname.indexOf("/webvowl/") === 0 && window.parent !== window ) {
+            (function (){
+                var documentId = Math.random().toString(36).slice(2),
+                    received = false;
+
+                function askForJson(){
+                    if ( !received ) {
+                        window.parent.postMessage({ type: "vowl-ready", id: documentId }, "*");
+                    }
+                }
+
+                var receivedJson = new Promise(function ( resolve ){
+                    window.addEventListener("message", function ( event ){
+                        if ( event.source !== window.parent || !event.data ) return;
+                        if ( event.data.type === "vowl-json" && !received ) {
+                            received = true;
+                            resolve(new TextDecoder().decode(event.data.buffer));
+                        } else if ( event.data.type === "vowl-ping" ) {
+                            askForJson();
+                        }
+                    });
+                });
+                var xhr = d3.xhr;
+                d3.xhr = function ( url, mimeType, callback ){
+                    if ( url === "./data/ontology.json" && callback instanceof Function ) {
+                        receivedJson.then(function ( text ){
+                            callback(null, { responseText: text });
+                        });
+                        return;
+                    }
+                    return xhr.apply(this, arguments);
+                };
+                var drawn = setInterval(function (){
+                    if ( document.querySelector("svg .node") ) {
+                        clearInterval(drawn);
+                        window.parent.postMessage({ type: "vowl-drawn" }, "*");
+                    }
+                }, 250);
+                askForJson();
+            })();
+        }
+    </script>
     <script src="js/webvowl.js"></script>
     <script src="js/webvowl.app.js"></script>
     <script>
