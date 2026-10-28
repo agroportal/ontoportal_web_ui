@@ -1379,6 +1379,7 @@ fr:
     release_date: Date de publication
     sections:
       visualization_unavailable: "Aucune visualisation n'a été générée pour la dernière soumission de cette ontologie."
+      visualization_load_failed: "La visualisation n'a pas pu être chargée."
       add_acronym_widgets: Ajouter des widgets web à votre site pour l'ontologie %{acronym}
       additional_parameters: Les paramètres supplémentaires sont documentés sur le
       autocomplete_widget_accesses: Le widget d'autocomplétion accède au contenu de

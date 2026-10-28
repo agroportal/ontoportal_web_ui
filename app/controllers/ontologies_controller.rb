@@ -426,37 +426,6 @@ class OntologiesController < ApplicationController
     end
   end
 
-  skip_before_action :verify_authenticity_token, only: :vowl_proxy
-
-  VOWL_MIME = {
-    '.html' => 'text/html', '.css' => 'text/css', '.js' => 'application/javascript',
-    '.json' => 'application/json', '.ico' => 'image/x-icon', '.txt' => 'text/plain',
-    '.png' => 'image/png', '.svg' => 'image/svg+xml'
-  }.freeze
-
-  def vowl_proxy
-    acronym = params[:acronym]
-    path = params[:path].to_s
-    base = $REST_URL.to_s.chomp('/')
-    uri = URI.parse("#{base}/ontologies/#{acronym}/vowl/#{path}")
-    uri.query = URI.encode_www_form(apikey: get_apikey)
-
-    res = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme.eql?('https')) do |http|
-      http.get(uri.request_uri)
-    end
-
-    unless res.is_a?(Net::HTTPSuccess)
-      render plain: 'Visualization not available', status: :not_found
-      return
-    end
-
-    expires_in 1.hour, public: false
-
-    send_data res.body,
-              type: VOWL_MIME.fetch(File.extname(path).downcase, 'text/html'),
-              disposition: 'inline'
-  end
-
   def show_licenses
 
     @metadata = submission_metadata

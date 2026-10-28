@@ -4,27 +4,69 @@
       #webvowl_loading.d-flex.flex-column.align-items-center.justify-content-center{ style: "position: absolute; inset: 0; background: #fff; z-index: 1;" }
         .p-3
           = render LoaderComponent.new(type: 'pulsing')
-      %iframe#webvowl_frame{ src: "/ontologies/#{@ontology.acronym}/vowl/",
+      %iframe#webvowl_frame{ src: "#{LinkedData::Client.settings.rest_url.to_s.chomp('/')}/webvowl/index.html#ontology",
+                             data: { json: "/ontologies/#{@ontology.acronym}/vowl/data/ontology.json",
+                                     failure: t('ontologies.sections.visualization_load_failed') },
                              style: "width: 100%; height: 100%; border: none;",
                              title: t('submissions.vowl') }
     :javascript
       (function () {
-        var started = Date.now();
-        var timer = setInterval(function () {
-          var frame = document.getElementById('webvowl_frame');
-          var overlay = document.getElementById('webvowl_loading');
-          if (!frame || !overlay) return;
+        var frame = document.getElementById('webvowl_frame');
+        var overlay = document.getElementById('webvowl_loading');
+        var frameOrigin = new URL(frame.src).origin;
 
-          var drawn = 0;
-          try {
-            drawn = frame.contentDocument.querySelectorAll('svg .node, svg circle').length;
-          } catch (e) { drawn = 0; }
+        function fetchJson() {
+          return fetch(frame.dataset.json, { credentials: 'same-origin' }).then(function (response) {
+            return response.ok ? response.arrayBuffer() : null;
+          }).catch(function () {
+            return null;
+          });
+        }
 
-          if (drawn > 0 || Date.now() - started > 180000) {
-            overlay.remove();
-            clearInterval(timer);
+        function showFailure() {
+          var container = document.getElementById('webvowl_container');
+          var message = document.createElement('p');
+          message.style.padding = '1em';
+          message.textContent = frame.dataset.failure;
+          container.replaceWith(message);
+          window.removeEventListener('message', onMessage);
+        }
+
+        var prefetched = fetchJson();
+        var servedDocument = null;
+
+        function ping() {
+          try { frame.contentWindow.postMessage({ type: 'vowl-ping' }, frameOrigin); } catch (e) {}
+        }
+
+        function removeOverlay() {
+          if (overlay) { overlay.remove(); overlay = null; }
+        }
+
+        function onMessage(event) {
+          if (!document.body.contains(frame)) {
+            window.removeEventListener('message', onMessage);
+            return;
           }
-        }, 500);
+          if (event.origin !== frameOrigin || event.source !== frame.contentWindow || !event.data) return;
+          if (event.data.type === 'vowl-ready') {
+            if (event.data.id === servedDocument) return;
+            servedDocument = event.data.id;
+            var json = prefetched || fetchJson();
+            prefetched = null;
+            json.then(function (buffer) {
+              if (!buffer) return showFailure();
+              frame.contentWindow.postMessage({ type: 'vowl-json', buffer: buffer }, frameOrigin, [buffer]);
+            });
+          } else if (event.data.type === 'vowl-drawn') {
+            removeOverlay();
+          }
+        }
+
+        window.addEventListener('message', onMessage);
+        frame.addEventListener('load', ping);
+        ping();
+        setTimeout(removeOverlay, 180000);
       })();
   - else
     #visualization_content{ style: "padding: 1em;" }

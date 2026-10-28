@@ -1343,6 +1343,7 @@ en:
     release_date: Release date
     sections:
       visualization_unavailable: "No visualization has been generated for the latest submission of this ontology."
+      visualization_load_failed: "The visualization could not be loaded."
       add_acronym_widgets: Add %{acronym} Web Widgets to your site
       additional_parameters: Additional parameters are documented on the
       autocomplete_widget_accesses: The autocomplete widget accesses ontology content

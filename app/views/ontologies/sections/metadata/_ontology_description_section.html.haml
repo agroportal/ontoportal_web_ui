@@ -69,8 +69,6 @@
               %span.admin-background
                 = render LinkFieldComponent.new(value: v)
   %hr.w-100.my-3
-  - if vowl_ready?(@submission_latest)
-    = tag.link rel: 'prefetch', as: 'fetch', href: "/ontologies/#{@ontology.acronym}/vowl/data/ontology.json", crossorigin: 'use-credentials'
   .icons_container
     = ontology_icon_links(@ontology_icon_links, @submission_latest)
     = ontology_sparql_endpoint_link(@submission_latest)
