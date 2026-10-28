@@ -5,10 +5,11 @@
         .p-3
           = render LoaderComponent.new(type: 'pulsing')
       %iframe#webvowl_frame{ src: "#{LinkedData::Client.settings.rest_url.to_s.chomp('/')}/webvowl/index.html#ontology",
-                             data: { json: "/ontologies/#{@ontology.acronym}/vowl/data/ontology.json",
-                                     failure: t('ontologies.sections.visualization_load_failed') },
+                             data: { json: "/ontologies/#{@ontology.acronym}/vowl/data/ontology.json" },
                              style: "width: 100%; height: 100%; border: none;",
                              title: t('submissions.vowl') }
+    %template#webvowl_failure
+      = empty_state(text: t('ontologies.sections.visualization_load_failed'))
     :javascript
       (function () {
         var frame = document.getElementById('webvowl_frame');
@@ -24,11 +25,8 @@
         }
 
         function showFailure() {
-          var container = document.getElementById('webvowl_container');
-          var message = document.createElement('p');
-          message.style.padding = '1em';
-          message.textContent = frame.dataset.failure;
-          container.replaceWith(message);
+          var failure = document.getElementById('webvowl_failure');
+          document.getElementById('webvowl_container').replaceWith(failure.content.cloneNode(true));
           window.removeEventListener('message', onMessage);
         }
 
