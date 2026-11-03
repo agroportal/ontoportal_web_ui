@@ -1928,7 +1928,7 @@ fr:
       “Parcourir” d'%{portal} pour filtrer la liste des ontologies.
     groups_and_categories: Groupes et Catégories
     no_taxonomy_created: Aucun %{type} n'a encore été créé
-    show_sub_categories: Afficher les sous-catégories
+    show_sub_categories: Afficher les sous-catégories (%{count})
     groups: Groupes
     categories: Catégories
   tools:

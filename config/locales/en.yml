@@ -1877,7 +1877,7 @@ en:
       filter out the list of ontologies."'
     groups_and_categories: Groups and Categories
     no_taxonomy_created: No %{type} are created yet
-    show_sub_categories: Show sub categories
+    show_sub_categories: Show sub categories (%{count})
     groups: Groups
     categories: Categories
   tools:

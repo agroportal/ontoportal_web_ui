@@ -30,7 +30,7 @@
   - if @taxonomy.children
     .taxonomy-children-reveal{'data-action': "click->reveal-component#toggle", 'data-id': reveal_id}
       .text
-        = t('taxonomy.show_sub_categories')
+        = t('taxonomy.show_sub_categories', count: @taxonomy.children.length)
       = inline_svg_tag 'icons/arrow-down.svg'
     .taxonomy-children-container
       .taxonomy-children-line
