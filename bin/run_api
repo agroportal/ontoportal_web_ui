@@ -45,6 +45,18 @@ if [ ! -d "tmp/ontoportal_docker" ]; then
   git clone --depth=1 -b  development https://github.com/ontoportal-lirmm/ontoportal_docker.git tmp/ontoportal_docker
 fi
 
+# Use AgroPortal's API compose file. ontoportal_docker downloads
+# https://raw.githubusercontent.com/$ORGANIZATION_NAME$COMPOSE_API_FILE_PATH,
+# reading both from .env, which ./run copies from .env.sample.
+compose_api_org="agroportal"
+compose_api_path="/ontologies_api/master/docker-compose.yml"
+compose_env_sample="tmp/ontoportal_docker/.env.sample"
+
+sed -i.bak \
+  -e "s|^ORGANIZATION_NAME=.*|ORGANIZATION_NAME=$compose_api_org|" \
+  -e "s|^COMPOSE_API_FILE_PATH=.*|COMPOSE_API_FILE_PATH=$compose_api_path|" \
+  "$compose_env_sample" && rm "$compose_env_sample.bak"
+
 # If an option is not provided, check and use the corresponding value from the environment variables
 api_key="${api_key:-$OP_API_KEY}"
 image_repository="${image_repository:-$API_IMAGE_REPOSITORY}"
