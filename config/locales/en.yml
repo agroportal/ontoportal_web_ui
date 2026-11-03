@@ -1878,6 +1878,8 @@ en:
     groups_and_categories: Groups and Categories
     no_taxonomy_created: No %{type} are created yet
     show_sub_categories: Show sub categories (%{count})
+    ontologies_count: "%{count} ontologies"
+    see_all_ontologies: See all ontologies ...
     groups: Groups
     categories: Categories
   tools:
