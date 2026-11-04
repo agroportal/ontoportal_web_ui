@@ -199,6 +199,12 @@ module OntologiesHelper
 
 
 
+  def documentation_link(ontology = nil)
+    ontology ||= @ontology
+    { href: "#{request.base_url}/ontologies/#{ontology.acronym}/documentation/",
+      label: t('submissions.documentation'), target: '_blank' }
+  end
+
   def mappings_link(ontology, count)
     return '0' if ontology.summaryOnly || count.nil? || count.zero?
 
@@ -484,6 +490,12 @@ module OntologiesHelper
     sections
   end
 
+  def documentation_ready?(submission = @submission_latest)
+    Array(submission&.submissionStatus).include?('DOCUMENTATION')
+  end
+
+
+
   def not_ready_submission_alert(ontology: @ontology, submission: @submission, old_submission_ready: @old_submission_ready)
     if ontology.admin?(session[:user])
       status = status_string(submission)
@@ -644,6 +656,19 @@ module OntologiesHelper
         ontology_render_icon_dropdown(icon, attr, label, values)
       end
     end.join.html_safe
+  end
+
+  def ontology_widoco_documentation_link(ontology, submission_latest)
+    icon = 'icons/widoco'
+    label = t('submissions.documentation')
+
+    if documentation_ready?(submission_latest)
+      doc = documentation_link(ontology)
+      title = label + '<br>' + link_to(doc[:href], doc[:href], target: '_blank')
+      ontology_icon_button(icon, doc[:href], title, interactive: false, target: doc[:target])
+    else
+      ontology_icon_button(icon, "javascript:void(0);", label, class: 'disabled-icon', disabled: 'disabled')
+    end
   end
 
   def ontology_sparql_endpoint_link(submission_latest)

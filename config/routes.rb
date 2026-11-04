@@ -181,6 +181,8 @@ Rails.application.routes.draw do
   get '/robots.txt' => 'robots#index'
 
   # Ontologies
+  get '/ontologies/:acronym/documentation' => 'ontologies#documentation_proxy'
+  get '/ontologies/:acronym/documentation/*path' => 'ontologies#documentation_proxy', :format => false
   get '/ontologies/view/edit/:id' => 'ontologies#edit_view', :constraints => { id: /[^\/?]+/ }
   get '/ontologies/view/new/:id' => 'ontologies#new_view'
   get '/ontologies/:acronym/download' => 'ontologies_redirection#redirect_ontology'

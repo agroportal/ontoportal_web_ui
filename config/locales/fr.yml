@@ -1891,6 +1891,7 @@ fr:
       content_1: Êtes-vous sûr de vouloir supprimer la soumission <span style='color:red;font-weight:bold;'>
       content_2: "</span> pour l'ontologie <span style='color:red;font-weight:bold;'>"
       content_3: "</span> ?<br/><b>Cette action est IRREVERSIBLE !!!</b>"
+    documentation: Documentation (Widoco)
     download: Télécharger
     download_metadata: Métadonnées
     edit_button: Éditer
