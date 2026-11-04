@@ -30,7 +30,7 @@ class OntologiesController < ApplicationController
   before_action :authorize_read_only, :only => [:new, :create, :edit, :update, :destroy]
   before_action :authorize_ontology_admin, only: [:edit]
 
-  KNOWN_PAGES = Set.new(["terms", "classes", "mappings", "notes", "widgets", "summary", "properties", "instances", "schemes", "collections", "sparql"])
+  KNOWN_PAGES = Set.new(["terms", "classes", "mappings", "notes", "widgets", "summary", "properties", "instances", "schemes", "collections", "sparql", "visualization"])
   EXTERNAL_MAPPINGS_GRAPH = "http://data.bioontology.org/metadata/ExternalMappings"
   INTERPORTAL_MAPPINGS_GRAPH = "http://data.bioontology.org/metadata/InterportalMappings"
 
@@ -309,6 +309,8 @@ class OntologiesController < ApplicationController
       self.notes # rescue self.summary
     when 'widgets'
       self.widgets # rescue self.summary
+    when 'visualization'
+      self.visualization # rescue self.summary
     when 'properties'
       self.properties # rescue self.summary
     when 'summary'
@@ -413,6 +415,14 @@ class OntologiesController < ApplicationController
       render partial: 'ontologies/sections/widgets', layout: false
     else
       render partial: 'ontologies/sections/widgets', layout: 'ontology_viewer'
+    end
+  end
+
+  def visualization
+    if request.xhr?
+      render partial: 'ontologies/sections/visualization', layout: false
+    else
+      render partial: 'ontologies/sections/visualization', layout: 'ontology_viewer'
     end
   end
 
