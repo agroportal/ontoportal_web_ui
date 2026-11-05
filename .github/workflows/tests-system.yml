@@ -66,3 +66,20 @@ jobs:
           CI=true RAILS_ENV=test bin/rails assets:clobber
           CI=true RAILS_ENV=test bin/rails  assets:precompile
           CI=true RAILS_ENV=test bin/rails test -v test/system/*
+
+      # A failed system test only says what was missing on the page; the UI
+      # and API logs say what the server answered instead
+      - name: Collect failure logs
+        if: failure()
+        run: bin/api_logs tmp/api_logs
+
+      - name: Upload failure logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: system-tests-logs-attempt-${{ github.run_attempt }}
+          path: |
+            log/test.log
+            tmp/screenshots
+            tmp/api_logs
+          retention-days: 14
