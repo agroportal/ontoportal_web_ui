@@ -15,8 +15,6 @@ on:
   workflow_call:
 env:
   API_URL: http://localhost:9393
-  REMOTE_API_KEY: 8b5b7825-538d-40e0-9e9e-5ab9274a9aeb
-  REMOTE_API_URL: https://data.bioontology.org
   BIOMIXER_URL: ${{ secrets.BIOMIXER_URL }}
   FAIRNESS_URL: ${{ secrets.FAIRNESS_URL }}
   ANNOTATOR_URL: ${{ secrets.ANNOTATOR_URL }}
@@ -53,7 +51,7 @@ jobs:
           bundler-cache: true
 
       - name: Run OntoPortal API
-        run: bin/run_api -k ${{ env.REMOTE_API_KEY }} -r agroportal -t master -s STY -u ${{ env.REMOTE_API_URL }}
+        run: bin/run_api
 
       # Add or replace database setup steps here
       - name: set up config file

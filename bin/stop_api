@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
+# Remove the API stack booted by bin/run_api: containers and data volumes.
 
-# Check if the directory exists
-if [ -d "tmp/ontoportal_docker" ]; then
-  # Check if the container is running
-  if docker ps --filter "name=ontoportal_docker-api" --format "{{.Names}}" | grep -q "ontoportal_docker-api"; then
-      container_names=$(docker ps --filter "name=ontoportal_docker-api" --format "{{.Names}}")
-      docker stop "$container_names"
-  fi
+set -euo pipefail
 
-   cd  "tmp/ontoportal_docker" && docker compose down --volumes
+cd "$(dirname "$0")/.."
+
+readonly CLONE_DIR="tmp/ontoportal_docker"
+
+# Clones older than ontoportal_docker@main have no docker-compose.yml: compose
+# would climb up to this repo's file and wipe the UI volumes instead
+if [ ! -f "$CLONE_DIR/docker-compose.yml" ]; then
+  echo "No ontoportal_docker@main clone in $CLONE_DIR; run bin/run_api first."
+  exit 0
 fi
 
+cd "$CLONE_DIR"
+./ontoportal clean -f
