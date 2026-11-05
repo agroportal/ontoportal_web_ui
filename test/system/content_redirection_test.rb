@@ -48,7 +48,7 @@ class ContentRedirectionTest < ApplicationSystemTestCase
 
     # test formats content
     ["json", "xml", "ntriples", "turtle"].each do |format|
-      find("a#resource_content_#{format}", visible: true).click
+      click_still("a#resource_content_#{format}", visible: true)
       assert_selector("div#resource_content_modal", visible: true, wait: 10)
       content = find("div#resource_content_modal pre code", visible: true).text.strip
       case format
