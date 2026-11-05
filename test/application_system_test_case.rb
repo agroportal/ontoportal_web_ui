@@ -15,6 +15,46 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     url: "http://localhost:4444"
   }
 
+  # How long an element must keep the same box before click_still clicks it,
+  # and how long to wait for that
+  STILL_FOR_MS = 300
+  STILL_TIMEOUT_S = 10
+
+  # Click once the element stops moving. Lazy turbo frames and label chips
+  # shift the layout for a second or two after a page or panel loads (the
+  # ontology header buttons jump ~150px when the Watch button lands). Selenium
+  # sends mousedown and mouseup separately: when the layout shifts in between,
+  # the browser fires no click, and the test fails later on a missing page.
+  def click_still(selector, **options)
+    element = find(selector, **options)
+    wait_until_still(element)
+    element.click
+  end
+
+  def wait_until_still(element)
+    using_wait_time(STILL_TIMEOUT_S) do
+      page.evaluate_async_script(<<~JS, element, STILL_FOR_MS)
+        const [element, stillForMs, done] = arguments
+        let box = null
+        let since = performance.now()
+
+        const tick = () => {
+          const rect = element.getBoundingClientRect()
+          const current = [rect.x, rect.y, rect.width, rect.height].join()
+          if (current !== box) {
+            box = current
+            since = performance.now()
+          }
+          if (performance.now() - since >= stillForMs) {
+            return done(true)
+          }
+          requestAnimationFrame(tick)
+        }
+        tick()
+      JS
+    end
+  end
+
   def wait_for(selector, tries = 60)
     tries.times.each do
       puts "waiting for #{selector}"
