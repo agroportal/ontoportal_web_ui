@@ -14,7 +14,7 @@
   %a.ontologies{href: "/ontologies?#{@taxonomy.id.split('/')[-2]}=#{@taxonomy.acronym}"}
     = inline_svg_tag('icons/ontology.svg')
     .number-of-ontologies
-      = "#{@taxonomy.ontologies.length} ontologies"
+      = t('taxonomy.ontologies_count', count: @taxonomy.ontologies.length)
 
   - unless link?(@taxonomy.description)
     .description.mb-1
@@ -23,14 +23,14 @@
   .ontologies-cards
     - @taxonomy.ontologies.each_with_index do |ontology, index|
       - if index>10
-        = render ChipButtonComponent.new(url: "/ontologies?#{@taxonomy.id.split('/')[-2]}=#{@taxonomy.acronym}", text: "...", tooltip:"See all ontologies ...", type: "clickable")
+        = render ChipButtonComponent.new(url: "/ontologies?#{@taxonomy.id.split('/')[-2]}=#{@taxonomy.acronym}", text: "...", tooltip: t('taxonomy.see_all_ontologies'), type: "clickable")
         - break
       = render ChipButtonComponent.new(url: "/ontologies/#{ontology.split('/').last}", text: ontology.split('/').last, tooltip: @ontologies_names[ontology], type: "clickable")
     
   - if @taxonomy.children
     .taxonomy-children-reveal{'data-action': "click->reveal-component#toggle", 'data-id': reveal_id}
       .text
-        = t('taxonomy.show_sub_categories')
+        = t('taxonomy.show_sub_categories', count: @taxonomy.children.length)
       = inline_svg_tag 'icons/arrow-down.svg'
     .taxonomy-children-container
       .taxonomy-children-line
