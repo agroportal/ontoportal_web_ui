@@ -179,7 +179,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   def agent_search(name)
     sleep 2
     wait_for(".search-inputs:last-of-type")
-    within(".search-inputs:last-of-type") do
+    agent_id, links_size = within(".search-inputs:last-of-type") do
       input = find("input[name^='agent']")
       agent_id = input[:name].split('agent').last
       input.set(name)
@@ -188,9 +188,15 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       links_size = links.size
       sleep 1
       first(:link, name).click
-      return links_size.eql?(1) ? agent_id : nil
+      [agent_id, links_size]
     end
 
+    # Wait for the agent chip (or the new agent form) to replace the search
+    # input. The swap resizes the row and moves the buttons below it: a click
+    # sent during the move is lost (e.g. "Add another" adds no row).
+    assert_no_selector("input[name='agent#{agent_id}']")
+
+    links_size.eql?(1) ? agent_id : nil
   end
 
   def agent_fill(agent, parent_id: nil, is_affiliation: false)
