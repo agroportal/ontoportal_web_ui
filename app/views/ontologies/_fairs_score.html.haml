@@ -18,11 +18,12 @@
                 )
 
 
-:javascript
-  jQuery(document).ready(() => {
-     if(window.location.href.includes("#fair-details")){
-        jQuery('#fair-details-link')[0].click()
-     }
-  })
+- if id_prefix == "ont-fair"
+  :javascript
+    jQuery(document).ready(() => {
+       if(window.location.href.includes("#fair-details")){
+          jQuery('#ont-fair-details-link')[0]?.click()
+       }
+    })
 
 
