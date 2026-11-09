@@ -20,7 +20,7 @@
 
 - if id_prefix == "ont-fair"
   :javascript
-    jQuery(document).ready(() => {
+    window.addEventListener("load", () => {
        if(window.location.href.includes("#fair-details")){
           jQuery('#ont-fair-details-link')[0]?.click()
        }
