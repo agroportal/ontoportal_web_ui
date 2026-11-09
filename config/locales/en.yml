@@ -1295,7 +1295,7 @@ en:
     natural_languages: Natural languages
     new_ontology_is_processing: The ontology is processing. Sections such as %{ontology}
       will be available  once processing is complete.
-    new_versions_loaded: New submission loaded on a nightly basis.
+    new_versions_loaded: New submission loaded on a nightly basis. Note this URL will be exposed publicly in the API if the ontology is itself publicly visible.
     nginx_redirection:
       instruction_1: 'Access Nginx configuration file:'
       instruction_1_content: The location of this file can vary depending on your
