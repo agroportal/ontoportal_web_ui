@@ -15,8 +15,6 @@ on:
   workflow_call:
 env:
   API_URL: http://localhost:9393
-  REMOTE_API_KEY: 8b5b7825-538d-40e0-9e9e-5ab9274a9aeb
-  REMOTE_API_URL: https://data.bioontology.org
   BIOMIXER_URL: ${{ secrets.BIOMIXER_URL }}
   FAIRNESS_URL: ${{ secrets.FAIRNESS_URL }}
   ANNOTATOR_URL: ${{ secrets.ANNOTATOR_URL }}
@@ -49,11 +47,11 @@ jobs:
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.1.0
+          ruby-version: '3.1'
           bundler-cache: true
 
       - name: Run OntoPortal API
-        run: bin/run_api -k ${{ env.REMOTE_API_KEY }} -r agroportal -t master -s STY -u ${{ env.REMOTE_API_URL }}
+        run: bin/run_api
 
       # Add or replace database setup steps here
       - name: set up config file
@@ -68,3 +66,20 @@ jobs:
           CI=true RAILS_ENV=test bin/rails assets:clobber
           CI=true RAILS_ENV=test bin/rails  assets:precompile
           CI=true RAILS_ENV=test bin/rails test -v test/system/*
+
+      # A failed system test only says what was missing on the page; the UI
+      # and API logs say what the server answered instead
+      - name: Collect failure logs
+        if: failure()
+        run: bin/api_logs tmp/api_logs
+
+      - name: Upload failure logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: system-tests-logs-attempt-${{ github.run_attempt }}
+          path: |
+            log/test.log
+            tmp/screenshots
+            tmp/api_logs
+          retention-days: 14

@@ -78,7 +78,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     visit ontology_path(@new_ontology.acronym)
 
     # click edit button
-    find("a.rounded-button[href=\"#{edit_ontology_submission_path(ontology_id: @new_ontology.acronym, id: 1)}\"]").click
+    click_still("a.rounded-button[href=\"#{edit_ontology_submission_path(ontology_id: @new_ontology.acronym, id: 1)}\"]")
     sleep 1
 
     selected_categories = @categories[3..4]
@@ -315,7 +315,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     visit ontology_path(existent_ontology.acronym)
 
     # click add button
-    find("a.rounded-button[href=\"#{new_ontology_submission_path(existent_ontology.acronym)}\"]").click
+    click_still("a.rounded-button[href=\"#{new_ontology_submission_path(existent_ontology.acronym)}\"]")
     sleep 1
     # assert existent
 
