@@ -15,6 +15,46 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     url: "http://localhost:4444"
   }
 
+  # How long an element must keep the same box before click_still clicks it,
+  # and how long to wait for that
+  STILL_FOR_MS = 300
+  STILL_TIMEOUT_S = 10
+
+  # Click once the element stops moving. Lazy turbo frames and label chips
+  # shift the layout for a second or two after a page or panel loads (the
+  # ontology header buttons jump ~150px when the Watch button lands). Selenium
+  # sends mousedown and mouseup separately: when the layout shifts in between,
+  # the browser fires no click, and the test fails later on a missing page.
+  def click_still(selector, **options)
+    element = find(selector, **options)
+    wait_until_still(element)
+    element.click
+  end
+
+  def wait_until_still(element)
+    using_wait_time(STILL_TIMEOUT_S) do
+      page.evaluate_async_script(<<~JS, element, STILL_FOR_MS)
+        const [element, stillForMs, done] = arguments
+        let box = null
+        let since = performance.now()
+
+        const tick = () => {
+          const rect = element.getBoundingClientRect()
+          const current = [rect.x, rect.y, rect.width, rect.height].join()
+          if (current !== box) {
+            box = current
+            since = performance.now()
+          }
+          if (performance.now() - since >= stillForMs) {
+            return done(true)
+          }
+          requestAnimationFrame(tick)
+        }
+        tick()
+      JS
+    end
+  end
+
   def wait_for(selector, tries = 60)
     tries.times.each do
       puts "waiting for #{selector}"
@@ -139,7 +179,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   def agent_search(name)
     sleep 2
     wait_for(".search-inputs:last-of-type")
-    within(".search-inputs:last-of-type") do
+    agent_id, links_size = within(".search-inputs:last-of-type") do
       input = find("input[name^='agent']")
       agent_id = input[:name].split('agent').last
       input.set(name)
@@ -148,9 +188,15 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       links_size = links.size
       sleep 1
       first(:link, name).click
-      return links_size.eql?(1) ? agent_id : nil
+      [agent_id, links_size]
     end
 
+    # Wait for the agent chip (or the new agent form) to replace the search
+    # input. The swap resizes the row and moves the buttons below it: a click
+    # sent during the move is lost (e.g. "Add another" adds no row).
+    assert_no_selector("input[name='agent#{agent_id}']")
+
+    links_size.eql?(1) ? agent_id : nil
   end
 
   def agent_fill(agent, parent_id: nil, is_affiliation: false)

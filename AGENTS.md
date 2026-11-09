@@ -88,11 +88,17 @@ bundle exec rspec
 
 ### Notes
 
-- `bin/run_api` clones `ontoportal-lirmm/ontoportal_docker` into
-  `tmp/ontoportal_docker` and boots the API with `STARTER_ONTOLOGY`. Options
-  come from `.env` (`OP_API_KEY`, `OP_API_URL`, `API_IMAGE_REPOSITORY`,
-  `API_IMAGE_TAG`) or flags (`bin/run_api -h`). `bin/stop_api` stops it and
-  deletes its volumes.
+- `bin/run_api` re-clones `agroportal/ontoportal_docker@main` into
+  `tmp/ontoportal_docker` and runs `./ontoportal start api`: it wipes the
+  previous stack and loads the admin user and a bundled STY. Every run starts
+  fresh; `bin/ontoportal test --api-url http://localhost:9393` reuses a
+  running API. `bin/stop_api` removes its containers and volumes.
+- The test API follows `ontoportal_docker@main` and the `:master` images,
+  unpinned on purpose, so the tests catch the backend commit that breaks the
+  UI. `bin/run_api` prints the commits tested (GitHub job summary in CI).
+  Don't pin them.
+- One test API per machine: the compose project name and ports are fixed.
+  Don't run two suites against it at once.
 - Memcached must listen on `localhost:11211`; `config/environments/test.rb`
   hard-codes it.
 - System tests use a remote Selenium at `http://localhost:4444` (compose
