@@ -27,7 +27,11 @@
                 .browse-faire-progress{:style => "width: #{ontology[:normalizedFairScore].to_s+"%"}; #{color ? 'background-color:' + color : ''}"}
               %p.browse-fair-score
                 = ontology[:fairScore]
-              %a.browse-fair-details{:href => "#{onto_link}#fair-details", 'data-turbo': 'false', style: style_text}= t('components.details_details')
+              - if external_ontology?
+                %a.browse-fair-details{:href => "#{onto_link}#fair-details", 'data-turbo': 'false', style: style_text}= t('components.details_details')
+              - else
+                = helpers.link_to_modal(nil, "/ajax/fair_score/html/?ontologies=#{ontology[:acronym]}", class: 'browse-fair-details', data: { show_modal_title_value: t('ontologies.fairness_assessment_questions_ofaire'), show_modal_size_value: 'modal-xl' }) do
+                  = t('components.details_details')
 
       .browse-ontology-cards{style: color ? "color: #{color} !important" : ''}
         = render SquareBadgeComponent.new(label: t('components.classes'),
