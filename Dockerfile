@@ -1,5 +1,5 @@
-# Make sure it matches the Ruby version in .ruby-version and Gemfile
-ARG RUBY_VERSION=3.1
+# Set from .ruby-version, the single Ruby pin, by docker-image.yml
+ARG RUBY_VERSION
 FROM ruby:${RUBY_VERSION}-slim-bookworm
 
 WORKDIR /app
