@@ -350,7 +350,7 @@ module AgentHelper
         state: "regular",
         size: nil
       ) do |btn|
-        btn.icon_left do
+        btn.with_icon_left do
           inline_svg_tag "icons/plus.svg"
         end
       end

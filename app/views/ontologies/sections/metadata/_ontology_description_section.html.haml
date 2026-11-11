@@ -1,5 +1,5 @@
 = render Layout::CardComponent.new do |c|
-  - c.header(text: t("ontologies.sections.metadata.general_information"))
+  - c.with_header(text: t("ontologies.sections.metadata.general_information"))
   = render Layout::ListComponent.new do |l|
     - l.row do
       %div

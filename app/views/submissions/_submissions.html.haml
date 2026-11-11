@@ -7,7 +7,7 @@
   %div.click_versions_collapse.p-1
     = render_alerts_container(AdminController)
     = render TableComponent.new(id: 'ontology_versions', stripped: false, borderless: true) do |t|
-      - t.header do |header|
+      - t.with_header do |header|
         - if @ontology.admin?(session[:user])
           - header.th do
             %div.align-middle

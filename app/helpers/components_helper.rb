@@ -60,7 +60,7 @@ module ComponentsHelper
         concat text_field_tag(name, value, type: type, placeholder: placeholder)
         concat(content_tag(:div, class: 'search-page-button') do
           render Buttons::RegularButtonComponent.new(id:'search-page-button', value: "Search", variant: "primary", type: "submit") do |btn|
-            btn.icon_right { inline_svg_tag button_icon}
+            btn.with_icon_right { inline_svg_tag button_icon}
           end
         end)
       end
@@ -106,7 +106,7 @@ module ComponentsHelper
           )))
         end
       end
-      c.error do
+      c.with_error do
         t('components.tree_view_empty')
       end
     end
@@ -253,7 +253,7 @@ module ComponentsHelper
 
   def properties_card(title, tooltip, properties, &block)
     render Layout::CardComponent.new do |d|
-      d.header(text: title, tooltip: tooltip)
+      d.with_header(text: title, tooltip: tooltip)
       render(Layout::ListComponent.new) do |c|
         if properties
           properties_list_component(c, properties, &block)
@@ -266,7 +266,7 @@ module ComponentsHelper
 
   def properties_dropdown(id, title, tooltip, properties, is_open: false, &block)
     render DropdownContainerComponent.new(title: title, id: id, tooltip: tooltip, is_open: is_open) do |d|
-      d.empty_state do
+      d.with_empty_state do
         properties_string = properties.keys[0..4].map { |key| "<b>#{attr_label(key, attr_metadata: attr_metadata(key), show_tooltip: false)}</b>" }.join(', ') + '... ' if properties
         empty_state_message t('components.empty_field', properties: properties_string)
       end
@@ -289,7 +289,7 @@ module ComponentsHelper
 
   def form_save_button(enable_loading: true)
     render Buttons::RegularButtonComponent.new(id: 'save-button', value: t('components.save_button'), variant: "primary", size: "slim", type: "submit", state: enable_loading ? 'animate' : '') do |btn|
-      btn.icon_left do
+      btn.with_icon_left do
         inline_svg_tag "check.svg"
       end
     end
@@ -297,7 +297,7 @@ module ComponentsHelper
 
   def form_cancel_button
     render Buttons::RegularButtonComponent.new(id: 'cancel-button', value: t('components.cancel_button'), variant: "secondary", size: "slim") do |btn|
-      btn.icon_left do
+      btn.with_icon_left do
         inline_svg_tag "x.svg", width: "9", height: "9"
       end
     end

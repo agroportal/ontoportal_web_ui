@@ -10,7 +10,7 @@
   %div.my-1
     = t('admin.search.search.found_documents', count: @count)
   = render TableComponent.new(id: 'collection_data', paging: true) do |t|
-    - t.header do |h|
+    - t.with_header do |h|
       - h.th { t('admin.search.search.id') }
       - h.th { t('admin.search.search.properties') }
     -  @docs.each do |d|

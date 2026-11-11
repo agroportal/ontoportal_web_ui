@@ -56,7 +56,7 @@
                         = hidden_field_tag "config[#{key}][]", "", id: "empty_config_#{key}"
                         = render Input::InputFieldComponent.new(name: "config[#{key}]", label: label_tooltip, error_message: attribute_error(key.to_s)) do
                           = render NestedFormInputsComponent.new do |c|
-                            - c.template do
+                            - c.with_template do
                               = text_input(name: "config[#{key}][]", value: "")
                             - Array(value_attr).each_with_index do |val, i|
                               - c.row do

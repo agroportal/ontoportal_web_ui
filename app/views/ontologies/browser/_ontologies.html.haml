@@ -21,7 +21,7 @@
                                              onto_link: ontoportal_ui_link(ontology[:id]),
                                              text_color: config[:color],
                                              bg_light_color: config[:'light-color'])
-  - c.loader do
+  - c.with_loader do
     - ontologies_browse_skeleton
-  - c.error do
+  - c.with_error do
     = empty_state

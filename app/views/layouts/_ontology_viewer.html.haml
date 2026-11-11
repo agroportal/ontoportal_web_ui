@@ -25,7 +25,7 @@
                      path: ontology_path(@ontology.acronym, p: section_title),
                      selected: selected_section?(section_title),
                      page_name: ontology_viewer_page_name(@ontology.acronym, @concept&.prefLabel || '', section_title))
-            - t.pinned_right do
+            - t.with_pinned_right do
               %div{style: "display: #{ontology_data_section? ? 'block' : 'none'}; border: none; outline: none; padding: 1px",
                 data: {'ontology-viewer-tabs-target': 'languageSelector' }}
                 = language_selector_tag(:content_language)

@@ -234,7 +234,7 @@ module SubmissionInputsHelper
 
   def has_ontology_language_input(submission = @submission)
     render(Layout::RevealComponent.new(possible_values: %w[SKOS OBO UMLS OWL TDV5], selected: submission.hasOntologyLanguage)) do |c|
-      c.button do
+      c.with_button do
         attribute_input("hasOntologyLanguage", label: t('submission_inputs.hasOntologyLanguage'))
       end
 
@@ -273,7 +273,7 @@ module SubmissionInputsHelper
     end
 
     render(Layout::RevealComponent.new(possible_values: %w[private public], selected: ontology.viewingRestriction)) do |c|
-      c.button do
+      c.with_button do
         select_input(label: label_required(t('submission_inputs.visibility')), name: "ontology[viewingRestriction]", required: true,
                      values: %w[public private],
                      selected: ontology.viewingRestriction)
@@ -289,7 +289,7 @@ module SubmissionInputsHelper
 
   def ontology_view_of_input(ontology = @ontology)
     render Layout::RevealComponent.new(selected: ontology.view?, toggle: true) do |c|
-      c.button do
+      c.with_button do
         content_tag(:span, class: 'd-flex') do
           switch_input(id: 'ontology_isView', name: 'ontology[isView]', label: t('submission_inputs.ontology_view_of_another_ontology'), checked: ontology.view?, style: 'font-size: 14px;')
         end
@@ -309,11 +309,11 @@ module SubmissionInputsHelper
                                           error_message: attribute_error(:contact)) do
 
       render NestedFormInputsComponent.new(object_name: 'contact', default_empty_row: true) do |c|
-        c.header do
+        c.with_header do
           content_tag(:div, name.blank? ? '' : label_required(t('submission_inputs.contact_name', name: name)), class: 'w-50') + content_tag(:div, name.blank? ? '' : label_required(t('submission_inputs.contact_email', name: name)), class: 'w-50')
         end
 
-        c.template do
+        c.with_template do
           content_tag(:div, class: 'd-flex my-1') do
             out = content_tag(:div, class: ' w-50 mr-2') do
               text_input(label: '', name: 'submission[contact][NEW_RECORD][name]', value: '', error_message: '')
@@ -441,14 +441,14 @@ module SubmissionInputsHelper
   def generate_list_field_input(attr, name, label, values, helper_text: nil, &block)
     render Input::InputFieldComponent.new(name: '', error_message: attribute_error(attr.attr), helper_text: helper_text) do
       render NestedFormInputsComponent.new do |c|
-        c.header do
+        c.with_header do
           label
         end
-        c.template do
+        c.with_template do
           block.call('', "#{name}[NEW_RECORD]", attr.attr.to_s + '_' + @ontology.acronym)
         end
 
-        c.empty_state do
+        c.with_empty_state do
           hidden_field_tag "#{name}[#{Array(values).size}]"
         end
 

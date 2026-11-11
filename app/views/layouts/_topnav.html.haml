@@ -28,7 +28,7 @@
           %a.nav-a{:href => "/login"}= t('layout.header.login')
         - else
           = render DropdownButtonComponent.new do |d|
-            - d.header do
+            - d.with_header do
               = link_to("#", class: "nav-link top-nav-nav-link supportMenuDropdownLink", role: "button") do
                 = session[:user].username
             - d.with_section(divide: false) do |s|
@@ -42,7 +42,7 @@
                 = link_to(t('layout.header.logout'), logout_path)
 
         = render DropdownButtonComponent.new do |d|
-          - d.header do
+          - d.with_header do
             = link_to("#", class: "nav-link top-nav-nav-link supportMenuDropdownLink", role: "button") do
               = t('layout.header.explore')
           - d.with_section(divide: false) do |s|
@@ -64,7 +64,7 @@
               = link_to(t("statistics.menu"), "/statistics")
 
         = render DropdownButtonComponent.new do |d|
-          - d.header do
+          - d.with_header do
             = link_to("#", class: "nav-link top-nav-nav-link supportMenuDropdownLink", role: "button") do
               = t('layout.header.support')
           - d.with_section(divide: false) do |s|

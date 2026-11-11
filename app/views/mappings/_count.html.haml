@@ -2,7 +2,7 @@
   .summary-mappings-tab
     .summary-mappings-tab-table
       = render TableComponent.new(id: 'summary-mappings-table', borderless: true, outline: true, searching: true, sort_column: '0', no_init_sort: true, search_placeholder: "Filter by semantic resources") do |t|
-        - t.header do |h|
+        - t.with_header do |h|
           - h.th {t("mappings.count.ontology")}
           - h.th {t("mappings.count.mappings")}
 

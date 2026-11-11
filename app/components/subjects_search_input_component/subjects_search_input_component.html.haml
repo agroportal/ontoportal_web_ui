@@ -1,11 +1,11 @@
 = render NestedFormInputsComponent.new do |c|
-  - c.header do
+  - c.with_header do
     - if @ontologies.empty?
       = render Display::AlertComponent.new(type:'warning', closable: false, message: t('submission_inputs.theme_taxonomy_not_set'))
     - else
       = t('submission_inputs.subjects_notice', ontologies: @ontologies.join(','))
 
-  - c.template do
+  - c.with_template do
     .subjects-container{ data: { controller: "class-picker", "class-picker-name-prefix-value": "submission[hasDomain]", "class-picker-row-class-value": "nested-subjects-form-input-row" } }
       .search-wrapper{ data: { "class-picker-target": "searchWrapper" } }
         = helpers.subjects_ontologies_content_autocomplete(ontologies: @ontologies)
@@ -20,5 +20,5 @@
         = hidden_field_tag "submission[hasDomain][#{i}]", value
 
 
-  - c.empty_state do
+  - c.with_empty_state do
     = hidden_field_tag "submission[hasDomain][0]", ""

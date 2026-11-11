@@ -15,7 +15,7 @@ module AutoCompleteHelper
                                     use_cache: false, search_icon_type: search_icon_type, display_all: true,
                                     sections: with_agents ? content_autocomplete_sections : [],
                                     actions_links: content_autocomplete_action_links(with_agents)) do |s|
-      s.template do
+      s.with_template do
         link_to "LINK", class: "search-content", 'data-turbo-frame': '_top' do
           content_tag(:div, class: 'search-element home-searched-ontology flex-column') do
             content_tag(:p, "LABEL") + content_tag(:small, "NAME") + content_tag(:small, "ACRONYM", class: 'text-primary')
@@ -53,7 +53,7 @@ module AutoCompleteHelper
                                     ajax_url: "/ajax/search/ontologies/#{ontology_acronym}/classes?search=#{search}",
                                     item_base_url: "", id_key: 'id', placeholder: t("ontologies.class_search_prompt"),
                                     use_cache: false, search_icon_type: search_icon_type, display_all: true) do |s|
-      s.template do
+      s.with_template do
         content_tag(:div, class: "search-content clickable-result", data: { action: "click->class-picker#addResult" }, 'data-turbo-frame': '_top') do
           content_tag(:div, class: 'search-element home-searched-ontology flex-column') do
             content_tag(:p, "LABEL", class: "class-label_name") + content_tag(:small, "NAME", class: "class-uri") + content_tag(:small, "ACRONYM", class: 'text-primary')
@@ -70,7 +70,7 @@ module AutoCompleteHelper
       render SearchInputComponent.new(id: id, name: name, ajax_url: "#{ajax_search_ontologies_content_path}?ontologies=#{ontologies.join(',')}&types=#{types.join(',')}&show_ontologies=false&search=#{search}",
                                       item_base_url: "", id_key: 'id', placeholder: t("ontologies.ontology_search_prompt"),
                                       use_cache: false, search_icon_type: search_icon_type, display_all: true) do |s|
-        s.template do
+        s.with_template do
           content_tag(:div, class: "search-content clickable-result", data: {action: "click->class-picker#addResult"},'data-turbo-frame': '_top') do
             content_tag(:div, class: 'search-element home-searched-ontology flex-column') do
               content_tag(:p, "LABEL", class: "class-label_name") + content_tag(:small, "NAME", class: "class-uri") + content_tag(:small, "ACRONYM", class: 'text-primary')

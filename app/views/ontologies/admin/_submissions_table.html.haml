@@ -1,7 +1,7 @@
 = turbo_frame_tag "admin_submissions_frame" do
   = form_tag submissions_ontology_administration_path(@ontology.acronym), method: :delete, id: "bulk_delete_form", data: { turbo_frame: "_top" } do
     = render TableComponent.new(id: 'submissions_table', stripped: true) do |t|
-      - t.header do |h|
+      - t.with_header do |h|
         - h.th { t('ontologies.admin.submissions.table.select') }
         - h.th { t('ontologies.admin.submissions.table.submission_id') }
         - h.th { t('ontologies.admin.submissions.table.release_date') }

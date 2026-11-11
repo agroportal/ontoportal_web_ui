@@ -1,6 +1,6 @@
 - if multiple?
   = render NestedFormInputsComponent.new(object_name: 'class') do |c|
-    - c.template do
+    - c.with_template do
       .ontology-classes-container{ data: { controller: "class-picker", "class-picker-name-prefix-value": @name_prefix, "class-picker-row-class-value": row_class, "class-picker-show-uri-value": "true" } }
         .search-wrapper{ data: { "class-picker-target": "searchWrapper" } }
           = helpers.ontology_classes_content_autocomplete(ontology_acronym: @ontology_acronym)
@@ -16,7 +16,7 @@
             %small.class-uri= value
           = hidden_field_tag "#{@name_prefix}[#{i}]", value
 
-    - c.empty_state do
+    - c.with_empty_state do
       = hidden_field_tag "#{@name_prefix}[0]", ""
 
 - else

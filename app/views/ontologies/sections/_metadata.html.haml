@@ -73,7 +73,7 @@
           = render FieldContainerComponent.new(label: attr_label('metadataVoc', attr_metadata: attr_metadata("metadataVoc"), show_tooltip: false)) do
             = Array(@content_properties['metadataVoc']).map{|x| metadata_vocabulary_display(x)}.join.html_safe
       = render Layout::CardComponent.new do |c|
-        - c.header do  |h|
+        - c.with_header do  |h|
           = t("ontologies.sections.visits")
           - if visits_data(@ontology)
             - analytics_link, analytics_target = api_button_link_and_target(@ontology.links["analytics"] + "?format=csv")
@@ -86,7 +86,7 @@
 
       - unless @ontology.view?
         = render DropdownContainerComponent.new(id: 'views', is_open: true) do |d|
-          - d.title do
+          - d.with_title do
             = render Display::HeaderComponent.new do
               = t("ontologies.sections.views", acronym: @ontology.acronym)
               = new_element_link(t("ontologies.sections.create_new_view"), new_view_path(@ontology.id))

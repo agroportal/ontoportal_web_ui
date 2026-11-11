@@ -2,7 +2,7 @@
   - @tools.each_value do |tool|
     = link_to tool[:link], class: "mx-2 d-block", style: "width: 35%" do
       = render Layout::CardComponent.new do |c|
-        - c.header do |h|
+        - c.with_header do |h|
           %div.d-flex.flex-column.align-items-center.text-primary.pt-4
             =  inline_svg_tag(tool[:icon], height: "50px", width: "50px")
             %h3.text-primary.mt-2

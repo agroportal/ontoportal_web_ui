@@ -27,7 +27,7 @@
         %p.mcp-muted= t('mcp.examples.intro', portal: portal_name)
         - McpHelper::EXAMPLES.each do |group, examples|
           = render Layout::CardComponent.new do |c|
-            - c.header(text: t("mcp.examples.groups.#{group}"))
+            - c.with_header(text: t("mcp.examples.groups.#{group}"))
             - examples.each do |example|
               .mcp-row
                 = render ClipboardComponent.new(message: t("mcp.examples.#{example}.question", portal: portal_name))

@@ -2,7 +2,7 @@
   .upload-mappings
     .card.upload-mappings-example.ontologies
       = render(Layout::RevealComponent.new(toggle: true, selected: false)) do |c|
-        - c.button do
+        - c.with_button do
           .title-bar
             = inline_svg_tag 'icons/settings.svg'
             = t('mappings.filter_ontologies')

@@ -55,7 +55,7 @@
                                         = chips_component(label: item["name"],id: item["acronym"], name: 'isOfType[]', value: item["id"])
                 %input.d-none{type: 'submit', 'data-ontologies-selector-target': 'submit'}
                 = render TurboFrameComponent.new(id: 'selector_results_frame', src: '/ontologies_selector/results') do |container|
-                    - container.loader do
+                    - container.with_loader do
                         = render LoaderComponent.new(type: 'pulsing') 
                         
                     

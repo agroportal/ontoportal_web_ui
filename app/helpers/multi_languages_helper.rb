@@ -57,7 +57,7 @@ module MultiLanguagesHelper
     selected_language = portal_lang
     selected_language = content_tag(:span, selected_language.upcase, data: { controller: 'tooltip' }, title: portal_language_help_text)
     render DropdownButtonComponent.new do |d|
-      d.header { selected_language }
+      d.with_header { selected_language }
       d.section(divide: false, selected_index: languages.find_index(selected_language)) do |s|
         languages.each do |lang, metadata|
           s.item do

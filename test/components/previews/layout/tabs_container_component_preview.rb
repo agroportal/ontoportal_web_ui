@@ -69,7 +69,7 @@ class Layout::TabsContainerComponentPreview < ViewComponent::Preview
           section_title
         end
       end
-      c.pinned_right do
+      c.with_pinned_right do
         RoundedButtonComponent.new(icon: 'check.svg').render_in(c) + '<span class="mx-1"></span>'.html_safe + RoundedButtonComponent.new.render_in(c)
       end
     end

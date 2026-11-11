@@ -3,7 +3,7 @@
      item_base_url:"/agents/#{@id}/show?parent_id=#{@parent_id}&editable=#{@editable}&edit_on_modal=#{@edit_on_modal}&name_prefix=#{@name_prefix}&deletable=#{@deletable}&agent_id=", id_key: 'id',
      use_cache: false,
      actions_links: @create_new_agent_action ? {create_new_agent: {link: "/agents/new?name=&id=#{@id}&parent_id=#{@parent_id}&type=#{@agent_type}&show_affiliations=#{@show_affiliations}&deletable=#{@deletable}&edit_on_modal=#{@edit_on_modal}&name_prefix=#{@name_prefix}[#{@id}]", target:'_self'}} : []) do |s|
-  - s.template do
+  - s.with_template do
     %a{href: "LINK", class: "search-content", 'data-turbo-frame': '_self'}
       %p.search-element.home-searched-ontology
         NAME ACRONYM IDENTIFIERS

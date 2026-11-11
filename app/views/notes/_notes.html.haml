@@ -12,7 +12,7 @@
   .ont_notes_table_container
     - cols = [ (current_user_admin? ? 'Action' : nil), 'Subject', 'Author', 'Type', (parent_type.eql?('ontology') ? 'Class' : nil),'Created'].compact
     = render TableComponent.new(id:"#{parent_type}_notes", searching: true, paging: true, sort_column: @notes.empty? ? nil : (cols.size - 1).to_s, custom_class: 'border rounded p-1') do |t|
-      - t.header do |row|
+      - t.with_header do |row|
         - row.create(*cols.map{|col| {th: col}})
 
       - if @notes.nil? || @notes.empty?
