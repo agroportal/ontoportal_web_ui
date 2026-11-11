@@ -193,8 +193,9 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
     # Wait for the agent chip (or the new agent form) to replace the search
     # input. The swap resizes the row and moves the buttons below it: a click
-    # sent during the move is lost (e.g. "Add another" adds no row).
-    assert_no_selector("input[name='agent#{agent_id}']")
+    # sent during the move is lost (e.g. "Add another" adds no row). While the
+    # row's frame loads, it only hides the input: wait for it to leave the DOM.
+    assert_no_selector("input[name='agent#{agent_id}']", visible: :all)
 
     links_size.eql?(1) ? agent_id : nil
   end

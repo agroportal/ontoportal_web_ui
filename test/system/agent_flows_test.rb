@@ -52,7 +52,41 @@ class AgentFlowsTest < ApplicationSystemTestCase
     refute_selector '.search-content'
   end
 
+  # A picked agent loads into its row's frame, which only hides the search
+  # input until the answer lands: agent_search must not hand the row back
+  # before, or the caller clicks into a row still changing size.
+  test "agent search waits for the picked agent to land" do
+    visit agents_url
+    find("a", text: "Create agent", match: :first).click
+    wait_for_text "TYPE"
+    delay_agent_frames
+
+    within '.agents-affiliations' do
+      find('.add-another-object', text: 'Add another').click
+      agent_search(@new_organization.name)
+
+      refute_selector 'turbo-frame[busy]', wait: 0
+    end
+  end
+
   private
+
+  # How long a slow server takes to answer an agent frame
+  AGENT_FRAME_DELAY_MS = 1000
+
+  # Answer every new agent form late, as a slow server would
+  def delay_agent_frames
+    page.execute_script(<<~JS, AGENT_FRAME_DELAY_MS)
+      const [delayMs] = arguments
+      const fetchNow = window.fetch
+      window.fetch = (resource, options) => {
+        const url = resource instanceof Request ? resource.url : String(resource)
+        const wait = url.includes('/agents/new') ? delayMs : 0
+        return new Promise(resolve => setTimeout(resolve, wait)).then(() => fetchNow(resource, options))
+      }
+    JS
+  end
+
   def create_agent_flow(new_agent, person_count: , organization_count:)
     wait_for_text "Create agent"
 
