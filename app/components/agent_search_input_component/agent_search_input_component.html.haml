@@ -1,4 +1,4 @@
-= hidden_field_tag  "#{@name_prefix}[#{@id}]"
+= hidden_field_tag  helpers.agent_field_name(@id, @name_prefix)
 = render SearchInputComponent.new(id: 'agent' + @id, name:'agent' + @id, ajax_url: "/ajax/agents?query=", display_all: true,
      item_base_url:"/agents/#{@id}/show?parent_id=#{@parent_id}&editable=#{@editable}&edit_on_modal=#{@edit_on_modal}&name_prefix=#{@name_prefix}&deletable=#{@deletable}&agent_id=", id_key: 'id',
      use_cache: false,

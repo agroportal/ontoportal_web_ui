@@ -151,8 +151,12 @@ module AgentHelper
     rest_url + agents_path + "?page=#{page}&pagesize=#{pagesize}" + (display ? "&display=#{display}" : '')
   end
   
+  # Prefixes nest as "[affiliations][7]", so a top-level agent's names start
+  # with a bracket. Rack 2 dropped it; Rails 8.1 keeps it in the key
+  # ("[identifiers]"), so the first segment is unwrapped: "identifiers[0]".
   def agent_field_name(name, name_prefix = '')
-    name_prefix&.empty? ? name : "#{name_prefix}[#{name}]"
+    field = name_prefix&.empty? ? name.to_s : "#{name_prefix}[#{name}]"
+    field.sub(/\A\[([^\[\]]+)\]/, '\1')
   end
 
   def agent_identifier_name(index, name, name_prefix)
