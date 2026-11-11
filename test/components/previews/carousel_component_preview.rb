@@ -12,7 +12,7 @@
 # ```haml
 # = render CarouselComponent.new do |c|
 #   - @items.each do |item|
-#     - c.slide { render SomeComponent.new(item) }
+#     - c.with_slide { render SomeComponent.new(item) }
 # ```
 #
 # ## Options
@@ -39,7 +39,7 @@ class CarouselComponentPreview < ViewComponent::Preview
   # *Previous* is disabled on the first slide.
   def default
     render CarouselComponent.new do |c|
-      4.times { |i| c.slide { SLIDE.call("Slide #{i + 1}") } }
+      4.times { |i| c.with_slide { SLIDE.call("Slide #{i + 1}") } }
     end
   end
 
@@ -48,7 +48,7 @@ class CarouselComponentPreview < ViewComponent::Preview
   # (and *Previous* on the first goes to the last). No button is ever disabled.
   def with_loop
     render CarouselComponent.new(loop: true) do |c|
-      3.times { |i| c.slide { SLIDE.call("Slide #{i + 1}", '#eef7ee') } }
+      3.times { |i| c.with_slide { SLIDE.call("Slide #{i + 1}", '#eef7ee') } }
     end
   end
 
@@ -57,14 +57,14 @@ class CarouselComponentPreview < ViewComponent::Preview
   # (this is how ontology depictions are shown).
   def images
     render CarouselComponent.new(images: true) do |c|
-      3.times { c.slide { render Display::ImageComponent.new(src: 'empty-box.svg') } }
+      3.times { c.with_slide { render Display::ImageComponent.new(src: 'empty-box.svg') } }
     end
   end
 
   # A single slide: both arrows are disabled (nothing to navigate to).
   def single_slide
     render CarouselComponent.new do |c|
-      c.slide { SLIDE.call('Only slide') }
+      c.with_slide { SLIDE.call('Only slide') }
     end
   end
 
@@ -74,7 +74,7 @@ class CarouselComponentPreview < ViewComponent::Preview
   # @param slides number
   def playground(images: false, loop: false, slides: 4)
     render CarouselComponent.new(images: images, loop: loop) do |c|
-      slides.to_i.times { |i| c.slide { SLIDE.call("Slide #{i + 1}") } }
+      slides.to_i.times { |i| c.with_slide { SLIDE.call("Slide #{i + 1}") } }
     end
   end
 end

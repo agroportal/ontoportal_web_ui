@@ -238,15 +238,15 @@ module SubmissionInputsHelper
         attribute_input("hasOntologyLanguage", label: t('submission_inputs.hasOntologyLanguage'))
       end
 
-      c.container { ontology_skos_language_help }
+      c.with_container { ontology_skos_language_help }
 
-      c.container { ontology_obo_language_help }
+      c.with_container { ontology_obo_language_help }
 
-      c.container { ontology_umls_language_help }
+      c.with_container { ontology_umls_language_help }
 
-      c.container { ontology_owl_language_help }
+      c.with_container { ontology_owl_language_help }
 
-      c.container { ontology_xlsx_language_help }
+      c.with_container { ontology_xlsx_language_help }
 
     end
   end
@@ -279,7 +279,7 @@ module SubmissionInputsHelper
                      selected: ontology.viewingRestriction)
       end
 
-      c.container do
+      c.with_container do
         content_tag(:div, class: 'upload-ontology-input-field-container') do
           select_input(label: t('submission_inputs.accounts_allowed', portal_name: portal_name), name: "ontology[acl]", values: @user_select_list, selected: ontology.acl, multiple: true)
         end
@@ -294,7 +294,7 @@ module SubmissionInputsHelper
           switch_input(id: 'ontology_isView', name: 'ontology[isView]', label: t('submission_inputs.ontology_view_of_another_ontology'), checked: ontology.view?, style: 'font-size: 14px;')
         end
       end
-      c.container do
+      c.with_container do
         content_tag(:div) do
           filtered_values = onts_for_select.reject { |label, acronym| acronym == ontology.acronym }
           render SelectInputComponent.new(id: 'viewOfSelect', values: filtered_values, name: 'ontology[viewOf]', selected: ontology.viewOf&.split('/')&.last)
@@ -325,7 +325,7 @@ module SubmissionInputsHelper
         end
 
         Array(@submission.contact).each_with_index do |contact, i|
-          c.row do
+          c.with_row do
             content_tag(:div, class: 'd-flex my-1') do
               out = content_tag(:div, class: 'w-50 mr-2') do
                 text_input(label: '', name: "submission[contact][#{i}][name]", value: contact['name'], error_message: '')
@@ -453,7 +453,7 @@ module SubmissionInputsHelper
         end
 
         Array(values).each_with_index do |metadata_val, i|
-          c.row do
+          c.with_row do
             block.call(metadata_val, "#{name}[#{i}]", "submission_#{attr.attr.to_s}" + '_' + @ontology.acronym)
           end
         end

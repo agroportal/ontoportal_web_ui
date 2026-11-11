@@ -58,9 +58,9 @@ module MultiLanguagesHelper
     selected_language = content_tag(:span, selected_language.upcase, data: { controller: 'tooltip' }, title: portal_language_help_text)
     render DropdownButtonComponent.new do |d|
       d.with_header { selected_language }
-      d.section(divide: false, selected_index: languages.find_index(selected_language)) do |s|
+      d.with_section(divide: false, selected_index: languages.find_index(selected_language)) do |s|
         languages.each do |lang, metadata|
-          s.item do
+          s.with_item do
             text = content_tag(:div, class: 'd-flex align-items-center') do
               content_tag(:span, render(LanguageFieldComponent.new(value: lang, auto_label: true)), class: 'mr-1') + beta_badge(metadata[:badge])
             end
@@ -205,7 +205,7 @@ module MultiLanguagesHelper
     elsif label.is_a?(Array)
       list_items_component(max_items: show_max) do |r|
         label.map do |x|
-          r.container { content_tag(:span, x, class: style_as_badge ? 'badge badge-pill p-2' : '', style: 'font-style: italic; color:var(--primary-color); background-color: var(--light-color);').html_safe }        
+          r.with_container { content_tag(:span, x, class: style_as_badge ? 'badge badge-pill p-2' : '', style: 'font-style: italic; color:var(--primary-color); background-color: var(--light-color);').html_safe }        
         end
       end
     else

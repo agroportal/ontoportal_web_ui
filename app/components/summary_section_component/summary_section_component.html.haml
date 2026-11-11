@@ -10,7 +10,7 @@
   - if action_links?
     %span
       = render Layout::HorizontalListComponent.new do |l|
-        - action_links.each { |link| l.element { raw link }}
+        - action_links.each { |link| l.with_element { raw link }}
 
 - if show_card?
   = render Layout::CardComponent.new do

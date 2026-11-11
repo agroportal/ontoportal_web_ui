@@ -90,7 +90,7 @@
                 - h.th do
                   = header
             - @results.each do |result|
-              - t.row do |r|
+              - t.with_row do |r|
                 - r.td do
                   - ontologies = ""
                   - result[:ontologies].each do |ontology|

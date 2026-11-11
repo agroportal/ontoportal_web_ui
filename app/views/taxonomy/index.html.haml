@@ -9,13 +9,13 @@
 
         = render TabsContainerComponent.new do |c|
             - groups_link = "#{$REST_URL}/groups?display=all"
-            - c.item(title: t('taxonomy.groups'), selected: !@category_section_active, actions: rounded_button_component(groups_link))
-            - c.item_content do
+            - c.with_item(title: t('taxonomy.groups'), selected: !@category_section_active, actions: rounded_button_component(groups_link))
+            - c.with_item_content do
                 = render partial: '/taxonomy/taxonomies', locals: { taxonomies: @groups, type: 'groups' }
 
             - categories_link = "#{$REST_URL}/categories?display=all"
-            - c.item(title: t('taxonomy.categories'), selected: @category_section_active, actions: rounded_button_component(categories_link))
-            - c.item_content do
+            - c.with_item(title: t('taxonomy.categories'), selected: @category_section_active, actions: rounded_button_component(categories_link))
+            - c.with_item_content do
                 = render partial: '/taxonomy/taxonomies', locals: { taxonomies: @categories, type: 'categories' }
 :javascript
     document.getElementById('categories_tab').addEventListener('click', function(event) {

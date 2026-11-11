@@ -11,7 +11,7 @@
       - submissions = @ontology.explore.submissions(invalidate_cache: true, include: 'submissionId,released,status')
       - latest_sub_id = submissions.map(&:submissionId).max
       - submissions.each do |sub|
-        - t.row do |r|
+        - t.with_row do |r|
           - if sub.submissionId != latest_sub_id
             - r.td { check_box_tag "ids[]", sub.submissionId}
           - else

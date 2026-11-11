@@ -14,7 +14,7 @@
       - h.th { t('admin.search.search.id') }
       - h.th { t('admin.search.search.properties') }
     -  @docs.each do |d|
-      - t.row do |r|
+      - t.with_row do |r|
         - r.td {d['id']}
         - r.td do
           %div{data:{controller:"text-truncate", 'text-truncate-more-text-value': t('admin.search.search.show_more') , 'text-truncate-less-text-value': t('admin.search.search.show_less')}}

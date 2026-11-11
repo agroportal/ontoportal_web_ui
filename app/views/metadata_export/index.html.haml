@@ -1,11 +1,11 @@
 = render_in_modal do
   = render TabsContainerComponent.new(id: 'metadata-export', type: 'pill') do |t|
-    - t.item(id: 'csv', title: 'CSV', selected: true)
-    - t.item(id: 'xml', title: 'XML')
-    - t.item(id: 'json', title: 'JSON')
-    - t.item(id: 'triples', title: 'N3')
+    - t.with_item(id: 'csv', title: 'CSV', selected: true)
+    - t.with_item(id: 'xml', title: 'XML')
+    - t.with_item(id: 'json', title: 'JSON')
+    - t.with_item(id: 'triples', title: 'N3')
     - %w[csv xml json triples].each do |format|
-      - t.item_content do
+      - t.with_item_content do
         %div.metadata-exporter{data: {controller: 'rdf-highlighter',
                   'rdf-highlighter-metadata-value': @ontology_metadata.to_json,
                   'rdf-highlighter-context-value': @submission_latest['@context'].to_json,

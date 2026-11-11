@@ -11,8 +11,8 @@
     = hidden_field_tag agent_field_name('',  @name_prefix+"[#{Array(@agents).size}]")
   - Array(@agents).each_with_index do |agent, i|
     - if agent.is_a?(String)
-      - c.row do
+      - c.with_row do
         = agent
     - elsif agent&.agentType
-      - c.row do
+      - c.with_row do
         = render partial: 'agents/agent_show', locals: {agent_id: i, agent: agent, name_prefix: @name_prefix, editable: @editable, edit_on_modal: @edit_on_modal, parent_id: @parent_id}

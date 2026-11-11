@@ -18,7 +18,7 @@
           = header_content
 
         - @value_attrs.each_with_index do |row_data, i|
-          - c.row do
+          - c.with_row do
             - row_options = { class: 'd-flex my-1 align-items-center' }
             - row_options[:data] = { controller: 'apikey-validator', 'apikey-validator-url-value': admin_validate_apikey_catalog_configuration_path } if is_federated
             = content_tag(:div, row_options) do

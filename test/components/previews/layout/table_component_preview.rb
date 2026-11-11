@@ -30,7 +30,7 @@ class Layout::TableComponentPreview < ViewComponent::Preview
     end
 
     rows.each do |row|
-      t.row do |r|
+      t.with_row do |r|
         row.each do |col|
           r.td { col }
         end

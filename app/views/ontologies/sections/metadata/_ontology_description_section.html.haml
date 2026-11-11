@@ -1,7 +1,7 @@
 = render Layout::CardComponent.new do |c|
   - c.with_header(text: t("ontologies.sections.metadata.general_information"))
   = render Layout::ListComponent.new do |l|
-    - l.row do
+    - l.with_row do
       %div
         - if @submission_latest&.abstract.blank?
           .creation_text.d-flex.align-items-center
@@ -22,7 +22,7 @@
         
 
 
-    - l.row do
+    - l.with_row do
       %div.creation_text
         - if @submission_latest&.released
           = t("ontologies.sections.metadata.initial_created_on")
@@ -33,7 +33,7 @@
             #{display_contact(@submission_latest.contact).html_safe}.
 
     - unless Array(@submission_latest&.naturalLanguage).empty?
-      - l.row do
+      - l.with_row do
         = render FieldContainerComponent.new(label: t("ontologies.sections.metadata.languages")) do
           = horizontal_list_container(Array(@submission_latest&.naturalLanguage)) do |v|
             = render LanguageFieldComponent.new(value: v)
@@ -42,17 +42,17 @@
     - categories = Array(@ontology&.hasDomain) 
     - subjects = Array(@submission_latest&.hasDomain)
     - unless categories.empty?
-      - l.row do
+      - l.with_row do
         = render FieldContainerComponent.new(label: t("ontologies.sections.metadata.categories")) do
           = horizontal_list_container(show_ontology_domains(categories).uniq) do |v|
             = category_chip(v)
     - unless subjects.empty?
-      - l.row do
+      - l.with_row do
         = render FieldContainerComponent.new(label: t("ontologies.sections.metadata.subjects")) do
           = turbo_frame_tag("subject_chips", src: subject_chips_path(subjects: subjects)) do
             = render LoaderComponent.new(small: true)
     - unless  Array(@submission_latest&.keywords).empty? && Array(@submission_latest&.keyClasses).empty?
-      - l.row do
+      - l.with_row do
         = render FieldContainerComponent.new(label: t("ontologies.sections.metadata.keywords")) do
           - values = Array(@submission_latest&.keywords)
           - values =  values.map{|x| x.split(',')}.flatten
@@ -62,7 +62,7 @@
             - else
               = render ChipButtonComponent.new(text: v, type: "static")
     - if  @submission_latest&.pullLocation
-      - l.row do
+      - l.with_row do
         = admin_block(class_css: '') do
           = render FieldContainerComponent.new(label: t("ontologies.sections.metadata.pull_location") ) do
             = horizontal_list_container([@submission_latest&.pullLocation]) do |v|

@@ -6,7 +6,7 @@
           .title-bar
             = inline_svg_tag 'icons/settings.svg'
             = t('mappings.filter_ontologies')
-        - c.container do
+        - c.with_container do
           .mappings-page-ontologies-selector{'data-mappings-target': 'ontologies'}
             = ontologies_selector(id:'mappings_page_ontologies' ,name: 'ontologies[]')
             .selector-button{'data-action': 'click->mappings#filterOntologies'}

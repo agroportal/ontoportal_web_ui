@@ -11,5 +11,5 @@
       = content
     - else
       = render Layout::ListComponent.new do |l|
-        - l.row do  
+        - l.with_row do  
           = empty_state || 'no data'

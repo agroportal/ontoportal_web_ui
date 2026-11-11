@@ -9,7 +9,7 @@
     - Array(@values).each_with_index do |v, i|
       - value = v[:value]
       - label = v[:label]
-      - c.row do
+      - c.with_row do
         %div{class: row_class}
           .class-picker-display
             %p.class-label_name= label

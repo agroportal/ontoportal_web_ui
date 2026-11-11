@@ -18,38 +18,38 @@
                     - formats = @formats.drop(1)
                     %div{'data-ontologies-selector-target': 'table'}
                         = render TabsContainerComponent.new do |c|         
-                            = c.item(title: t('ontologies_selector.tabs_title.categories'), selected: true)
-                            = c.item_content do
+                            = c.with_item(title: t('ontologies_selector.tabs_title.categories'), selected: true)
+                            = c.with_item_content do
                                 .chips.categories
                                     - @filters[:categories][0].each do |item|
                                         = chips_component(label: item.acronym, id: item.acronym, value: item.id, name: 'categories[]', tooltip: item.name)
-                            = c.item(title: t('ontologies_selector.tabs_title.groups'))
-                            = c.item_content do
+                            = c.with_item(title: t('ontologies_selector.tabs_title.groups'))
+                            = c.with_item_content do
                                 .chips.groups
                                     - @filters[:groups][0].each do |item|
 
                                         = chips_component(label: item.acronym, id: item.acronym, value: item.id, name: 'groups[]', tooltip: item.name)
 
-                            = c.item(title: t('ontologies_selector.tabs_title.format'))
-                            = c.item_content do
+                            = c.with_item(title: t('ontologies_selector.tabs_title.format'))
+                            = c.with_item_content do
                                 .chips.format
                                     - formats.each do |item|
                                         = chips_component(label: item, id: item, name: 'formats[]', value: item)
 
-                            = c.item(title: t('ontologies_selector.tabs_title.natural_languages'))
-                            = c.item_content do
+                            = c.with_item(title: t('ontologies_selector.tabs_title.natural_languages'))
+                            = c.with_item_content do
                                 .chips.natural-language
                                     - @filters[:naturalLanguage][0].each do |item|
                                         = chips_component(label: item["acronym"], id: item["acronym"], name: 'naturalLanguage[]', value: item['id'])
                             
-                            = c.item(title: t('ontologies_selector.tabs_title.formality_levels'))
-                            = c.item_content do
+                            = c.with_item(title: t('ontologies_selector.tabs_title.formality_levels'))
+                            = c.with_item_content do
                                 .chips
                                     - @filters[:hasFormalityLevel][0].each do |item|
                                         = chips_component(label: item["name"],id: item["acronym"], name: 'formalityLevel[]', value: item["id"])
                             
-                            = c.item(title: t('ontologies_selector.tabs_title.ontology_types'))
-                            = c.item_content do
+                            = c.with_item(title: t('ontologies_selector.tabs_title.ontology_types'))
+                            = c.with_item_content do
                                 .chips
                                     - @filters[:isOfType][0].each do |item|
                                         = chips_component(label: item["name"],id: item["acronym"], name: 'isOfType[]', value: item["id"])

@@ -13,8 +13,8 @@ module ComponentsHelper
 
   # `id` defaults to the title, which makes the tab pane id change with the locale
   def tab_item_component(container_tabs:, title:, path:, selected: false, json_link: "", id: nil, &content)
-    container_tabs.item(id: id, title: title.html_safe, path: path, selected: selected, json_link: json_link)
-    container_tabs.item_content { capture(&content) }
+    container_tabs.with_item(id: id, title: title.html_safe, path: path, selected: selected, json_link: json_link)
+    container_tabs.with_item_content { capture(&content) }
   end
 
   def alert_component(message, type: "info")
@@ -167,7 +167,7 @@ module ComponentsHelper
           raise ArgumentError, t('components.error_block')
         end
 
-        tree_child.child(child: child, href: href,
+        tree_child.with_child(child: child, href: href,
                          children_href: children_link, selected: child.id.eql?(selected&.id),
                          muted: child.isInActiveScheme&.empty?,
                          target_frame: target_frame,
@@ -211,7 +211,7 @@ module ComponentsHelper
   def properties_list_component(c, properties, truncate: true, &block)
     properties.each do |k, value|
       values, label = value
-      c.row do
+      c.with_row do
         content = if block_given?
                     capture(values, &block)
                   else
@@ -232,7 +232,7 @@ module ComponentsHelper
 
     render Layout::HorizontalListComponent.new(truncate: truncate) do |l|
       Array(values).each do |v|
-        l.element do
+        l.with_element do
           capture(v, &block)
         end
       end
@@ -244,7 +244,7 @@ module ComponentsHelper
 
     render Layout::ListComponent.new do |l|
       Array(values).each do |v|
-        l.row do
+        l.with_row do
           capture(v, &block)
         end
       end

@@ -62,7 +62,7 @@
                 - h.th do
                   = header
             - @results.each do |result|
-              - t.row do |r|
+              - t.with_row do |r|
                 - r.td do
                   .class
                     = link_to result[:class][:text], result[:class][:link]

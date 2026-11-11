@@ -31,7 +31,7 @@
         - h.th {t('statistics.ontology_visits')}
 
       - @merged_data[:labels].reverse.each_with_index  do |year_month, i|
-        - t.row do |r|
+        - t.with_row do |r|
           - r.td {year_month}
           - r.td {@merged_data[:visits][2][size - i].to_s}
           - r.td {@merged_data[:visits][0][size - i].to_s}

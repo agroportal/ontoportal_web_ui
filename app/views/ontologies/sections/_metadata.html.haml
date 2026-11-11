@@ -50,7 +50,7 @@
         = horizontal_list_container(values) do |v|
           = render LinkFieldComponent.new(value: v, raw: true)
       = properties_dropdown('projects_section',t("ontologies.sections.projects_and_usage_information"),t("ontologies.sections.info_tooltip_projects"), nil) do |c|
-        - c.row do
+        - c.with_row do
           = projects_field(@projects)
         - properties_list_component(c, @projects_properties)
       :javascript
@@ -62,14 +62,14 @@
       = properties_dropdown('community',t("ontologies.sections.community"), t("ontologies.sections.info_tooltip_community_dropdown", site: portal_name), nil ) do |c|
         - properties_list_component(c, @community_properties, truncate: false)
         - unless Array(@ontology.group).empty?
-          - c.row do
+          - c.with_row do
             = render FieldContainerComponent.new(label: t("ontologies.sections.label_groups")) do
               = horizontal_list_container(@ontology.group) do |v|
                 = render ChipButtonComponent.new(text: show_group_name(v), type: "static", tooltip: show_group_name(v))
 
       = properties_dropdown('content',t("ontologies.sections.content"), t("ontologies.sections.info_tooltip_properties_dropdown", site: portal_name), nil) do |c|
         - properties_list_component(c, @content_properties.reject{|k, v| %w[keyClasses metadataVoc].include?(k.to_s)})
-        - c.row do
+        - c.with_row do
           = render FieldContainerComponent.new(label: attr_label('metadataVoc', attr_metadata: attr_metadata("metadataVoc"), show_tooltip: false)) do
             = Array(@content_properties['metadataVoc']).map{|x| metadata_vocabulary_display(x)}.join.html_safe
       = render Layout::CardComponent.new do |c|
@@ -81,7 +81,7 @@
               = inline_svg("summary/download.svg", width: '30px', height: '20px')
 
         = render Layout::ListComponent.new do |l|
-          - l.row do
+          - l.with_row do
             = render partial: "visits"
 
       - unless @ontology.view?
@@ -91,7 +91,7 @@
               = t("ontologies.sections.views", acronym: @ontology.acronym)
               = new_element_link(t("ontologies.sections.create_new_view"), new_view_path(@ontology.id))
           = render Layout::ListComponent.new do |l|
-            - l.row do
+            - l.with_row do
               = render partial: 'ontology_views'
 
 

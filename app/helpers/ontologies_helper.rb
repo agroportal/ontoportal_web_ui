@@ -711,7 +711,7 @@ module OntologiesHelper
       else
         render CarouselComponent.new(images: true) do |c|
           depictions.each do |url|
-            c.slide { render Display::ImageComponent.new(src: url) }
+            c.with_slide { render Display::ImageComponent.new(src: url) }
           end
         end
       end
@@ -861,7 +861,7 @@ module OntologiesHelper
       t.add_row({ td: "ID" }, { td: resource_id })
 
       resource_id_values.each do |property, values|
-        t.row do |row|
+        t.with_row do |row|
           url = property.gsub(/[<>]/, '')
           row.td do
             content_tag(:span, prefixed_url(url), title: link_to(url, url), 'data-controller': 'tooltip')
@@ -881,7 +881,7 @@ module OntologiesHelper
                                                                   .map(&:flatten)
                                                                   .group_by { |x| x.delete_at(1) }
       inverse_grouped_by_properties.each do |property, values|
-        t.row do |row|
+        t.with_row do |row|
           url = property.gsub(/[<>]/, '')
           row.td do
             content_tag(:span, prefixed_url(url), title: link_to(url, url), 'data-controller': 'tooltip')

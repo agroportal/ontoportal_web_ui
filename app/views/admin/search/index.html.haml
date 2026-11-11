@@ -19,7 +19,7 @@
           - h.th { t('admin.search.index.name') }
           - h.th { t('admin.search.index.actions') }
         - @collections.each do |c|
-          - t.row do |r|
+          - t.with_row do |r|
             - r.td{ c }
             - r.td do
               .d-flex.align-items-center

@@ -16,7 +16,7 @@
 
 
           - sections.each do |section|
-            - t.row do
+            - t.with_row do
               = section
 
 
@@ -24,7 +24,7 @@
             - t.add_row(*row)
 
         - if @concept_id
-          - t.row do |r|
+          - t.with_row do |r|
             - r.td(colspan: 2) do
               %div.d-flex.justify-content-center.p-2#content_resource_formats
                 - [["json","json-ld-file"], ["xml","rdf-xml-file"] , ["ntriples","ntriples-file"], ["turtle","turtle-file"]].each do |format, icon|

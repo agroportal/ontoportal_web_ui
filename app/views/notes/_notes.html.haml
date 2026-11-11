@@ -16,7 +16,7 @@
         - row.create(*cols.map{|col| {th: col}})
 
       - if @notes.nil? || @notes.empty?
-        - t.row do |row|
+        - t.with_row do |row|
           - row.td(colspan: colspan) do
             %div.text-center
               = t('notes.no_notes')

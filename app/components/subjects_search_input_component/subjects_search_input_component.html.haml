@@ -14,7 +14,7 @@
   - Array(@values).each_with_index do |v, i|
     - value = v[:value]
     - label =  v[:label]
-    - c.row do
+    - c.with_row do
       .nested-subjects-form-input-row
         = helpers.text_input(name: "", value: label, readonly: true)
         = hidden_field_tag "submission[hasDomain][#{i}]", value

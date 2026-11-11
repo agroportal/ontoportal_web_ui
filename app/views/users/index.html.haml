@@ -17,7 +17,7 @@
       - h.th {t('users.index.last_login')}
       - h.th {t('users.index.actions')}
     - @users.each do |user|
-      - t.row(id: user.id.split('/').last) do |r|
+      - t.with_row(id: user.id.split('/').last) do |r|
         - r.td {user.firstName}
         - r.td {user.lastName}
         - r.td {user.username}
