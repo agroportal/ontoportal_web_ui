@@ -30,7 +30,8 @@
               - if external_ontology?
                 %a.browse-fair-details{:href => "#{onto_link}#fair-details", 'data-turbo': 'false', style: style_text}= t('components.details_details')
               - else
-                = helpers.link_to_modal(nil, "/ajax/fair_score/html/?ontologies=#{ontology[:acronym]}", class: 'browse-fair-details', data: { show_modal_title_value: t('ontologies.fairness_assessment_questions_ofaire'), show_modal_size_value: 'modal-xl' }) do
+                -# Not through `helpers`: its capture reads the page's buffer, and the link would wrap this card
+                = link_to_modal(nil, "/ajax/fair_score/html/?ontologies=#{ontology[:acronym]}", class: 'browse-fair-details', data: { show_modal_title_value: t('ontologies.fairness_assessment_questions_ofaire'), show_modal_size_value: 'modal-xl' }) do
                   = t('components.details_details')
 
       .browse-ontology-cards{style: color ? "color: #{color} !important" : ''}
