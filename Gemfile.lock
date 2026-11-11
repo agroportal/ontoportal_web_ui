@@ -223,8 +223,9 @@ GEM
     graphql-client (0.26.0)
       activesupport (>= 3.0)
       graphql (>= 1.13.0)
-    haml (5.2.2)
-      temple (>= 0.8.0)
+    haml (6.4.0)
+      temple (>= 0.8.2)
+      thor
       tilt
     haml-rails (2.1.0)
       actionpack (>= 5.1)
@@ -635,13 +636,13 @@ GEM
     sxp (2.0.0)
       matrix (~> 0.4)
       rdf (~> 3.3)
-    temple (0.10.3)
+    temple (0.10.7)
     terminal-table (4.0.0)
       unicode-display_width (>= 1.1.1, < 4)
     terser (1.2.6)
       execjs (>= 0.3.0, < 3)
     thor (1.5.0)
-    tilt (2.6.0)
+    tilt (2.9.0)
     time (0.4.1)
       date
     timeout (0.6.1)
@@ -718,7 +719,7 @@ DEPENDENCIES
   flipper-active_support_cache_store
   flipper-ui
   graphql-client
-  haml (~> 5.1)
+  haml (~> 6.3)
   haml-rails
   html2haml
   i18n

@@ -62,7 +62,7 @@ gem 'dalli'
 gem 'graphql-client'
 
 # Haml template engine for Ruby on Rails
-gem 'haml', '~> 5.1'
+gem 'haml', '~> 6.3'
 
 # Internationalization (i18n)
 gem 'i18n'
