@@ -108,7 +108,7 @@
                   = render Display::ProgressBarComponent.new(progress: result[:specialization_score])
                 - r.td do
                   .recommender-result-highlighted{'data-action': 'change->recommender#handleHighlightedChange'}
-                    = render Input::RadioChipComponent.new(label: result[:annotations].length.to_s+' annotations', name: 'highlighted_recommendation', value: result[:annotations], checked: result[:highlighted])
+                    = render Input::RadioChipComponent.new(label: result[:annotations].length.to_s+' annotations', name: 'highlighted_recommendation', value: result[:annotations].to_json, checked: result[:highlighted])
         .recommender-bottom-actions
           .json-button
             - json_href, json_target = api_button_link_and_target(@json_link)
