@@ -256,6 +256,10 @@ Rails.application.routes.draw do
   # Pages the removed /:controller(/:action(/:id)) catch-all used to serve
   get 'landscape' => 'landscape#index'
   get 'content_finder' => 'content_finder#index'
+  get 'my-ontologies' => 'my_ontologies#index'
+  get 'statistics' => 'statistics#index'
+  get 'admin/metadata_administration' => 'admin#metadata_administration'
+  get 'search/json_search(/:id)' => 'search#json_search'
 
   mount Lookbook::Engine, at: '/lookbook'
 end
