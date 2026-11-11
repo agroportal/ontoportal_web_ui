@@ -28,54 +28,54 @@
           %a.nav-a{:href => "/login"}= t('layout.header.login')
         - else
           = render DropdownButtonComponent.new do |d|
-            - d.header do
+            - d.with_header do
               = link_to("#", class: "nav-link top-nav-nav-link supportMenuDropdownLink", role: "button") do
                 = session[:user].username
             - d.with_section(divide: false) do |s|
-              - s.item do
+              - s.with_item do
                 = link_to(t('layout.header.account_setting'), "/account")
             - d.with_section do |s|
-              - s.item do
+              - s.with_item do
                 = link_to(t('layout.header.user_ontologies') + ' ', "/my-ontologies")
             - d.with_section do |s|
-              - s.item do
+              - s.with_item do
                 = link_to(t('layout.header.logout'), logout_path)
 
         = render DropdownButtonComponent.new do |d|
-          - d.header do
+          - d.with_header do
             = link_to("#", class: "nav-link top-nav-nav-link supportMenuDropdownLink", role: "button") do
               = t('layout.header.explore')
           - d.with_section(divide: false) do |s|
             - if agents_enabled?
-              - s.item do
+              - s.with_item do
                 = link_to(t("home.agents"), "/agents")
-            - s.item do
+            - s.with_item do
               = link_to("Landscape", "/landscape")
-            - s.item do
+            - s.with_item do
               = link_to(t('taxonomy.groups_and_categories'), '/groups')
             - if sparql_enabled?
-              - s.item do
+              - s.with_item do
                 = link_to(t("layout.header.sparql_editor"), "/sparql")
-            - s.item do
+            - s.with_item do
               = link_to(t("layout.header.mcp_server"), mcp_path)
-            -# - s.item do
+            -# - s.with_item do
             -#   = link_to(t("statistics.ontology_visits"), "/visits")
-            - s.item do
+            - s.with_item do
               = link_to(t("statistics.menu"), "/statistics")
 
         = render DropdownButtonComponent.new do |d|
-          - d.header do
+          - d.with_header do
             = link_to("#", class: "nav-link top-nav-nav-link supportMenuDropdownLink", role: "button") do
               = t('layout.header.support')
           - d.with_section(divide: false) do |s|
-            - s.item do
+            - s.with_item do
               = link_to(t('layout.header.submit_feedback'), feedback_path(location: encode_param(request.url)), id: "submitFeedbackMenuItem", class: "pop_window")
           - d.with_section do |s|
-            - s.item do
+            - s.with_item do
               = link_to(t('layout.header.documentation'), $FOOTER_LINKS[:sections][:support][:documentation] , target: "_blank")
-            - s.item do
+            - s.with_item do
               = link_to(t('layout.header.cite_us'), $FOOTER_LINKS[:sections][:about][:cite_us], target: "_blank")
-            - s.item do
+            - s.with_item do
               = link_to(t('layout.header.release_notes'), $FOOTER_LINKS[:sections][:products][:release_notes], target: "_blank")
 
         = portal_language_selector

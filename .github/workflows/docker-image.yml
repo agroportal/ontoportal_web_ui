@@ -56,13 +56,17 @@ jobs:
             agroportal/ontoportal_web_ui
             ghcr.io/${{ github.repository }}
 
+      - name: Read Ruby version
+        id: ruby
+        run: echo "version=$(cat .ruby-version)" >> "$GITHUB_OUTPUT"
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64, linux/arm64
           build-args: |
-            RUBY_VERSION=3.1
+            RUBY_VERSION=${{ steps.ruby.outputs.version }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

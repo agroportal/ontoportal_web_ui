@@ -1,6 +1,6 @@
 - service_link, target = api_button_link_and_target("#{@ontology.id}/metrics?display=all", current_user)
 = render SummarySectionComponent.new(title: t("ontologies.sections.metadata.metrics") , link: Rails.configuration.settings.links[:metrics], link_title: t("ontologies.sections.metadata.metrics_link_title"), show_card: false, service_link: service_link, target: target) do |s|
-  - s.action_link do
+  - s.with_action_link do
     = link_to_modal '', ontology_path(@ontology.acronym) + "/metrics",
                         class: "metrics-item", title: t("ontologies.sections.metadata.see_all_metrics", acronym: @ontology.acronym),
                         data: { controller: "tooltip", show_modal_size_value: 'modal-md' , show_modal_title_value: t("ontologies.sections.metadata.show_modal_title_1", acronym: @ontology.acronym)}

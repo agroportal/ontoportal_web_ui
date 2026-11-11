@@ -242,10 +242,6 @@ class ApplicationController < ActionController::Base
     redirect_to "/ontologies"
   end
 
-  def redirect_to_user_ontologies # Redirect to the My ontologies page
-    redirect_to "/my-ontologies"
-  end
-
   def redirect_to_home # Redirect to Home Page
     redirect_to "/"
   end

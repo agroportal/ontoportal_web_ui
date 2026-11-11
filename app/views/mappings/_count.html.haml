@@ -2,17 +2,17 @@
   .summary-mappings-tab
     .summary-mappings-tab-table
       = render TableComponent.new(id: 'summary-mappings-table', borderless: true, outline: true, searching: true, sort_column: '0', no_init_sort: true, search_placeholder: "Filter by semantic resources") do |t|
-        - t.header do |h|
+        - t.with_header do |h|
           - h.th {t("mappings.count.ontology")}
           - h.th {t("mappings.count.mappings")}
 
         - if @mapping_counts.blank?
-          - t.row do |r|
+          - t.with_row do |r|
             - r.td {t("mappings.count.no_mappings")}
             - r.td {'&nbsp;'}
         - else
           - @mapping_counts.each do |mapping_count|
-            - t.row do |r|
+            - t.with_row do |r|
               - r.td do
                 - title =  mapping_count[:target_ontology].name
                 = link_to_modal title, mappings_show_mappings_path(id: @ontology_acronym ,target: mapping_count[:target_ontology].id), data: { show_modal_title_value: title, show_modal_size_value: 'modal-xl'}

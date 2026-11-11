@@ -185,7 +185,7 @@ module ApplicationHelper
   def subscribe_button(ontology_id)
     return if ontology_id.nil?
     render TurboFrameComponent.new(id: 'subscribe_button', src: ontology_subscriptions_path(ontology_id: ontology_id.split('/').last), class: 'ml-1') do |t|
-      t.loader do
+      t.with_loader do
         content_tag(:div, style: 'margin-left: 10px;') do
           render PillButtonComponent.new do
             (content_tag(:span, t('application.watching'), class: 'ml-1') + render(LoaderComponent.new(small: true))).html_safe
@@ -468,7 +468,7 @@ module ApplicationHelper
   def save_button_component(class_name: nil, id: , value:, data: nil, size: nil, type: nil)
     content_tag(:div, data: data, class: class_name) do
       render Buttons::RegularButtonComponent.new(id:id, value: value, variant: "primary", state: 'regular', size: size, type: type) do |btn|
-        btn.icon_right do
+        btn.with_icon_right do
           inline_svg_tag "check.svg"
         end
       end
@@ -478,7 +478,7 @@ module ApplicationHelper
   def cancel_button_component(class_name: nil, id: , value:, data: nil)
     content_tag(:div, data: data, class: class_name) do
       render Buttons::RegularButtonComponent.new(id:id, value: value, variant: "secondary", state: 'regular') do |btn|
-        btn.icon_left do
+        btn.with_icon_left do
           inline_svg_tag "x.svg"
         end
       end

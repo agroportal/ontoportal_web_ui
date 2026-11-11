@@ -13,8 +13,8 @@ module ComponentsHelper
 
   # `id` defaults to the title, which makes the tab pane id change with the locale
   def tab_item_component(container_tabs:, title:, path:, selected: false, json_link: "", id: nil, &content)
-    container_tabs.item(id: id, title: title.html_safe, path: path, selected: selected, json_link: json_link)
-    container_tabs.item_content { capture(&content) }
+    container_tabs.with_item(id: id, title: title.html_safe, path: path, selected: selected, json_link: json_link)
+    container_tabs.with_item_content { capture(&content) }
   end
 
   def alert_component(message, type: "info")
@@ -60,7 +60,7 @@ module ComponentsHelper
         concat text_field_tag(name, value, type: type, placeholder: placeholder)
         concat(content_tag(:div, class: 'search-page-button') do
           render Buttons::RegularButtonComponent.new(id:'search-page-button', value: "Search", variant: "primary", type: "submit") do |btn|
-            btn.icon_right { inline_svg_tag button_icon}
+            btn.with_icon_right { inline_svg_tag button_icon}
           end
         end)
       end
@@ -106,7 +106,7 @@ module ComponentsHelper
           )))
         end
       end
-      c.error do
+      c.with_error do
         t('components.tree_view_empty')
       end
     end
@@ -167,7 +167,7 @@ module ComponentsHelper
           raise ArgumentError, t('components.error_block')
         end
 
-        tree_child.child(child: child, href: href,
+        tree_child.with_child(child: child, href: href,
                          children_href: children_link, selected: child.id.eql?(selected&.id),
                          muted: child.isInActiveScheme&.empty?,
                          target_frame: target_frame,
@@ -211,7 +211,7 @@ module ComponentsHelper
   def properties_list_component(c, properties, truncate: true, &block)
     properties.each do |k, value|
       values, label = value
-      c.row do
+      c.with_row do
         content = if block_given?
                     capture(values, &block)
                   else
@@ -232,7 +232,7 @@ module ComponentsHelper
 
     render Layout::HorizontalListComponent.new(truncate: truncate) do |l|
       Array(values).each do |v|
-        l.element do
+        l.with_element do
           capture(v, &block)
         end
       end
@@ -244,7 +244,7 @@ module ComponentsHelper
 
     render Layout::ListComponent.new do |l|
       Array(values).each do |v|
-        l.row do
+        l.with_row do
           capture(v, &block)
         end
       end
@@ -253,7 +253,7 @@ module ComponentsHelper
 
   def properties_card(title, tooltip, properties, &block)
     render Layout::CardComponent.new do |d|
-      d.header(text: title, tooltip: tooltip)
+      d.with_header(text: title, tooltip: tooltip)
       render(Layout::ListComponent.new) do |c|
         if properties
           properties_list_component(c, properties, &block)
@@ -266,7 +266,7 @@ module ComponentsHelper
 
   def properties_dropdown(id, title, tooltip, properties, is_open: false, &block)
     render DropdownContainerComponent.new(title: title, id: id, tooltip: tooltip, is_open: is_open) do |d|
-      d.empty_state do
+      d.with_empty_state do
         properties_string = properties.keys[0..4].map { |key| "<b>#{attr_label(key, attr_metadata: attr_metadata(key), show_tooltip: false)}</b>" }.join(', ') + '... ' if properties
         empty_state_message t('components.empty_field', properties: properties_string)
       end
@@ -289,7 +289,7 @@ module ComponentsHelper
 
   def form_save_button(enable_loading: true)
     render Buttons::RegularButtonComponent.new(id: 'save-button', value: t('components.save_button'), variant: "primary", size: "slim", type: "submit", state: enable_loading ? 'animate' : '') do |btn|
-      btn.icon_left do
+      btn.with_icon_left do
         inline_svg_tag "check.svg"
       end
     end
@@ -297,7 +297,7 @@ module ComponentsHelper
 
   def form_cancel_button
     render Buttons::RegularButtonComponent.new(id: 'cancel-button', value: t('components.cancel_button'), variant: "secondary", size: "slim") do |btn|
-      btn.icon_left do
+      btn.with_icon_left do
         inline_svg_tag "x.svg", width: "9", height: "9"
       end
     end

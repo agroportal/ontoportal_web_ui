@@ -583,7 +583,7 @@ module OntologiesHelper
   def ontology_object_tabs_component(ontology_id:, objects_title:, object_id:, api_link: true, &block)
     resource_url = ontology_object_json_link(ontology_id, objects_title, object_id)
     render TabsContainerComponent.new(type: 'outline') do |c|
-      concat(c.pinned_right do
+      concat(c.with_pinned_right do
         content_tag(:div, '', 'data-concepts-json-target': 'button') do
           concat(render_permalink_link) if $PURL_ENABLED
           concat(render_concepts_json_button(resource_url)) if api_link
@@ -711,7 +711,7 @@ module OntologiesHelper
       else
         render CarouselComponent.new(images: true) do |c|
           depictions.each do |url|
-            c.slide { render Display::ImageComponent.new(src: url) }
+            c.with_slide { render Display::ImageComponent.new(src: url) }
           end
         end
       end
@@ -759,7 +759,7 @@ module OntologiesHelper
       state: "regular",
       size: nil,
       href: href) do |btn|
-        btn.icon_left do
+        btn.with_icon_left do
           inline_svg_tag "upload.svg"
         end
       end
@@ -861,7 +861,7 @@ module OntologiesHelper
       t.add_row({ td: "ID" }, { td: resource_id })
 
       resource_id_values.each do |property, values|
-        t.row do |row|
+        t.with_row do |row|
           url = property.gsub(/[<>]/, '')
           row.td do
             content_tag(:span, prefixed_url(url), title: link_to(url, url), 'data-controller': 'tooltip')
@@ -881,7 +881,7 @@ module OntologiesHelper
                                                                   .map(&:flatten)
                                                                   .group_by { |x| x.delete_at(1) }
       inverse_grouped_by_properties.each do |property, values|
-        t.row do |row|
+        t.with_row do |row|
           url = property.gsub(/[<>]/, '')
           row.td do
             content_tag(:span, prefixed_url(url), title: link_to(url, url), 'data-controller': 'tooltip')
@@ -920,7 +920,7 @@ module OntologiesHelper
     checked = values.any? { |obj| [link_last_part(object["id"]), link_last_part(object["value"])].include?(obj) }
     content_tag(:div, (key.to_s.eql?("categories") ? { 'data-action' => 'click->parent-categories-selector#check' } : {})) do
       group_chip_component(name: key, object: object, checked: checked, title: title) do |c|
-        c.count { browse_chip_count_badge(key: key, id: object["id"], count: count) } if countable
+        c.with_count { browse_chip_count_badge(key: key, id: object["id"], count: count) } if countable
       end
     end
   end

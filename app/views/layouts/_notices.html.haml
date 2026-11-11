@@ -16,7 +16,7 @@
       .view-full-site-button
         - query_string = request.query_string.empty? ? "" : "?#{request.query_string}"
         = render Buttons::RegularButtonComponent.new(id:'slices-view-full-site', value: t('home.view_full_site'), variant: "primary", href: "#{$UI_URL}#{request.path}#{query_string}", color: 'warning', size: "slim") do |btn|
-          = btn.icon_right do
+          = btn.with_icon_right do
             = inline_svg_tag "arrow-right.svg"
 #site-notice
   - message_name = ""

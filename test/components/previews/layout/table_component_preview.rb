@@ -22,7 +22,7 @@ class Layout::TableComponentPreview < ViewComponent::Preview
     headers = 5.times.map { |i| "header #{i}" }
     rows = 6.times.map { |row| 5.times.map { |i| "line #{row} :#{i} " } }
 
-    t.header do |h|
+    t.with_header do |h|
       headers.each do |header|
         h.th { header }
       end
@@ -30,7 +30,7 @@ class Layout::TableComponentPreview < ViewComponent::Preview
     end
 
     rows.each do |row|
-      t.row do |r|
+      t.with_row do |r|
         row.each do |col|
           r.td { col }
         end

@@ -50,7 +50,7 @@ class TableComponent < ViewComponent::Base
   end
 
   def add_row(*array, &block)
-    self.row.create(*array, &block)
+    self.with_row.create(*array, &block)
   end
 
   def mini_class

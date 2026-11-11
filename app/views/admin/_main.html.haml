@@ -8,7 +8,7 @@
 
   = render Admin::SectionComponent.new(id: 'site-admin-version', title: t('admin.site_administration.version_management'), description: t('admin.site_administration.version_management_description', portal_name: portal_name)) do
     = render TurboFrameComponent.new(id: 'update_check_frame', src: '/admin/update_check_enabled') do |c|
-      - c.loader { t('admin.site_administration.checking_for_updates') }
+      - c.with_loader { t('admin.site_administration.checking_for_updates') }
 
   = render Admin::SectionComponent.new(id: 'site-admin-federation', title: t('admin.site_administration.federated_portals'), description: t('admin.site_administration.federated_portals_description', portal_name: portal_name)) do
     = render partial: 'admin/catalog_configuration/federated_portals'

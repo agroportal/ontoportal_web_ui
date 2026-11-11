@@ -22,10 +22,10 @@
       %div.catalog-configuration-tabs-container 
         = render TabsContainerComponent.new(id: "description-site-tabs_") do |c|
           - sections.each do |section_title|
-            - c.item(id: section_title.to_s, title: section_title.to_s.humanize, path: "##{section_title.to_s}", 
+            - c.with_item(id: section_title.to_s, title: section_title.to_s.humanize, path: "##{section_title.to_s}", 
                       selected: selected_section?(section_title.to_s) || section_title.to_s == sections[0].to_s,
                       page_name: section_title.to_s)
-            - c.item_content do
+            - c.with_item_content do
               %div.p-1
                 - attributes = @catalog_groups[section_title]
                 - attributes.each do |attr|
@@ -56,10 +56,10 @@
                         = hidden_field_tag "config[#{key}][]", "", id: "empty_config_#{key}"
                         = render Input::InputFieldComponent.new(name: "config[#{key}]", label: label_tooltip, error_message: attribute_error(key.to_s)) do
                           = render NestedFormInputsComponent.new do |c|
-                            - c.template do
+                            - c.with_template do
                               = text_input(name: "config[#{key}][]", value: "")
                             - Array(value_attr).each_with_index do |val, i|
-                              - c.row do
+                              - c.with_row do
                                 = text_input(name: "config[#{key}][]", value: val || "")
                       - else
                         = render Input::InputFieldComponent.new(name: "list_fields_#{key}", label: label_tooltip) do

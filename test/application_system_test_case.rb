@@ -219,9 +219,9 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       identifier = agent.identifiers.first
 
       if agent.agentType.eql?('organization')
-        fill_in "_identifiers_0_notation", with: identifier['notation']
+        fill_in "identifiers_0_notation", with: identifier['notation']
       else
-        fill_in "_identifiers_1_notation", with: identifier['notation']
+        fill_in "identifiers_1_notation", with: identifier['notation']
       end
 
       if is_affiliation || agent.agentType.eql?('organization')

@@ -5,7 +5,7 @@
     = rounded_button_component("#{$REST_URL}/users?display=all")
 
   = render TableComponent.new(id: 'admin_users', custom_class: 'border rounded p-1', searching: true, paging: true, sort_column: '7') do |t|
-    - t.header do |h|
+    - t.with_header do |h|
       - h.th {t('users.index.first_name')}
       - h.th {t('users.index.last_name')}
       - h.th {t('users.index.username')}
@@ -17,7 +17,7 @@
       - h.th {t('users.index.last_login')}
       - h.th {t('users.index.actions')}
     - @users.each do |user|
-      - t.row(id: user.id.split('/').last) do |r|
+      - t.with_row(id: user.id.split('/').last) do |r|
         - r.td {user.firstName}
         - r.td {user.lastName}
         - r.td {user.username}

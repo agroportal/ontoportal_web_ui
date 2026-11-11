@@ -80,7 +80,7 @@ class UsersController < ApplicationController
 
         flash[:notice] = t('users.account_successfully_created')
         session[:user] = LinkedData::Client::Models::User.authenticate(@user.username, @user.password)
-        redirect_to_user_ontologies
+        redirect_to_home
       end
     else
       render action: "new"

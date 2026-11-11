@@ -26,7 +26,6 @@ config/secrets.yml
 /public/assets/
 nohup.out
 
-.ruby-version
 
 # Ignore editor files
 .idea

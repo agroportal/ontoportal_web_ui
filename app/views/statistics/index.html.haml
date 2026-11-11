@@ -22,7 +22,7 @@
     - size = @merged_data[:labels].size - 1
     - visits =  @year_month_visits
     = render TableComponent.new(id: 'statistics_table', paging: true, sort_column: '0', no_init_sort: true, show_all: true) do |t|
-      - t.header do |h|
+      - t.with_header do |h|
         - h.th {t('statistics.date')}
         - h.th {t('statistics.ontologies')}
         - h.th {t('statistics.users')}
@@ -31,7 +31,7 @@
         - h.th {t('statistics.ontology_visits')}
 
       - @merged_data[:labels].reverse.each_with_index  do |year_month, i|
-        - t.row do |r|
+        - t.with_row do |r|
           - r.td {year_month}
           - r.td {@merged_data[:visits][2][size - i].to_s}
           - r.td {@merged_data[:visits][0][size - i].to_s}

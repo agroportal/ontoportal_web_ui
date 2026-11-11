@@ -39,7 +39,7 @@ class Buttons::RegularButtonComponentPreview < ViewComponent::Preview
 
   def icon_left
     render Buttons::RegularButtonComponent.new(id:'regular-button', value: "Login", variant: "primary") do |btn|
-      btn.icon_left do
+      btn.with_icon_left do
         inline_svg_tag "check.svg"
       end
     end
@@ -48,7 +48,7 @@ class Buttons::RegularButtonComponentPreview < ViewComponent::Preview
   def icon_right
 
     render Buttons::RegularButtonComponent.new(id:'regular-button', value: "Login", variant: "primary") do |btn|
-      btn.icon_right do
+      btn.with_icon_right do
         inline_svg_tag "check.svg"
       end
     end

@@ -57,12 +57,12 @@
             = "#{t('annotator.total_results')} #{@results.length} (direct: #{@direct_results} / parents: #{@parents_results})"
         .annotator-table-container
           = render TableComponent.new(id: 'annotator-table', borderless: true, layout_fixed: false, outline: true, sort_column: '0', no_init_sort: true) do |t|
-            - t.header do |h|
+            - t.with_header do |h|
               - @results_table_header.each do |header|
                 - h.th do
                   = header
             - @results.each do |result|
-              - t.row do |r|
+              - t.with_row do |r|
                 - r.td do
                   .class
                     = link_to result[:class][:text], result[:class][:link]
@@ -99,18 +99,18 @@
           .json-button
             - json_href, json_target = api_button_link_and_target(@json_link)
             = render Buttons::RegularButtonComponent.new(id:'annotator_json', value: "JSON", variant: "secondary", href: json_href, size: "slim", target: json_target, state: "regular") do |btn|
-              - btn.icon_left do
+              - btn.with_icon_left do
                 = inline_svg_tag "json.svg"
           .rdf-button
             - rdf_href, rdf_target = api_button_link_and_target(@rdf_link)
             = render Buttons::RegularButtonComponent.new(id:'annotator_rdf', value: "RDF", variant: "secondary", href: rdf_href, size: "slim", target: rdf_target, state: "regular") do |btn|
-              - btn.icon_left do
+              - btn.with_icon_left do
                 = inline_svg_tag "summary/sparql.svg"
           .cite-us-button
             = render Buttons::RegularButtonComponent.new(id:'annotator_cite_us', value: t('recommender.cite'), variant: "secondary", href: $CITE_ANNOTATOR, size: "slim", target: '_blank', state: "regular") do |btn|
-              - btn.icon_left do
+              - btn.with_icon_left do
                 = inline_svg_tag "icons/cite.svg"
           .annotator-doc
             = render Buttons::RegularButtonComponent.new(id:'annotator_api_doc', value: t('annotator.api_documentation'), variant: "secondary", href: $ANNOTATOR_API_DOC, size: "slim", target: '_blank', state: "regular") do |btn|
-              - btn.icon_left do
+              - btn.with_icon_left do
                 = inline_svg_tag "summary/documentation.svg"

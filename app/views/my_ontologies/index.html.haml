@@ -46,7 +46,7 @@
 
           .browse-ontologies
             = render TurboFrameComponent.new(id: "ontologies_list_view-page-1" , src: "/user_ontologies_filter?page=1&#{request_params}", data:{"turbo-frame-target":"frame", "turbo-frame-url-value": "/user_ontologies_filter"}) do |list|
-              - list.loader do
+              - list.with_loader do
                 = browser_counter_loader
 
 
