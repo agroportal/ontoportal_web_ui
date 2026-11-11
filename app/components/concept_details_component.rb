@@ -40,7 +40,7 @@ class ConceptDetailsComponent < ViewComponent::Base
     rows = row_hash_properties(scheme_set, concept_properties, &block)
 
     rows.each do |row|
-      section do |table_row|
+      with_section do |table_row|
         table_row.create(*row)
       end
     end
