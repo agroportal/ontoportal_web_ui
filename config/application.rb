@@ -11,10 +11,6 @@ module BioportalWebUi
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
-    # Rails 8.1 always preserves the full timezone in to_time; opt in now
-    # instead of keeping the 7.0 offset-only behaviour 8.0 deprecates.
-    config.active_support.to_time_preserves_timezone = :zone
-
     # permitted locales available for the application
     config.i18n.available_locales = [:en, :fr, :it, :de]
     config.i18n.default_locale = :en
