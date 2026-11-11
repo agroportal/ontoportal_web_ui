@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 # Main Rails gem
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.2.0'
+gem 'rails', '~> 8.0.0'
 
 # JavaScript bundling for Rails
 gem 'jsbundling-rails'
@@ -66,7 +66,7 @@ gem 'haml', '~> 5.1'
 
 # Internationalization (i18n)
 gem 'i18n'
-gem 'rails-i18n', '~> 7.0'
+gem 'rails-i18n', '~> 8.0'
 
 # MySQL database adapter
 gem 'mysql2'
@@ -83,7 +83,7 @@ gem 'rest-client'
 
 # View components framework for Rails
 gem 'lookbook', '~> 1.5.5'
-gem 'view_component', '~> 2.72'
+gem 'view_component', '~> 3.0'
 
 # Pagination library for Rails
 gem 'will_paginate', '~> 3.0'
