@@ -185,6 +185,9 @@ group :test do
 
   # Testing framework for Rails
   gem 'rspec-rails'
+
+  # minitest 6 drops minitest/mock, which several tests stub with
+  gem 'minitest', '~> 5.27'
 end
 
 gem 'concurrent-ruby', '1.3.4'

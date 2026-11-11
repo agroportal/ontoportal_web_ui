@@ -341,9 +341,7 @@ GEM
       mime-types-data (~> 3.2025, >= 3.2025.0507)
     mime-types-data (3.2025.0701)
     mini_mime (1.1.5)
-    minitest (6.1.0)
-      drb (~> 2.0)
-      prism (>= 1.5, < 3)
+    minitest (5.27.0)
     msgpack (1.8.0)
     multi_json (1.15.0)
     multi_xml (0.6.0)
@@ -734,6 +732,7 @@ DEPENDENCIES
   jsbundling-rails
   letter_opener_web (~> 2.0)
   lookbook (~> 1.5.5)
+  minitest (~> 5.27)
   multi_json
   mysql2
   net-ftp (~> 0.2.0)
