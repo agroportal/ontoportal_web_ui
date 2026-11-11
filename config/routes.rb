@@ -253,8 +253,9 @@ Rails.application.routes.draw do
   get 'check_resolvability' => 'check_resolvability#index'
   get 'check_url_resolvability' => 'check_resolvability#check_resolvability'
 
-  # Install the default route as the lowest priority.
-  get '/:controller(/:action(/:id))'
+  # Pages the removed /:controller(/:action(/:id)) catch-all used to serve
+  get 'landscape' => 'landscape#index'
+  get 'content_finder' => 'content_finder#index'
 
   mount Lookbook::Engine, at: '/lookbook'
 end
