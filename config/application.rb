@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 module BioportalWebUi
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.2
+    config.load_defaults 8.0
 
     # permitted locales available for the application
     config.i18n.available_locales = [:en, :fr, :it, :de]
