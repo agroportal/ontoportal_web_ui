@@ -4,6 +4,19 @@ if (window.BP_CONFIG === undefined) {
 }
 var problemOnly = true;
 
+var ADMIN_I18N = null;
+
+function t18(key, vars) {
+  if (ADMIN_I18N === null) {
+    try { ADMIN_I18N = jQuery("#admin-ontologies-i18n").data("adminI18n") || {}; }
+    catch (e) { ADMIN_I18N = {}; }
+  }
+  var s = ADMIN_I18N[key];
+  if (s === undefined) return key;
+  if (vars) { for (var k in vars) { s = s.split("%{" + k + "}").join(vars[k]); } }
+  return s;
+}
+
 function toggleShow(val) {
   problemOnly = val;
 }
@@ -44,7 +57,7 @@ var AjaxAction = function(httpMethod, operation, path, isLongOperation, params) 
     delete params["ontologies"];
   }
   this.params = params;
-  this.confirmMsg = "Are you sure?";
+  this.confirmMsg = t18("cannot_undo");
 };
 
 AjaxAction.prototype.setConfirmMsg = function(msg) {
@@ -68,10 +81,10 @@ AjaxAction.prototype.clearStatusMessages = function() {
 
 AjaxAction.prototype.showProgressMessage = function() {
   this.clearStatusMessages();
-  var msg = "Performing " + this.operation;
+  var msg = t18("performing", {operation: this.operation});
 
   if (this.ontologies[0] !== DUMMY_ONTOLOGY) {
-    msg += " for " + this.ontologies.join(", ");
+    msg = t18("performing_for", {operation: this.operation, ontologies: this.ontologies.join(", ")});
   }
   jQuery("#progress_message").text(msg).html();
   jQuery("#progress_message").show();
@@ -182,7 +195,7 @@ AjaxAction.prototype.ajaxCall = function() {
   var self = this;
 
   if (self.ontologies.length === 0) {
-    alertify.alert("Please select at least one ontology from the table to perform action on.<br/>To select/de-select ontologies, simply click anywhere in the ontology row.");
+    alertify.alert(t18("alert_select") + "<br/>" + t18("alert_select_hint"));
     return;
   }
 
@@ -241,9 +254,9 @@ AjaxAction.prototype.onSuccessAction = function(data, ontology, deferredObj) {
             var tm = end - start;
 
             if (ontology === DUMMY_ONTOLOGY) {
-              success[0] = self.operation + " completed in " + millisToMinutesAndSeconds(tm);
+              success[0] = t18("completed_in", {operation: self.operation, time: millisToMinutesAndSeconds(tm)});
             } else {
-              success[0] = self.operation + " for " + ontology + " completed in " + millisToMinutesAndSeconds(tm);
+              success[0] = t18("completed_for", {operation: self.operation, ontology: ontology, time: millisToMinutesAndSeconds(tm)});
             }
             self.onSuccessActionLongOperation(data, ontology);
           }
@@ -293,10 +306,14 @@ AjaxAction.prototype.act = function() {
 };
 
 
+function redHighlight(value) {
+  return "<span style='color:red;font-weight:bold;'>" + value + "</span>";
+}
+
 function DeleteSubmission(ontology, submissionId) {
-  AjaxAction.call(this, "DELETE", "SUBMISSION DELETION", "ontologies/" + ontology + "/submissions/" + submissionId, false, {ontologies: ontology});
+  AjaxAction.call(this, "DELETE", t18("name_submission_deletion"), "ontologies/" + ontology + "/submissions/" + submissionId, false, {ontologies: ontology});
   this.submissionId = submissionId;
-  this.setConfirmMsg("Are you sure you want to delete submission <span style='color:red;font-weight:bold;'>" + submissionId + "</span> for ontology <span style='color:red;font-weight:bold;'>" + ontology + "</span>?<br/><b>This action CAN NOT be undone!!!</b>");
+  this.setConfirmMsg(t18("del_sub", {id: redHighlight(submissionId), ontology: redHighlight(ontology)}) + "<br/><b>" + t18("cannot_undo_short") + "</b>");
 }
 
 DeleteSubmission.prototype = Object.create(AjaxAction.prototype);
@@ -308,12 +325,12 @@ DeleteSubmission.act = function(ontology, submissionId) {
 };
 
 function RefreshReport() {
-  AjaxAction.call(this, "POST", "REFRESH OF ONTOLOGIES REPORT", "refresh_ontologies_report", true);
-  var msg = "Refreshing this report takes a while...<br/>Are you sure you're ready for some coffee time?";
+  AjaxAction.call(this, "POST", t18("name_refresh_report"), "refresh_ontologies_report", true);
+  var msg = t18("refresh_confirm");
   this.setSelectedOntologies();
 
   if (this.ontologies.length > 0) {
-    msg = "Ready to refresh report for ontologies:" + this.getSelectedOntologiesForDisplay() + "Proceed?";
+    msg = t18("refresh_sel_lead") + this.getSelectedOntologiesForDisplay() + t18("proceed_short");
   } else {
     this.ontologies = [DUMMY_ONTOLOGY];
   }
@@ -332,9 +349,9 @@ RefreshReport.act = function() {
 };
 
 function DeleteOntologies() {
-  AjaxAction.call(this, "DELETE", "ONTOLOGY DELETION", "ontologies", false);
+  AjaxAction.call(this, "DELETE", t18("name_ontology_deletion"), "ontologies", false);
   this.setSelectedOntologies();
-  this.setConfirmMsg("You are about to delete the following ontologies:" + this.getSelectedOntologiesForDisplay() + "<b>This action CAN NOT be undone!!! Are you sure?</b>");
+  this.setConfirmMsg(t18("del_onts_lead") + this.getSelectedOntologiesForDisplay() + "<b>" + t18("cannot_undo") + "</b>");
 }
 
 DeleteOntologies.prototype = Object.create(AjaxAction.prototype);
@@ -351,16 +368,16 @@ DeleteOntologies.act = function() {
 
 function ProcessOntologies(action) {
   var actions = {
-    all: "FULL ONTOLOGY RE-PROCESSING",
-    process_annotator: "PROCESSING OF ONTOLOGY FOR ANNOTATOR",
-    diff: "CALCULATION OF ONTOLOGY DIFFS",
-    index_search: "PROCESSING OF ONTOLOGY FOR SEARCH",
-    run_metrics: "CALCULATION OF ONTOLOGY METRICS",
-    generate_foops: "FAIRNESS ASSESSMENT WITH FOOPS!"
+    all: t18("name_all"),
+    process_annotator: t18("name_process_annotator"),
+    diff: t18("name_diff"),
+    index_search: t18("name_index_search"),
+    run_metrics: t18("name_run_metrics"),
+    generate_foops: t18("name_generate_foops")
   };
   AjaxAction.call(this, "PUT", actions[action], "ontologies", false, {actions: action});
   this.setSelectedOntologies();
-  this.setConfirmMsg("You are about to perform " + actions[action] + " on the following ontologies:" + this.getSelectedOntologiesForDisplay() + "The ontologies will be added to the queue and processed on the next cron job execution.<br style='margin:10px 0;'/><b>Should I proceed?</b>");
+  this.setConfirmMsg(t18("proc_lead", {operation: actions[action]}) + this.getSelectedOntologiesForDisplay() + t18("proc_queue") + "<br style='margin:10px 0;'/><b>" + t18("proceed") + "</b>");
 }
 
 ProcessOntologies.prototype = Object.create(AjaxAction.prototype);
@@ -377,7 +394,7 @@ function performActionOnOntologies() {
   var action = jQuery('#admin_action').val();
 
   if (!action) {
-    alertify.alert("Please choose an action to perform on the selected ontologies.");
+    alertify.alert(t18("alert_choose"));
     return;
   }
 
@@ -407,11 +424,11 @@ function populateOntologyRows(data) {
     var ontologyDateCreated = parseReportDate(ontology["date_created"]);
 
     if (ontology["logFilePath"] != '') {
-      bpLinks += "<div><a href='" + "/admin/ontologies/" + acronym + "/log' target='_blank'>Log</a> </div>";
+      bpLinks += "<div><a href='" + "/admin/ontologies/" + acronym + "/log' target='_blank'>" + t18("link_log") + "</a> </div>";
     }
-    bpLinks += "<div><a href='" + BP_CONFIG.rest_url + "/ontologies/" + acronym + "?apikey=" + BP_CONFIG.apikey + "&userapikey: " + BP_CONFIG.userapikey + "' target='_blank'>REST</a></div>";
-    let title = `Ontology Submissions for ${acronym}`
-    let link = `<div><a id='link_submissions_${acronym}' href="/ontologies/${acronym}/submissions?container_id=application_modal_content" data-controller="show-modal" data-show-modal-title-value="${title}" data-action="click->show-modal#show" data-turbo="true" data-turbo-frame="application_modal_content">Submissions</a></div>`
+    bpLinks += "<div><a href='" + BP_CONFIG.rest_url + "/ontologies/" + acronym + "?apikey=" + BP_CONFIG.apikey + "&userapikey: " + BP_CONFIG.userapikey + "' target='_blank'>" + t18("link_rest") + "</a></div>";
+    let title = t18("submissions_modal_title", {acronym: acronym})
+    let link = `<div><a id='link_submissions_${acronym}' href="/ontologies/${acronym}/submissions?container_id=application_modal_content" data-controller="show-modal" data-show-modal-title-value="${title}" data-action="click->show-modal#show" data-turbo="true" data-turbo-frame="application_modal_content">${t18("link_submissions")}</a></div>`
     bpLinks += link
 
     var errStatus = ontology["errErrorStatus"] ? ontology["errErrorStatus"].join(", ") : '';
@@ -434,10 +451,10 @@ function isDateGeneratedSet(data) {
 }
 
 function setDateGenerated(data) {
-  var buttonText = "Generate";
+  var buttonText = t18("generate");
 
   if (isDateGeneratedSet(data)) {
-    buttonText = "Refresh";
+    buttonText = t18("refresh");
   }
   jQuery(".report_date_generated").text(data.report_date_generated).html();
   jQuery(".report_date_generated_button").text(buttonText).html();
@@ -526,50 +543,50 @@ function displayOntologies(data, ontology) {
         {
           "targets": 0,
           "searchable": true,
-          "title": "Ontology"
+          "title": t18("col_ontology")
         },
         {
           "targets": 1,
           "searchable": true,
-          "title": "Admin",
+          "title": t18("col_admin"),
         },
         {
           "targets": 2,
           "searchable": true,
-          "title": "Format",
+          "title": t18("col_format"),
         },
         {
           "targets": 3,
           "searchable": true,
-          "title": "Date Created",
+          "title": t18("col_date_created"),
           "type": "date",
         },
         {
           "targets": 4,
           "searchable": true,
-          "title": "Report Date",
+          "title": t18("col_report_date"),
           "type": "date",
         },
         {
           "targets": 5,
           "searchable": false,
           "orderable": false,
-          "title": "URL",
+          "title": t18("col_url"),
         },
         {
           "targets": 6,
           "searchable": true,
-          "title": "Error Status",
+          "title": t18("col_error_status"),
         },
         {
           "targets": 7,
           "searchable": true,
-          "title": "Missing Status",
+          "title": t18("col_missing_status"),
         },
         {
           "targets": 8,
           "searchable": true,
-          "title": "Issues"
+          "title": t18("col_issues")
         },
         {
           "targets": 9,
@@ -581,8 +598,14 @@ function displayOntologies(data, ontology) {
       "lengthChange": true,
       "searching": true,
       "language": {
-        "search": "Filter: ",
-        "emptyTable": "No ontologies available"
+        "search": t18("filter"),
+        "emptyTable": t18("no_ontologies"),
+        "zeroRecords": t18("zero_records"),
+        "info": t18("info"),
+        "infoEmpty": t18("info_empty"),
+        "infoFiltered": t18("info_filtered"),
+        "lengthMenu": t18("length_menu"),
+        "paginate": { "next": t18("paginate_next"), "previous": t18("paginate_previous") }
       },
       "info": true,
       "paging": true,
@@ -599,12 +622,12 @@ function displayOntologies(data, ontology) {
 
 
 function showOntologiesToggleLinks(problemOnly) {
-  var str = 'View Ontologies:&nbsp;&nbsp;&nbsp;&nbsp;';
+  var str = t18("view_ontologies") + '&nbsp;&nbsp;&nbsp;&nbsp;';
 
   if (problemOnly) {
-    str += '<a id="show_all_ontologies_action" href="javascript:;">All</a>&nbsp;&nbsp;|&nbsp;&nbsp;<strong>Problem Only</strong>';
+    str += '<a id="show_all_ontologies_action" href="javascript:;">' + t18("all") + '</a>&nbsp;&nbsp;|&nbsp;&nbsp;<strong>' + t18("problem_only") + '</strong>';
   } else {
-    str += '<strong>All</strong>&nbsp;&nbsp;|&nbsp;&nbsp;<a id="show_problem_only_ontologies_action" href="javascript:;">Problem Only</a>';
+    str += '<strong>' + t18("all") + '</strong>&nbsp;&nbsp;|&nbsp;&nbsp;<a id="show_problem_only_ontologies_action" href="javascript:;">' + t18("problem_only") + '</a>';
   }
   return str;
 }
@@ -614,7 +637,7 @@ jQuery(".admin.index").ready(function() {
   displayOntologies({}, DUMMY_ONTOLOGY);
 
 
-  jQuery("div.ontology_nav").html('<span class="toggle-row-display">' + showOntologiesToggleLinks(problemOnly) + '</span><span style="padding-left:30px;">Apply to Selected Rows:&nbsp;&nbsp;&nbsp;&nbsp;<select id="admin_action" name="admin_action"><option value="">Please Select</option><option value="delete">Delete</option><option value="all">Process</option><option value="process_annotator">Annotate</option><option value="diff">Diff</option><option value="index_search">Index</option><option value="run_metrics">Metrics</option><option value="generate_foops">FOOPS!</option></select>&nbsp;&nbsp;&nbsp;&nbsp;<a class="link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" href="javascript:;" id="admin_action_submit"><span class="ui-button-text">Go</span></a></span>');
+  jQuery("div.ontology_nav").html('<span class="toggle-row-display">' + showOntologiesToggleLinks(problemOnly) + '</span><span style="padding-left:30px;">' + t18("apply_to_selected") + '&nbsp;&nbsp;&nbsp;&nbsp;<select id="admin_action" name="admin_action"><option value="">' + t18("please_select") + '</option><option value="delete">' + t18("act_delete") + '</option><option value="all">' + t18("act_process") + '</option><option value="process_annotator">' + t18("act_annotate") + '</option><option value="diff">' + t18("act_diff") + '</option><option value="index_search">' + t18("act_index") + '</option><option value="run_metrics">' + t18("act_metrics") + '</option><option value="generate_foops">' + t18("act_foops") + '</option></select>&nbsp;&nbsp;&nbsp;&nbsp;<a class="link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" href="javascript:;" id="admin_action_submit"><span class="ui-button-text">' + t18("go") + '</span></a></span>');
 
   // toggle between all and problem ontologies
   jQuery.fn.dataTable.ext.search.push(

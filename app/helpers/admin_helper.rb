@@ -49,4 +49,8 @@ module AdminHelper
     response
   end
 
+  def admin_ontologies_i18n
+    I18n.t('admin.ontologies').transform_values(&:to_s)
+  end
+
 end
