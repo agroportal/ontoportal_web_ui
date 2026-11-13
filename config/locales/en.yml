@@ -1201,6 +1201,15 @@ en:
         loading: "Loading log..."
         no_log: "No log available."
         parse_error: "Error parsing log: %{message}"
+      oops:
+        title: "Quality report (OOPS!)"
+        unavailable: "No OOPS! report has been generated for the latest submission of this ontology."
+        summary: "%{total} pitfalls found: %{critical} critical, %{important} important, %{minor} minor."
+        code: "Code"
+        pitfall: "Pitfall"
+        importance: "Importance"
+        affected: "Affected elements"
+        open: "Open the raw report"
       ontology:
         title: "Ontology"
         warning: "Warning: Deleting the ontology is irreversible. All submissions and metadata will be lost."
