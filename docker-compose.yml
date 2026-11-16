@@ -109,7 +109,7 @@ services:
       MEMCACHE_SERVERS: 127.0.0.1:11211
 
   chrome-server:
-    image: selenium/standalone-chrome:112.0-chromedriver-112.0-grid-4.9.0-20230421
+    image: selenium/standalone-chrome:157.0-chromedriver-157.0-grid-4.52.0-20261101
     shm_size: 2g
     network_mode: 'host'
     ports:
