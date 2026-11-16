@@ -16,7 +16,11 @@ class OntologiesAdministrationController < ApplicationController
     @log = LinkedData::Client::HTTP.get(log_url)
 
     respond_to do |format|
-      format.html { render partial: 'ontologies/admin/log', layout: false }
+      format.html do
+        # Its status, as fresh as the submissions table, tells whether a step failed
+        @latest_submission = @ontology.explore.latest_submission(include: 'submissionStatus', invalidate_cache: true)
+        render partial: 'ontologies/admin/log', layout: false
+      end
       # log.txt, the download button
       format.text { send_data log_text, filename: "#{@ontology.acronym}-latest-submission-log.txt" }
     end

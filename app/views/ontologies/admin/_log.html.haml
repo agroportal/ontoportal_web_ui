@@ -1,8 +1,9 @@
 = turbo_frame_tag "admin_log_frame" do
-  -# A log without errors says so instead of listing its lines; Download has them
+  -# The status tells whether a step failed, the log may hold no ERROR line.
+  -# Without a failure, a sentence replaces the lines; Download has them
   - if @log.blank?
     %p= t('ontologies.admin.log.no_log')
-  - elsif @log.is_a?(Array) && @log.none? { |entry| entry.to_h[:severity] == 'ERROR' }
+  - elsif !submission_failed?(@latest_submission)
     %p= t('ontologies.admin.log.no_errors', acronym: @ontology.acronym)
   - else
     %div
