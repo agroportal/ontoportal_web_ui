@@ -1,0 +1,15 @@
+= render_in_modal do
+  .submission-processing
+    %p= submission_state_summary(@submission)
+    %ul.processing-stages
+      - submission_stages(@submission).each do |stage|
+        %li
+          .processing-stage
+            = processing_icon(stage.outcome)
+            = stage.name
+          %ul.processing-steps
+            - stage.steps.each do |step|
+              %li.processing-step
+                = processing_icon(step.outcome)
+                %span= step.description
+                %code= step.code

@@ -132,3 +132,6 @@ application.register("ror-search", RorSearchController)
 
 import ConceptGraphController from "./concept_graph_controller.js"
 application.register("concept-graph", ConceptGraphController)
+
+import BulkSelectController from "./bulk_select_controller.js"
+application.register("bulk-select", BulkSelectController)

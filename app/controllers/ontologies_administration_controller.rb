@@ -6,6 +6,8 @@ class OntologiesAdministrationController < ApplicationController
   before_action :authorize_ontology_admin
 
   def show
+    # Its processing logs show only when a step failed
+    @latest_submission = @ontology.explore.latest_submission(include: 'submissionStatus')
     render 'ontologies/admin'
   end
 
@@ -17,6 +19,15 @@ class OntologiesAdministrationController < ApplicationController
 
   def submissions
     render partial: 'ontologies/admin/submissions_table', locals: { ontology: @ontology }, layout: false
+  end
+
+  # Processing details of a submission, shown in the application modal
+  def submission_status
+    @submission = LinkedData::Client::HTTP.get("/ontologies/#{@ontology.acronym}/submissions/#{params[:id].to_i}",
+                                               include: 'submissionId,submissionStatus')
+    return head(:not_found) if @submission.submissionId.nil?
+
+    render partial: 'ontologies/admin/submission_status', layout: false
   end
 
   def destroy

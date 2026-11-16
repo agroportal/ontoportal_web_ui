@@ -22,19 +22,20 @@
           %i.fas.fa-spinner.fa-spin.mr-2
           = t('ontologies.admin.submissions.loading')
 
-  .admin-section
-    .edit-ontology-title
-      %div.d-flex.justify-content-between.align-items-center.mb-2
-        %div
-          = t('ontologies.admin.log.title')
-        = link_to log_ontology_administration_path(@ontology.acronym), data: { turbo_frame: "admin_log_frame", turbo: "true" }, class: "btn btn-sm btn-outline-primary" do
-          %i.fas.fa-sync-alt.me-1
-      %hr
-    = render Layout::CardComponent.new do |c|
-      %div#admin_log_container.admin-log-container
-        -# = "hello"
-        = turbo_frame_tag "admin_log_frame", src: log_ontology_administration_path(@ontology.acronym), loading: "lazy" do
-          = t('ontologies.admin.log.loading')
+  - if submission_failed?(@latest_submission)
+    .admin-section
+      .edit-ontology-title
+        %div.d-flex.justify-content-between.align-items-center.mb-2
+          %div
+            = t('ontologies.admin.log.title')
+          = link_to log_ontology_administration_path(@ontology.acronym), data: { turbo_frame: "admin_log_frame", turbo: "true" }, class: "btn btn-sm btn-outline-primary" do
+            %i.fas.fa-sync-alt.me-1
+        %hr
+      = render Layout::CardComponent.new do |c|
+        %div#admin_log_container.admin-log-container
+          -# = "hello"
+          = turbo_frame_tag "admin_log_frame", src: log_ontology_administration_path(@ontology.acronym), loading: "lazy" do
+            = t('ontologies.admin.log.loading')
 
   -# .admin-section
   -#   .edit-ontology-title
@@ -50,24 +51,6 @@
   -#         = t('ontologies.admin.ontology.delete')
 
 :javascript
-  // Checkboxes validation
-  document.addEventListener("turbo:load", function() {
-    const bulkDeleteForm = document.getElementById('bulk_delete_form');
-    const bulkDeleteButton = document.getElementById('bulk_delete_button');
-    
-    if (bulkDeleteForm && bulkDeleteButton) {
-      bulkDeleteButton.addEventListener('click', function(event) {
-        const checkboxes = bulkDeleteForm.querySelectorAll('input[name="ids[]"]:checked');
-        if (checkboxes.length === 0) {
-          event.preventDefault();
-          event.stopPropagation();
-          alert("#{t('ontologies.admin.submissions.select_at_least_one')}");
-          return false;
-        }
-      });
-    }
-  });
-
   // Highlight logs after refresh
   document.addEventListener("turbo:frame-load", function(event) {
     if (event.target.id === "admin_log_frame") {

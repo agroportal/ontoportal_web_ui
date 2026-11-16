@@ -25,6 +25,17 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'the state of a submission opens its processing details' do
+    post login_index_url, params: { user: PORTAL_ADMIN }
+
+    get "#{PAGE}/submissions"
+    details = css_select('a.submission-state').first['href']
+
+    get details
+    assert_response :success
+    assert_select 'turbo-frame#application_modal_content .submission-processing'
+  end
+
   test 'visitors get neither the gear button nor the page' do
     get "/ontologies/#{ACRONYM}", headers: HTML
     assert_select GEAR_BUTTON, count: 0

@@ -74,6 +74,7 @@ Rails.application.routes.draw do
     resource :administration, controller: 'ontologies_administration', only: [:show] do
       get 'log'
       get 'submissions'
+      get 'submissions/:id', action: :submission_status, as: :submission_status
       delete 'submissions', action: :destroy_submission
       delete 'submissions/:id', action: :destroy_submission
     end
