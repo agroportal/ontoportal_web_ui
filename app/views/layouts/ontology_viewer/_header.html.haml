@@ -18,7 +18,8 @@
     %div
       = @ontology.acronym
   .ontology-details-header-sub-container
-    .ontology-details-header-left-container{style:'width: 70%'}
+    -# 70% wide; shrinks to 60% to keep the buttons on this row
+    .ontology-details-header-left-container{style:'flex: 1 1 60%; max-width: 70%'}
       .ontology-details-name-bar
         %div
           = @ontology.name
