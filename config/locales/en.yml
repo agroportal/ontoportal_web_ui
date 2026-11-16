@@ -1239,6 +1239,7 @@ en:
         title: "Latest submission error log"
         loading: "Loading log..."
         no_log: "No log available."
+        no_errors: "The processing log for the latest submission of ontology %{acronym} contains no errors."
         download: "Download the log"
         parse_error: "Error parsing log: %{message}"
       ontology:

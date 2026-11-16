@@ -8,8 +8,6 @@ class OntologiesAdministrationController < ApplicationController
   before_action :authorize_admin, only: :destroy
 
   def show
-    # Its processing logs show only when a step failed
-    @latest_submission = @ontology.explore.latest_submission(include: 'submissionStatus')
     render 'ontologies/admin'
   end
 

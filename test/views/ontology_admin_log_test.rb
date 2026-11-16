@@ -17,10 +17,19 @@ class OntologyAdminLogTest < ActionView::TestCase
     assert_includes rendered, ERB::Util.html_escape(MESSAGE)
   end
 
-  # The General section shows the log when the latest submission failed
+  test 'says when the log contains no errors' do
+    @ontology = OpenStruct.new(acronym: 'STY')
+    @log = [OpenStruct.new(timestamp: '2026-11-16 10:00:00', severity: 'INFO', message: 'Parsed STY/2')]
+
+    render partial: 'ontologies/admin/log'
+
+    assert_select 'p', text: 'The processing log for the latest submission of ontology STY contains no errors.'
+    assert_not_includes rendered, 'Parsed STY/2'
+  end
+
+  # The General section always shows the log
   test 'links the download of the log' do
     @ontology = OpenStruct.new(acronym: 'STY')
-    @latest_submission = OpenStruct.new(submissionId: 2, submissionStatus: %w[UPLOADED ERROR_RDF])
 
     render partial: 'ontologies/admin/general'
 

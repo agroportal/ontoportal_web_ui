@@ -1271,6 +1271,7 @@ fr:
         title: "Journal d'erreurs de la dernière soumission"
         loading: "Chargement du journal..."
         no_log: "Aucun journal disponible."
+        no_errors: "Le journal de traitement de la dernière soumission de l'ontologie %{acronym} ne contient aucune erreur."
         download: "Télécharger le journal"
         parse_error: "Erreur lors de l'analyse du journal : %{message}"
       ontology:
