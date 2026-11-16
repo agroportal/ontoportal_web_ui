@@ -377,6 +377,14 @@ $widget-table-border-color: #EFEFEF;
     padding-right: 1rem;
   }
 
+  // Phones: the section menu (Layout::VerticalTabsComponent) goes above the
+  // section, or the submissions table ends up off-screen
+  @media (max-width: 767.98px) {
+    [data-controller='tabs-container'] {
+      flex-direction: column;
+    }
+  }
+
   // Processing state of a submission (SubmissionStatusHelper), in the colors
   // of the banner atop the ontology page (components/alert.scss)
   $state-success: rgb(34, 197, 94);

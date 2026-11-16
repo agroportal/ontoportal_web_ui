@@ -1179,6 +1179,8 @@ en:
     access_rights_information: Additional license and access rights information
     admin:
       title: "Administration"
+      sections:
+        general: "General"
       submissions:
         title: "Submissions"
         table:

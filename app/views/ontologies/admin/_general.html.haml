@@ -1,0 +1,25 @@
+.admin-section
+  .edit-ontology-title
+    %div
+      = t('ontologies.admin.submissions.title')
+    %hr
+  = render Layout::CardComponent.new do |c|
+    = turbo_frame_tag "admin_submissions_frame", src: submissions_ontology_administration_path(@ontology.acronym), loading: "lazy" do
+      .text-center.p-4
+        %i.fas.fa-spinner.fa-spin.mr-2
+        = t('ontologies.admin.submissions.loading')
+
+- if submission_failed?(@latest_submission)
+  .admin-section
+    .edit-ontology-title
+      %div.d-flex.justify-content-between.align-items-center.mb-2
+        %div
+          = t('ontologies.admin.log.title')
+        = link_to log_ontology_administration_path(@ontology.acronym), data: { turbo_frame: "admin_log_frame", turbo: "true" }, class: "btn btn-sm btn-outline-primary" do
+          %i.fas.fa-sync-alt.me-1
+      %hr
+    = render Layout::CardComponent.new do |c|
+      %div#admin_log_container.admin-log-container
+        -# = "hello"
+        = turbo_frame_tag "admin_log_frame", src: log_ontology_administration_path(@ontology.acronym), loading: "lazy" do
+          = t('ontologies.admin.log.loading')

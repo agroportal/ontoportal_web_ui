@@ -1211,6 +1211,8 @@ fr:
       droits d'accès
     admin:
       title: "Page d'administration"
+      sections:
+        general: "Général"
       submissions:
         title: "Soumissions"
         table:
