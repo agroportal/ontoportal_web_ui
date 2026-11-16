@@ -86,6 +86,10 @@ class LoginFlowsTest < ApplicationSystemTestCase
 
     click_on 'Save'
 
+    # The click returns before the update lands: wait for it before asking
+    # the API
+    assert_text I18n.t('users.account_successfully_updated')
+
     logged_in_user = LinkedData::Client::Models::User.authenticate(@user_bob.username, "new password")
 
     assert logged_in_user && !logged_in_user.errors

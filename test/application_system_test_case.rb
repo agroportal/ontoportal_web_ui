@@ -83,6 +83,10 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
     # Click the login button
     click_button 'Login'
+
+    # The click returns before the login lands: wait for its redirect, or
+    # the caller's next visit races the session cookie
+    assert_no_current_path login_index_path
   end
 
   def assert_date(date)
