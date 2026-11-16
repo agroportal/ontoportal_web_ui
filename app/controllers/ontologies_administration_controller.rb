@@ -5,7 +5,7 @@ class OntologiesAdministrationController < ApplicationController
 
   before_action :authorize_ontology_admin
   # Ontology admins may not delete their ontology yet (agroportal/project-management#765)
-  before_action :authorize_admin, only: :destroy
+  before_action :authorize_admin, only: [:confirm_destroy, :destroy]
 
   def show
     render 'ontologies/admin'
@@ -37,6 +37,11 @@ class OntologiesAdministrationController < ApplicationController
     return head(:not_found) if @submission.submissionId.nil?
 
     render partial: 'ontologies/admin/submission_status', layout: false
+  end
+
+  # Asks for the acronym before deleting the ontology, in the application modal
+  def confirm_destroy
+    render partial: 'ontologies/admin/delete_ontology', layout: false
   end
 
   def destroy

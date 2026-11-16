@@ -1,9 +1,9 @@
--# The delete button wakes up once the acronym is typed; the server checks it too
-.card.border-danger.ontology-delete-zone{data: { controller: 'type-to-confirm', type_to_confirm_expected_value: @ontology.acronym }}
-  .card-header.text-danger= t('ontologies.admin.ontology.title')
-  .card-body
+= render_in_modal do
+  -# The delete button wakes up once the acronym is typed; the server checks it too
+  %div{data: { controller: 'type-to-confirm', type_to_confirm_expected_value: @ontology.acronym }}
     %p.text-muted= t('ontologies.admin.ontology.warning')
-    = form_tag ontology_administration_path(@ontology.acronym), method: :delete do
+    -# A full page load: the response leaves the modal for another page
+    = form_tag ontology_administration_path(@ontology.acronym), method: :delete, data: { turbo: false } do
       = label_tag :confirmation, t('ontologies.admin.ontology.type_acronym')
       = text_field_tag :confirmation, nil, placeholder: @ontology.acronym, autocomplete: 'off', class: 'form-control mb-3', data: { type_to_confirm_target: 'input', action: 'type-to-confirm#check' }
-      = submit_tag t('ontologies.admin.ontology.delete', acronym: @ontology.acronym), disabled: true, class: 'btn btn-outline-danger', data: { type_to_confirm_target: 'submit' }
+      = submit_tag t('ontologies.admin.ontology.delete', acronym: @ontology.acronym), disabled: true, class: 'btn btn-danger', data: { type_to_confirm_target: 'submit' }

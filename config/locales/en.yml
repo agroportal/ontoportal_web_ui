@@ -1242,8 +1242,10 @@ en:
         no_errors: "The processing log for the latest submission of ontology %{acronym} contains no errors."
         download: "Download the log"
         parse_error: "Error parsing log: %{message}"
+      danger_zone:
+        title: "Danger Zone"
       ontology:
-        title: "Delete ontology - caution zone!"
+        title: "Delete this ontology"
         warning: "Deleting the ontology removes its submissions, views, notes, reviews and files. This cannot be undone."
         type_acronym: "Type the acronym to confirm:"
         delete: "Delete ontology \"%{acronym}\""

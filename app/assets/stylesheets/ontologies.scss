@@ -362,7 +362,52 @@ $widget-table-border-color: #EFEFEF;
     font-size: 0.9em;
     line-height: 1.4;
   }
-  
+
+  // Danger Zone: a red frame around one row per irreversible action, as on
+  // GitHub: what it does on the left, its button on the right
+  .danger-zone {
+    border: 1px solid var(--danger-color, #dc3545);
+    border-radius: 6px;
+  }
+
+  .danger-zone-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+
+    & + .danger-zone-item {
+      border-top: 1px solid #dee2e6;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .btn {
+      flex: none;
+    }
+
+    // Red, over the theme's link color; white only on the red fill of
+    // :hover and :active, as :focus keeps a transparent background
+    .btn-outline-danger {
+      color: var(--danger-color, #dc3545) !important;
+
+      &:hover,
+      &:active {
+        color: #fff !important;
+      }
+    }
+  }
+
+  // Section titles (SummarySectionComponent) as on the ontology summary
+  // page: dark text, underlined in the primary color. The h2 rule above is
+  // for the page title.
+  .card_title {
+    color: inherit;
+  }
+
   .admin-actions {
     margin-top: 15px;
     display: flex;

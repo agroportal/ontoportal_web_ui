@@ -77,6 +77,7 @@ Rails.application.routes.draw do
       get 'submissions/:id', action: :submission_status, as: :submission_status
       delete 'submissions', action: :destroy_submission
       delete 'submissions/:id', action: :destroy_submission
+      get 'delete', action: :confirm_destroy, as: :confirm_destroy
     end
 
     resources :submissions do

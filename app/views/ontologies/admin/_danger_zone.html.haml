@@ -1,0 +1,10 @@
+-# One row per irreversible action, as on GitHub; its button opens the
+-# confirmation in the application modal
+= render SummarySectionComponent.new(title: t('ontologies.admin.danger_zone.title'), show_card: false) do
+  .danger-zone
+    .danger-zone-item
+      %div
+        %strong= t('ontologies.admin.ontology.title')
+        %p= t('ontologies.admin.ontology.warning')
+      = link_to_modal(nil, confirm_destroy_ontology_administration_path(@ontology.acronym), class: 'btn btn-outline-danger', data: { show_modal_title_value: t('ontologies.admin.ontology.title') }) do
+        = t('ontologies.admin.ontology.title')

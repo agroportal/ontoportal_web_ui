@@ -12,7 +12,7 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
   ACRONYM = 'STY'
   PAGE = "/ontologies/#{ACRONYM}/administration"
   GEAR_BUTTON = "a.rounded-button[href='#{PAGE}']"
-  DELETE_ZONE = '.ontology-delete-zone'
+  DANGER_ZONE = '.danger-zone'
   HTML = { 'Accept' => 'text/html' }.freeze
   # Seeded by bin/run_api
   PORTAL_ADMIN = { username: 'admin', password: 'password' }.freeze
@@ -70,7 +70,11 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
     post login_index_url, params: { user: PORTAL_ADMIN }
 
     get owned_page
-    assert_select DELETE_ZONE
+    assert_select DANGER_ZONE
+
+    # The confirmation the Danger Zone opens in the application modal
+    get "#{owned_page}/delete"
+    assert_select "turbo-frame#application_modal_content form[action='#{owned_page}'] input[name=confirmation]"
 
     delete owned_page, params: { confirmation: OWNED[:acronym].downcase }
     assert_redirected_to owned_page
@@ -88,7 +92,10 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
 
     get owned_page
     assert_response :success
-    assert_select DELETE_ZONE, count: 0
+    assert_select DANGER_ZONE, count: 0
+
+    get "#{owned_page}/delete"
+    assert_redirected_to '/'
 
     delete owned_page, params: { confirmation: OWNED[:acronym] }
     assert_redirected_to '/'
