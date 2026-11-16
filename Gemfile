@@ -183,6 +183,11 @@ group :test do
   # Mock HTTP requests in tests
   gem 'webmock'
 
+  # Compare RDF serializations as graphs: the API orders triples at random
+  gem 'json-ld'
+  gem 'rdf-rdfxml'
+  gem 'rdf-turtle'
+
   # Testing framework for Rails
   gem 'rspec-rails'
 
