@@ -2,7 +2,7 @@
   - if @log.blank?
     %p= t('ontologies.admin.log.no_log')
   - else
-    %div{style: "max-height: 400px; white-space: pre;"}
+    %div
       - begin
         - logs = @log.is_a?(String) ? JSON.parse(@log) : @log
         - logs = [logs] unless logs.is_a?(Array)

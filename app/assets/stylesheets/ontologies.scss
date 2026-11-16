@@ -356,7 +356,9 @@ $widget-table-border-color: #EFEFEF;
     max-height: 500px;
     overflow-y: auto;
     font-family: monospace;
+    // Long lines wrap, URIs included: no horizontal scrollbar
     white-space: pre-wrap;
+    overflow-wrap: anywhere;
     font-size: 0.9em;
     line-height: 1.4;
   }
