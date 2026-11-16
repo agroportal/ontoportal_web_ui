@@ -41,9 +41,8 @@
             = t('ontology_details.header.last_submission_date')
             = render DateTimeFieldComponent.new(value: sub.creationDate)
     .ontology-details-header-right-container.justify-content-end{style: 'min-width: 20%;'}
-      -# TODO: reenable in the next releases
-      -# %span.mx-1
-      -#   = ontology_admin_button
+      %span.mx-1
+        = ontology_admin_button
       %span.mx-1
         = new_submission_button
       - if @submission_latest
