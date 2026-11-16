@@ -18,11 +18,13 @@ class TableRowComponent < ViewComponent::Base
     block.call(self) if block_given?
   end
 
-  def th(width: nil, colspan: nil, &block)
-    self.with_cell(type: 'th', width: width, colspan: colspan, &block)
+  # data: data-* attributes, e.g. DataTables' { orderable: false } on a header
+  # or { order: '2024-01-31' }, the value it sorts a cell by
+  def th(width: nil, colspan: nil, data: nil, &block)
+    self.with_cell(type: 'th', width: width, colspan: colspan, data: data, &block)
   end
 
-  def td(width: nil, colspan: nil, &block)
-    self.with_cell(type: 'td', width: width, colspan: colspan, &block)
+  def td(width: nil, colspan: nil, data: nil, &block)
+    self.with_cell(type: 'td', width: width, colspan: colspan, data: data, &block)
   end
 end

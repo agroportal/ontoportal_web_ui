@@ -26,6 +26,13 @@ class SubmissionStatusHelperTest < ActionView::TestCase
     assert_equal 'Not parsed', pill('UPLOADED').at_css('span').text
   end
 
+  # The submissions table sorts the states by it
+  test 'labels the state as its pill does' do
+    [%w[UPLOADED RDF], %w[UPLOADED ERROR_RDF], %w[RDF ERROR_METRICS], %w[ARCHIVED], %w[UPLOADED]].each do |codes|
+      assert_equal pill(*codes).at_css('span').text, view.submission_state_label(submission(*codes))
+    end
+  end
+
   # As the banner atop the ontology page: red before parsing, orange after
   test 'colors the pill as the ontology page banner' do
     assert_includes pill('UPLOADED', 'ERROR_RDF')['class'], 'submission-state--failed'

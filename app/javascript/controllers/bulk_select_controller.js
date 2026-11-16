@@ -13,4 +13,16 @@ export default class extends Controller {
     toggle() {
         this.submitTarget.disabled = !this.checkboxTargets.some(checkbox => checkbox.checked)
     }
+
+    // A paged table detaches the rows of other pages, and the form no longer
+    // submits their checkboxes: unchecked, they can't look selected. A redraw
+    // (sort, page) detaches every row; those it puts back keep their check.
+    checkboxTargetDisconnected(checkbox) {
+        if (checkbox.isConnected) {
+            return
+        }
+
+        checkbox.checked = false
+        this.toggle()
+    }
 }

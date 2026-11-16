@@ -1,12 +1,13 @@
 = turbo_frame_tag "admin_submissions_frame" do
   = form_tag submissions_ontology_administration_path(@ontology.acronym), method: :delete, id: "bulk_delete_form", data: { turbo_frame: "_top", controller: "bulk-select" } do
-    = render TableComponent.new(id: 'submissions_table', stripped: true) do |t|
+    -# Newest first; sorts by ID, date and state, not by checkbox or action
+    = render TableComponent.new(id: 'submissions_table', stripped: true, paging: true, sort_column: '1') do |t|
       - t.with_header do |h|
-        - h.th { t('ontologies.admin.submissions.table.select') }
+        - h.th(data: { orderable: false }) { t('ontologies.admin.submissions.table.select') }
         - h.th { t('ontologies.admin.submissions.table.submission_id') }
         - h.th { t('submissions.submitted') }
         - h.th { t('ontologies.admin.submissions.table.status') }
-        - h.th { t('ontologies.admin.submissions.table.actions') }
+        - h.th(data: { orderable: false }) { t('ontologies.admin.submissions.table.actions') }
 
       - submissions = @ontology.explore.submissions(invalidate_cache: true, include: 'submissionId,creationDate,submissionStatus')
       - latest_sub_id = submissions.map(&:submissionId).max
@@ -17,8 +18,9 @@
           - else
             - r.td { "" }
           - r.td { sub.submissionId.to_s }
-          - r.td { render DateTimeFieldComponent.new(value: sub.creationDate) unless sub.creationDate.nil? }
-          - r.td { submission_state_pill(sub, submission_status_ontology_administration_path(@ontology.acronym, sub.submissionId)) }
+          -# Sort keys: the ISO 8601 date, not "May 15, 2025"; the pill label, not its svg
+          - r.td(data: { order: sub.creationDate.to_s }) { render DateTimeFieldComponent.new(value: sub.creationDate) unless sub.creationDate.nil? }
+          - r.td(data: { order: submission_state_label(sub) }) { submission_state_pill(sub, submission_status_ontology_administration_path(@ontology.acronym, sub.submissionId)) }
           - r.td do
             .d-flex.align-items-center
               = edit_button(link: edit_ontology_submission_path(ontology_id: @ontology.acronym, id: sub.submissionId), title: t('submissions.edit_button'))
@@ -26,5 +28,5 @@
                 = link_to "/ontologies/#{@ontology.acronym}/administration/submissions/#{sub.submissionId}", method: :delete, data: { confirm: t('ontologies.admin.submissions.confirm_delete', submission_id: sub.submissionId) }, class: 'btn btn-link p-0 border-0 bg-transparent ml-2', title: t('ontologies.admin.submissions.delete') do
                   = inline_svg_tag('icons/delete.svg')
 
-    .admin-actions.justify-content-end
+    .admin-actions.justify-content-end.px-3.pb-3
       = submit_tag t('ontologies.admin.submissions.delete_selected'), disabled: true, data: { confirm: t('ontologies.admin.submissions.confirm_delete_selected'), bulk_select_target: "submit" }, class: "btn btn-danger", id: "bulk_delete_button"

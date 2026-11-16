@@ -367,6 +367,16 @@ $widget-table-border-color: #EFEFEF;
     gap: 10px;
   }
 
+  // Paging controls of the submissions table, off the card's borders like
+  // the delete button (px-3)
+  .dataTables_length {
+    padding: 1rem 1rem 0;
+  }
+
+  .dataTables_paginate {
+    padding-right: 1rem;
+  }
+
   // Processing state of a submission (SubmissionStatusHelper), in the colors
   // of the banner atop the ontology page (components/alert.scss)
   $state-success: rgb(34, 197, 94);

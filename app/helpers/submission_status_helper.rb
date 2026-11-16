@@ -49,6 +49,11 @@ module SubmissionStatusHelper
     end
   end
 
+  # The text of the pill, e.g. "Failed at Parse"; the table sorts states by it
+  def submission_state_label(submission)
+    state_label(submission_state(submission), status_codes(submission))
+  end
+
   # One sentence on the overall state, atop the details
   def submission_state_summary(submission)
     t("summaries.#{submission_state(submission)}", scope: I18N_SCOPE)
