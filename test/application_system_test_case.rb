@@ -10,10 +10,15 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   include ApplicationTestHelpers::Agents
   include ApplicationTestHelpers::Federation
 
+  # Fixture users log in with "password". Chrome flags it as breached and
+  # opens a "Change your password" dialog that swallows every native click
+  # until the next test resets the session
   driven_by :selenium, using: ENV['CI'].present? ? :headless_chrome : :chrome, screen_size: [1400, 1400], options: {
     browser: :remote,
     url: "http://localhost:4444"
-  }
+  } do |driver_option|
+    driver_option.add_preference('profile.password_manager_leak_detection', false)
+  end
 
   # How long an element must keep the same box before click_still clicks it,
   # and how long to wait for that
