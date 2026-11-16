@@ -14,7 +14,7 @@
               - when 'DEBUG' then 'text-warning'
               - when 'INFO' then 'text-success'
               - else ''
-            = "[#{entry[:timestamp]}] <span class=\"#{severity_class}\">#{entry[:severity]}:</span> #{entry[:message]}".html_safe
+            = safe_join(["[#{entry[:timestamp]}] ", content_tag(:span, "#{entry[:severity]}:", class: severity_class), " #{entry[:message]}"])
           - else
             = entry.to_s
       - rescue => e
