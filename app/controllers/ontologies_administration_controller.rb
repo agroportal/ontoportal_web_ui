@@ -13,6 +13,8 @@ class OntologiesAdministrationController < ApplicationController
   before_action :authorize_admin, only: [:confirm_destroy, :destroy]
 
   def show
+    # The Danger Zone lists the accounts allowed to see a private ontology
+    @acl = ontology_acl
     render 'ontologies/admin'
   end
 
@@ -44,7 +46,7 @@ class OntologiesAdministrationController < ApplicationController
     render partial: 'ontologies/admin/submission_status', layout: false
   end
 
-  # From the danger zone. Ontology admins already change it on the edit page
+  # From the Danger Zone, the only page that changes it after creation
   def update_visibility
     acronym = @ontology.acronym
     visibility = params[:visibility]
@@ -55,6 +57,28 @@ class OntologiesAdministrationController < ApplicationController
       redirect_to ontology_administration_path(acronym), notice: t("ontologies.admin.visibility.changed.#{visibility}", acronym: acronym)
     else
       redirect_to ontology_administration_path(acronym), alert: t('ontologies.admin.visibility.error', acronym: acronym)
+    end
+  end
+
+  # The accounts allowed to see the private ontology, in the application modal
+  def edit_accounts
+    @acl = ontology_acl
+    @users = LinkedData::Client::Models::User.all(include: 'username')
+                                             .map { |user| [user.username, user.id] }
+                                             .sort_by { |username, _id| username.downcase }
+    render partial: 'ontologies/admin/accounts', layout: false
+  end
+
+  # A form without any account selected sends no acl: it empties the list
+  def update_accounts
+    acronym = @ontology.acronym
+    acl = Array(params[:acl]).compact_blank
+
+    response = @ontology.update(values: { acl: acl }, cache_refresh_all: false)
+    if response_success?(response)
+      redirect_to ontology_administration_path(acronym), notice: t('ontologies.admin.visibility.accounts.saved', acronym: acronym)
+    else
+      redirect_to ontology_administration_path(acronym), alert: t('ontologies.admin.visibility.accounts.error', acronym: acronym)
     end
   end
 
@@ -95,6 +119,11 @@ class OntologiesAdministrationController < ApplicationController
   end
 
   private
+
+  # User URIs. The API leaves acl out of an ontology unless asked for it
+  def ontology_acl
+    Array(LinkedData::Client::HTTP.get("/ontologies/#{@ontology.acronym}", include: 'acl', invalidate_cache: true).acl)
+  end
 
   # One line per entry, as the page shows them:
   #   [2026-11-16 10:02:11] ERROR: Submission STY/2 failed: RDF

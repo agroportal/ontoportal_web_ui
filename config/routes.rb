@@ -79,6 +79,8 @@ Rails.application.routes.draw do
       delete 'submissions/:id', action: :destroy_submission
       get 'delete', action: :confirm_destroy, as: :confirm_destroy
       patch 'visibility', action: :update_visibility, as: :visibility
+      get 'accounts', action: :edit_accounts, as: :accounts
+      patch 'accounts', action: :update_accounts
     end
 
     resources :submissions do

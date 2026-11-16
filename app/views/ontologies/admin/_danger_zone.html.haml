@@ -1,13 +1,17 @@
 -# One row per irreversible action, as on GitHub
 = render SummarySectionComponent.new(title: t('ontologies.admin.danger_zone.title'), show_card: false) do
   .danger-zone
-    -# The menu offers the other visibility, after a confirmation
-    - visibility = @ontology.viewingRestriction == 'private' ? 'private' : 'public'
-    - other_visibility = visibility == 'private' ? 'public' : 'private'
+    -# The menu offers the other visibility, after a confirmation. A private
+    -# ontology also lists the accounts allowed to see it; the menu edits them
+    - restricted = @ontology.viewingRestriction == 'private'
+    - visibility, other_visibility = restricted ? %w[private public] : %w[public private]
+    - accounts = Array(@acl).map { |user_id| user_id.to_s.split('/').last }
     .danger-zone-item
       %div
         %strong= t('ontologies.admin.visibility.title')
         %p= t("ontologies.admin.visibility.current.#{visibility}")
+        - if restricted
+          %p= accounts.empty? ? t('ontologies.admin.visibility.accounts.none') : t('ontologies.admin.visibility.accounts.list', accounts: accounts.to_sentence)
       .dropdown
         %button.btn.btn-outline-danger.dropdown-toggle{type: 'button', data: { toggle: 'dropdown' }, 'aria-haspopup': 'true', 'aria-expanded': 'false'}
           = t('ontologies.admin.visibility.change')
@@ -15,6 +19,10 @@
           = button_to t("ontologies.admin.visibility.to.#{other_visibility}"), visibility_ontology_administration_path(@ontology.acronym),
                       method: :patch, params: { visibility: other_visibility }, class: 'dropdown-item', form: { data: { turbo: false } },
                       data: { confirm: t("ontologies.admin.visibility.confirm.#{other_visibility}", acronym: @ontology.acronym) }
+          - if restricted
+            = link_to_modal(nil, accounts_ontology_administration_path(@ontology.acronym), class: 'dropdown-item',
+                            data: { show_modal_title_value: t('ontologies.admin.visibility.accounts.title', acronym: @ontology.acronym) }) do
+              = t('ontologies.admin.visibility.accounts.edit')
 
     -# Ontology admins may not delete their ontology yet (agroportal/project-management#765).
     -# Its button opens the confirmation in the application modal

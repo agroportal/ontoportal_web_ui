@@ -401,6 +401,11 @@ $widget-table-border-color: #EFEFEF;
         color: #fff !important;
       }
     }
+
+    // A link in a menu, like its buttons, over the theme's link color
+    a.dropdown-item {
+      color: inherit !important;
+    }
   }
 
   // Section titles (SummarySectionComponent) as on the ontology summary

@@ -1292,6 +1292,14 @@ fr:
           public: "%{acronym} est maintenant publique."
           private: "%{acronym} est maintenant privée."
         error: "Impossible de changer la visibilité de %{acronym}."
+        accounts:
+          list: "Comptes autorisés : %{accounts}."
+          none: "Aucun compte n'est autorisé en dehors de ses administrateurs."
+          edit: "Modifier les comptes autorisés"
+          title: "Comptes autorisés à voir %{acronym}"
+          save: "Enregistrer"
+          saved: "Comptes autorisés à voir %{acronym} enregistrés."
+          error: "Impossible d'enregistrer les comptes autorisés à voir %{acronym}."
       ontology:
         title: "Supprimer cette ontologie"
         warning: "Supprimer l'ontologie supprime ses soumissions, vues, notes, avis et fichiers. Cette action est irréversible."

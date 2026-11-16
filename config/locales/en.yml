@@ -1260,6 +1260,14 @@ en:
           public: "%{acronym} is now public."
           private: "%{acronym} is now private."
         error: "Could not change the visibility of %{acronym}."
+        accounts:
+          list: "Accounts allowed: %{accounts}."
+          none: "No account is allowed besides its administrators."
+          edit: "Edit the accounts allowed"
+          title: "Accounts allowed to see %{acronym}"
+          save: "Save"
+          saved: "Accounts allowed to see %{acronym} saved."
+          error: "Could not save the accounts allowed to see %{acronym}."
       ontology:
         title: "Delete this ontology"
         warning: "Deleting the ontology removes its submissions, views, notes, reviews and files. This cannot be undone."
