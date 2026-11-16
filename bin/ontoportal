@@ -135,7 +135,7 @@ dev() {
           bash_cmd+=" (bundle config unset local.ontologies_api_client) &&"
         fi
   done
-  bash_cmd+=" (bundle check || bundle install) && bin/rails secret && EDITOR='nano' bin/rails credentials:edit && bin/rails db:prepare && bundle exec rails s -b 0.0.0.0 -p 3000"
+  bash_cmd+=" (bundle check || bundle install) && bin/rails db:prepare && bundle exec rails s -b 0.0.0.0 -p 3000"
   docker_run_cmd+=" --service-ports dev bash -c \"$bash_cmd\""
   echo "$docker_run_cmd"
   echo "Run: bundle exec rails s -b 0.0.0.0 -p 3000"

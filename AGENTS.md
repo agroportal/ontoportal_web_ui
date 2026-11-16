@@ -49,8 +49,8 @@ the stage API, with the API key from `.env`:
   and key into `.env`.
 - Runs compose services `dev` (Rails, http://localhost:3000), `node`
   (`yarn build --watch`), `db` (MySQL 8.0) and `cache` (Memcached).
-- Interactive: opens `nano` on the Rails credentials before booting; exit it
-  to continue. Agents should ask a human to run it.
+- Runs `dev` with `-it`, so it needs a TTY. Agents should ask a human to run
+  it.
 - `--api-client-path ../ontologies_api_ruby_client` mounts a local API client
   checkout.
 - `--reset-cache` runs `docker compose down --volumes`: deletes the database,
