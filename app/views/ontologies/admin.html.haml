@@ -20,19 +20,6 @@
     - tabs.with_item_content do
       = render 'ontologies/admin/general'
 
-  -# .admin-section
-  -#   .edit-ontology-title
-  -#     %div
-  -#       = t('ontologies.admin.ontology.title')
-  -#     %hr
-  -#   = render Layout::CardComponent.new do |c|
-  -#     %p.admin-warning-text
-  -#       %strong= t('ontologies.admin.ontology.warning')
-  -#     .admin-actions
-  -#       = link_to ontology_administration_path(@ontology.acronym), method: :delete, data: { confirm: t('ontologies.admin.ontology.confirm_delete') }, class: "btn btn-danger" do
-  -#         = inline_svg_tag('icons/delete.svg', width: '16px', height: '16px', class: 'text-white')
-  -#         = t('ontologies.admin.ontology.delete')
-
 :javascript
   // Highlight logs after refresh
   document.addEventListener("turbo:frame-load", function(event) {

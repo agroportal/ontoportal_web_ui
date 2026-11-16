@@ -1241,10 +1241,13 @@ en:
         no_log: "No log available."
         parse_error: "Error parsing log: %{message}"
       ontology:
-        title: "Ontology"
-        warning: "Warning: Deleting the ontology is irreversible. All submissions and metadata will be lost."
-        delete: "Delete Ontology"
-        confirm_delete: "Are you sure you want to delete the ENTIRE ontology? This cannot be undone."
+        title: "Delete ontology - caution zone!"
+        warning: "Deleting the ontology removes its submissions, views, notes, reviews and files. This cannot be undone."
+        type_acronym: "Type the acronym to confirm:"
+        delete: "Delete ontology \"%{acronym}\""
+        not_confirmed: "Type the acronym %{acronym} to delete the ontology."
+        deleted: "Ontology %{acronym} deleted."
+        error: "Could not delete ontology %{acronym}."
     add_new_submission: Add new submission
     admin_links: Administration links
     administrator: 'Administrator:'

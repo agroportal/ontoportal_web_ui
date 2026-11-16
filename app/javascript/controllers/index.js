@@ -135,3 +135,6 @@ application.register("concept-graph", ConceptGraphController)
 
 import BulkSelectController from "./bulk_select_controller.js"
 application.register("bulk-select", BulkSelectController)
+
+import TypeToConfirmController from "./type_to_confirm_controller.js"
+application.register("type-to-confirm", TypeToConfirmController)

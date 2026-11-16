@@ -23,3 +23,8 @@
         -# = "hello"
         = turbo_frame_tag "admin_log_frame", src: log_ontology_administration_path(@ontology.acronym), loading: "lazy" do
           = t('ontologies.admin.log.loading')
+
+-# Ontology admins may not delete their ontology yet (agroportal/project-management#765)
+- if current_user_admin?
+  .admin-section
+    = render 'ontologies/admin/delete_ontology'

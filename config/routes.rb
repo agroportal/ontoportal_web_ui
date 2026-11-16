@@ -69,9 +69,9 @@ Rails.application.routes.draw do
   get '/user_ontologies_filter', to: 'my_ontologies#user_ontologies_filter'
 
   resources :ontologies do
-    # Ontology admin page. No :destroy: admins may not delete their
-    # ontology yet (agroportal/project-management#765)
-    resource :administration, controller: 'ontologies_administration', only: [:show] do
+    # Ontology admin page. Only portal admins :destroy the ontology: its
+    # admins may not delete it yet (agroportal/project-management#765)
+    resource :administration, controller: 'ontologies_administration', only: [:show, :destroy] do
       get 'log'
       get 'submissions'
       get 'submissions/:id', action: :submission_status, as: :submission_status

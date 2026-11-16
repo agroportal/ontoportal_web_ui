@@ -1273,10 +1273,13 @@ fr:
         no_log: "Aucun journal disponible."
         parse_error: "Erreur lors de l'analyse du journal : %{message}"
       ontology:
-        title: "Ontologie"
-        warning: "Attention : La suppression de l'ontologie est irréversible. Toutes les soumissions et métadonnées seront perdues."
-        delete: "Supprimer l'ontologie"
-        confirm_delete: "Êtes-vous sûr de vouloir supprimer l'ontologie ? Cette action est irréversible."
+        title: "Supprimer l'ontologie - zone de danger !"
+        warning: "Supprimer l'ontologie supprime ses soumissions, vues, notes, avis et fichiers. Cette action est irréversible."
+        type_acronym: "Saisissez l'acronyme pour confirmer :"
+        delete: "Supprimer l'ontologie « %{acronym} »"
+        not_confirmed: "Saisissez l'acronyme %{acronym} pour supprimer l'ontologie."
+        deleted: "Ontologie %{acronym} supprimée."
+        error: "Impossible de supprimer l'ontologie %{acronym}."
     add_new_submission: Ajouter une nouvelle soumission
     admin_links: Liens d'administratiion
     administrator: 'Administrateur :'
