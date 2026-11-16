@@ -484,6 +484,36 @@ module OntologiesHelper
     sections
   end
 
+  def oops_report_link(ontology = nil)
+    ontology ||= @ontology
+    href, target = api_button_link_and_target("#{ontology.id}/oops", allow_annonymous = true)
+    { href: href, label: t('ontologies.admin.oops.open'), target: target }
+  end
+
+  def oops_report(ontology = nil)
+    ontology ||= @ontology
+    conn = Faraday.new do |f|
+      f.options.timeout = 10
+      f.options.open_timeout = 5
+      f.headers['Authorization'] = "apikey token=#{get_apikey}"
+    end
+    response = conn.get("#{rest_url}/ontologies/#{ontology.acronym}/oops")
+    return nil unless response.status.eql?(200)
+
+    MultiJson.load(response.body.force_encoding('UTF-8'))
+  rescue StandardError => e
+    Rails.logger.warn "Stored OOPS report unavailable for #{ontology.acronym}: #{e.message}"
+    nil
+  end
+
+  def oops_importance_class(importance)
+    case importance
+    when 'CRITICAL' then 'bg-danger'
+    when 'IMPORTANT' then 'bg-warning'
+    else 'bg-secondary'
+    end
+  end
+
   def not_ready_submission_alert(ontology: @ontology, submission: @submission, old_submission_ready: @old_submission_ready)
     if ontology.admin?(session[:user])
       status = status_string(submission)

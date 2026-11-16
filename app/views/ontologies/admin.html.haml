@@ -36,6 +36,42 @@
         = turbo_frame_tag "admin_log_frame", src: log_ontology_administration_path(@ontology.acronym), loading: "lazy" do
           = t('ontologies.admin.log.loading')
 
+  - oops_pitfalls = oops_report(@ontology)
+  .admin-section
+    .edit-ontology-title
+      %div
+        = t('ontologies.admin.oops.title')
+      %hr
+    = render Layout::CardComponent.new do |c|
+      - if oops_pitfalls.blank?
+        %p.text-muted
+          = t('ontologies.admin.oops.unavailable')
+      - else
+        %p.text-muted
+          = t('ontologies.admin.oops.summary', total: oops_pitfalls['total_pitfalls'], critical: oops_pitfalls['total_critical'], important: oops_pitfalls['total_important'], minor: oops_pitfalls['total_minor'])
+        %table.table.table-sm
+          %thead
+            %tr
+              %th= t('ontologies.admin.oops.code')
+              %th= t('ontologies.admin.oops.pitfall')
+              %th= t('ontologies.admin.oops.importance')
+              %th= t('ontologies.admin.oops.affected')
+          %tbody
+            - oops_pitfalls['pitfalls'].each do |pitfall|
+              %tr
+                %td= pitfall['code']
+                %td
+                  = pitfall['name']
+                  %br
+                  %small.text-muted= pitfall['description']
+                %td
+                  %span.badge.badge-pill.text-white{class: oops_importance_class(pitfall['importance'])}= pitfall['importance']
+                %td= pitfall['affected_elements_total']
+        .admin-actions
+          - oops = oops_report_link(@ontology)
+          = link_to oops[:href], target: oops[:target], class: "btn btn-outline-primary" do
+            = oops[:label]
+
   -# .admin-section
   -#   .edit-ontology-title
   -#     %div
