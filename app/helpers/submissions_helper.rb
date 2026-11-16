@@ -60,8 +60,10 @@ module SubmissionsHelper
     [acronym, submission_id].join('#')
   end
 
-  def submission_metadata_selector(id: 'search_metadata', name: 'search[metadata]', label: t('submission_inputs.metadata_selector_label'))
-    select_input(id: id, name: name, label: label, values: submission_editable_properties.sort, multiple: true,
+  # except: properties another page edits, e.g. [:viewingRestriction]
+  def submission_metadata_selector(id: 'search_metadata', name: 'search[metadata]', label: t('submission_inputs.metadata_selector_label'), except: [])
+    properties = submission_editable_properties.reject { |_label, property| except.include?(property) }
+    select_input(id: id, name: name, label: label, values: properties.sort, multiple: true,
                  data: { placeholder: t('submission_inputs.metadata_selector_placeholder') })
   end
 

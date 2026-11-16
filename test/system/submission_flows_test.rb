@@ -99,7 +99,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
       # Licencing tab
       click_on "Licensing"
-      submission_licensing_edit_fill(ontology_2, submission_2)
+      submission_licensing_edit_fill(submission_2)
 
       # Agents tab
       click_on "Agents"
@@ -459,10 +459,10 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
   end
 
-  def submission_licensing_edit_fill(ontology, submission)
-    wait_for_text "Visibility"
+  # The visibility is no longer here: the Danger Zone of the admin page changes it
+  def submission_licensing_edit_fill(submission)
+    wait_for '[name="submission[useGuidelines]"]'
 
-    tom_select 'ontology[viewingRestriction]', ontology.viewingRestriction
     tom_select 'submission[hasLicense]', 'CC Attribution 3.0'
     fill_in 'submission[useGuidelines]', with: submission.useGuidelines
     fill_in 'submission[morePermissions]', with: submission.morePermissions

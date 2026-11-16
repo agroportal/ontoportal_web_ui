@@ -72,7 +72,7 @@ class SubmissionsController < ApplicationController
     category_attributes = submission_metadata.group_by{|x| x['category']}.transform_values{|x| x.map{|attr| attr['attribute']} }
     category_attributes = category_attributes.reject{|key| ['no'].include?(key.to_s)}
     category_attributes['general'] << %w[acronym name groups administeredBy sampleQueries]
-    category_attributes['licensing'] << 'viewingRestriction'
+    # No viewingRestriction: the Danger Zone of the admin page changes the visibility
     category_attributes['relations'] << 'viewOf'
     category_attributes["description"] << %w[hasDomain subjects]
     category_attributes["usage"].delete("hasDomain")
