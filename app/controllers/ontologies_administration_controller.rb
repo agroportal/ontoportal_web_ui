@@ -3,6 +3,11 @@ class OntologiesAdministrationController < ApplicationController
   include OntologiesHelper
   layout 'ontology'
 
+  # viewingRestriction: everyone sees a public ontology; a private one, its
+  # administrators and the accounts in its access list
+  VISIBILITIES = %w[public private].freeze
+  private_constant :VISIBILITIES
+
   before_action :authorize_ontology_admin
   # Ontology admins may not delete their ontology yet (agroportal/project-management#765)
   before_action :authorize_admin, only: [:confirm_destroy, :destroy]
@@ -37,6 +42,20 @@ class OntologiesAdministrationController < ApplicationController
     return head(:not_found) if @submission.submissionId.nil?
 
     render partial: 'ontologies/admin/submission_status', layout: false
+  end
+
+  # From the danger zone. Ontology admins already change it on the edit page
+  def update_visibility
+    acronym = @ontology.acronym
+    visibility = params[:visibility]
+    return head(:bad_request) unless VISIBILITIES.include?(visibility)
+
+    response = @ontology.update(values: { viewingRestriction: visibility }, cache_refresh_all: false)
+    if response_success?(response)
+      redirect_to ontology_administration_path(acronym), notice: t("ontologies.admin.visibility.changed.#{visibility}", acronym: acronym)
+    else
+      redirect_to ontology_administration_path(acronym), alert: t('ontologies.admin.visibility.error', acronym: acronym)
+    end
   end
 
   # Asks for the acronym before deleting the ontology, in the application modal

@@ -1244,6 +1244,22 @@ en:
         parse_error: "Error parsing log: %{message}"
       danger_zone:
         title: "Danger Zone"
+      visibility:
+        title: "Change ontology visibility"
+        change: "Change visibility"
+        current:
+          public: "This ontology is currently public."
+          private: "This ontology is currently private: only its administrators and the accounts allowed see it."
+        to:
+          public: "Change to public"
+          private: "Change to private"
+        confirm:
+          public: "Make %{acronym} public? Everyone will see it."
+          private: "Make %{acronym} private? Only its administrators and the accounts allowed will see it."
+        changed:
+          public: "%{acronym} is now public."
+          private: "%{acronym} is now private."
+        error: "Could not change the visibility of %{acronym}."
       ontology:
         title: "Delete this ontology"
         warning: "Deleting the ontology removes its submissions, views, notes, reviews and files. This cannot be undone."

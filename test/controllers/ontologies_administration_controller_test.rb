@@ -13,6 +13,7 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
   PAGE = "/ontologies/#{ACRONYM}/administration"
   GEAR_BUTTON = "a.rounded-button[href='#{PAGE}']"
   DANGER_ZONE = '.danger-zone'
+  DELETE_BUTTON = "a[href$='/administration/delete']"
   HTML = { 'Accept' => 'text/html' }.freeze
   # Seeded by bin/run_api
   PORTAL_ADMIN = { username: 'admin', password: 'password' }.freeze
@@ -70,7 +71,7 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
     post login_index_url, params: { user: PORTAL_ADMIN }
 
     get owned_page
-    assert_select DANGER_ZONE
+    assert_select "#{DANGER_ZONE} #{DELETE_BUTTON}"
 
     # The confirmation the Danger Zone opens in the application modal
     get "#{owned_page}/delete"
@@ -92,7 +93,8 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
 
     get owned_page
     assert_response :success
-    assert_select DANGER_ZONE, count: 0
+    assert_select DANGER_ZONE
+    assert_select DELETE_BUTTON, count: 0
 
     get "#{owned_page}/delete"
     assert_redirected_to '/'
@@ -100,6 +102,21 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
     delete owned_page, params: { confirmation: OWNED[:acronym] }
     assert_redirected_to '/'
     assert ontology_exists?
+  end
+
+  # As on the edit page, which already lets them
+  test 'ontology admins change the visibility of their ontology' do
+    create_owned_ontology
+    post login_index_url, params: { user: { username: @owner.username, password: @owner.password } }
+
+    patch "#{owned_page}/visibility", params: { visibility: 'hidden' }
+    assert_response :bad_request
+
+    %w[private public].each do |visibility|
+      patch "#{owned_page}/visibility", params: { visibility: visibility }
+      assert_redirected_to owned_page
+      assert_equal visibility, owned_ontology.viewingRestriction
+    end
   end
 
   private
@@ -116,9 +133,12 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
     "/ontologies/#{OWNED[:acronym]}/administration"
   end
 
+  def owned_ontology
+    LinkedData::Client::Models::Ontology.find_by_acronym(OWNED[:acronym], invalidate_cache: true).first
+  end
+
   # The API answers a missing ontology with an error object, not nil
   def ontology_exists?
-    ontology = LinkedData::Client::Models::Ontology.find_by_acronym(OWNED[:acronym], invalidate_cache: true).first
-    ontology&.acronym == OWNED[:acronym]
+    owned_ontology&.acronym == OWNED[:acronym]
   end
 end

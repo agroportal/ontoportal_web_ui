@@ -385,13 +385,15 @@ $widget-table-border-color: #EFEFEF;
       margin: 0;
     }
 
-    .btn {
+    .btn,
+    .dropdown {
       flex: none;
     }
 
-    // Red, over the theme's link color; white only on the red fill of
-    // :hover and :active, as :focus keeps a transparent background
-    .btn-outline-danger {
+    // A link button turns red over the theme's link color; white only on
+    // the red fill of :hover and :active, as :focus keeps a transparent
+    // background. Buttons keep Bootstrap's colors, open menu included
+    a.btn-outline-danger {
       color: var(--danger-color, #dc3545) !important;
 
       &:hover,

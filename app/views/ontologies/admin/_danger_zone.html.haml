@@ -1,10 +1,27 @@
--# One row per irreversible action, as on GitHub; its button opens the
--# confirmation in the application modal
+-# One row per irreversible action, as on GitHub
 = render SummarySectionComponent.new(title: t('ontologies.admin.danger_zone.title'), show_card: false) do
   .danger-zone
+    -# The menu offers the other visibility, after a confirmation
+    - visibility = @ontology.viewingRestriction == 'private' ? 'private' : 'public'
+    - other_visibility = visibility == 'private' ? 'public' : 'private'
     .danger-zone-item
       %div
-        %strong= t('ontologies.admin.ontology.title')
-        %p= t('ontologies.admin.ontology.warning')
-      = link_to_modal(nil, confirm_destroy_ontology_administration_path(@ontology.acronym), class: 'btn btn-outline-danger', data: { show_modal_title_value: t('ontologies.admin.ontology.title') }) do
-        = t('ontologies.admin.ontology.title')
+        %strong= t('ontologies.admin.visibility.title')
+        %p= t("ontologies.admin.visibility.current.#{visibility}")
+      .dropdown
+        %button.btn.btn-outline-danger.dropdown-toggle{type: 'button', data: { toggle: 'dropdown' }, 'aria-haspopup': 'true', 'aria-expanded': 'false'}
+          = t('ontologies.admin.visibility.change')
+        .dropdown-menu.dropdown-menu-right
+          = button_to t("ontologies.admin.visibility.to.#{other_visibility}"), visibility_ontology_administration_path(@ontology.acronym),
+                      method: :patch, params: { visibility: other_visibility }, class: 'dropdown-item', form: { data: { turbo: false } },
+                      data: { confirm: t("ontologies.admin.visibility.confirm.#{other_visibility}", acronym: @ontology.acronym) }
+
+    -# Ontology admins may not delete their ontology yet (agroportal/project-management#765).
+    -# Its button opens the confirmation in the application modal
+    - if current_user_admin?
+      .danger-zone-item
+        %div
+          %strong= t('ontologies.admin.ontology.title')
+          %p= t('ontologies.admin.ontology.warning')
+        = link_to_modal(nil, confirm_destroy_ontology_administration_path(@ontology.acronym), class: 'btn btn-outline-danger', data: { show_modal_title_value: t('ontologies.admin.ontology.title') }) do
+          = t('ontologies.admin.ontology.title')

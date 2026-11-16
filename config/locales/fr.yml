@@ -1276,6 +1276,22 @@ fr:
         parse_error: "Erreur lors de l'analyse du journal : %{message}"
       danger_zone:
         title: "Zone de danger"
+      visibility:
+        title: "Changer la visibilité de l'ontologie"
+        change: "Changer la visibilité"
+        current:
+          public: "Cette ontologie est actuellement publique."
+          private: "Cette ontologie est actuellement privée : seuls ses administrateurs et les comptes autorisés la voient."
+        to:
+          public: "Rendre publique"
+          private: "Rendre privée"
+        confirm:
+          public: "Rendre %{acronym} publique ? Tout le monde la verra."
+          private: "Rendre %{acronym} privée ? Seuls ses administrateurs et les comptes autorisés la verront."
+        changed:
+          public: "%{acronym} est maintenant publique."
+          private: "%{acronym} est maintenant privée."
+        error: "Impossible de changer la visibilité de %{acronym}."
       ontology:
         title: "Supprimer cette ontologie"
         warning: "Supprimer l'ontologie supprime ses soumissions, vues, notes, avis et fichiers. Cette action est irréversible."
