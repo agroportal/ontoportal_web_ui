@@ -15,8 +15,11 @@
       %div.d-flex.justify-content-between.align-items-center.mb-2
         %div
           = t('ontologies.admin.log.title')
-        = link_to log_ontology_administration_path(@ontology.acronym), data: { turbo_frame: "admin_log_frame", turbo: "true" }, class: "btn btn-sm btn-outline-primary" do
-          %i.fas.fa-sync-alt.me-1
+        %div
+          = link_to log_ontology_administration_path(@ontology.acronym), data: { turbo_frame: "admin_log_frame", turbo: "true" }, class: "btn btn-sm btn-outline-primary" do
+            %i.fas.fa-sync-alt.me-1
+          = link_to log_ontology_administration_path(@ontology.acronym, format: :txt), title: t('ontologies.admin.log.download'), 'aria-label': t('ontologies.admin.log.download'), class: "btn btn-sm btn-outline-primary ml-1" do
+            %i.fas.fa-download
       %hr
     = render Layout::CardComponent.new do |c|
       %div#admin_log_container.admin-log-container

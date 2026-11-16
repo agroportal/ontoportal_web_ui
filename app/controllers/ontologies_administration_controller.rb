@@ -16,7 +16,12 @@ class OntologiesAdministrationController < ApplicationController
   def log
     log_url = "/ontologies/#{@ontology.acronym}/admin/log"
     @log = LinkedData::Client::HTTP.get(log_url)
-    render partial: 'ontologies/admin/log', layout: false
+
+    respond_to do |format|
+      format.html { render partial: 'ontologies/admin/log', layout: false }
+      # log.txt, the download button
+      format.text { send_data log_text, filename: "#{@ontology.acronym}-latest-submission-log.txt" }
+    end
   end
 
   def submissions
@@ -64,6 +69,18 @@ class OntologiesAdministrationController < ApplicationController
   end
 
   private
+
+  # One line per entry, as the page shows them:
+  #   [2026-11-16 10:02:11] ERROR: Submission STY/2 failed: RDF
+  def log_text
+    return @log if @log.is_a?(String)
+
+    # An API error is an object without message: it adds no line
+    lines = Array(@log).map(&:to_h).filter_map do |entry|
+      "[#{entry[:timestamp]}] #{entry[:severity]}: #{entry[:message]}" if entry[:message]
+    end
+    lines.join("\n")
+  end
 
   def authorize_ontology_admin
     @ontology = LinkedData::Client::Models::Ontology.find_by_acronym(params[:ontology_id]).first

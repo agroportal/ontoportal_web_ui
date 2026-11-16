@@ -37,6 +37,15 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'admins download the log of the latest submission' do
+    post login_index_url, params: { user: PORTAL_ADMIN }
+
+    get "#{PAGE}/log.txt"
+    assert_response :success
+    assert_equal 'text/plain', response.media_type
+    assert_includes response.headers['Content-Disposition'], %(attachment; filename="#{ACRONYM}-latest-submission-log.txt")
+  end
+
   test 'the state of a submission opens its processing details' do
     post login_index_url, params: { user: PORTAL_ADMIN }
 

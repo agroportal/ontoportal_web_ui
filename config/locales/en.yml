@@ -1239,6 +1239,7 @@ en:
         title: "Latest submission error log"
         loading: "Loading log..."
         no_log: "No log available."
+        download: "Download the log"
         parse_error: "Error parsing log: %{message}"
       ontology:
         title: "Delete ontology - caution zone!"

@@ -16,4 +16,14 @@ class OntologyAdminLogTest < ActionView::TestCase
     assert_select 'img', count: 0
     assert_includes rendered, ERB::Util.html_escape(MESSAGE)
   end
+
+  # The General section shows the log when the latest submission failed
+  test 'links the download of the log' do
+    @ontology = OpenStruct.new(acronym: 'STY')
+    @latest_submission = OpenStruct.new(submissionId: 2, submissionStatus: %w[UPLOADED ERROR_RDF])
+
+    render partial: 'ontologies/admin/general'
+
+    assert_select "a[href='/ontologies/STY/administration/log.txt'][title='Download the log']"
+  end
 end

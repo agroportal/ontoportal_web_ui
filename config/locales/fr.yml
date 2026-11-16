@@ -1271,6 +1271,7 @@ fr:
         title: "Journal d'erreurs de la dernière soumission"
         loading: "Chargement du journal..."
         no_log: "Aucun journal disponible."
+        download: "Télécharger le journal"
         parse_error: "Erreur lors de l'analyse du journal : %{message}"
       ontology:
         title: "Supprimer l'ontologie - zone de danger !"
