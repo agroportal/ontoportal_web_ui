@@ -193,6 +193,17 @@ en:
       federation_provide_apikey: Please provide an APIKEY for the federation user corresponding to each portal in order to enable the federation.
       federation_not_allowed: This portal isn't allowed to activate federation features.
       federation_invalid_apikeys: 'The following portals were not added because their API key is invalid: %{portals}'
+      sections:
+        general: General
+        licensing: Licensing
+        description: Description
+        dates: Dates
+        agents: Agents
+        community: Community
+        usage: Usage
+        methodology_and_provenance: Methodology and provenance
+        media: Media
+        other: Other
     licenses:
       create:
         success: License renewed successfully
