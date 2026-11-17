@@ -5,7 +5,7 @@ class CollapsableBlockComponent < ViewComponent::Base
 
 
   def initialize(id: '', parent_id: '', collapsed: true, title: '')
-    super
+    super()
     @id = id
     @collapsed = collapsed
     @parent_id = parent_id

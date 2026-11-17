@@ -3,7 +3,7 @@
 class Display::InfoTooltipComponent < ViewComponent::Base
 
   def initialize(text: nil , icon: "info.svg", interactive: true)
-    super
+    super()
     @text = text
     @icon = icon
     @interactive = interactive

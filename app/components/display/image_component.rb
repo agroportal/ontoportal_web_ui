@@ -4,7 +4,7 @@ class Display::ImageComponent < ViewComponent::Base
   include ModalHelper
 
   def initialize(src: , title: '', enable_zoom: true)
-    super
+    super()
     @src = src
     @title = title
     @enable_zoom = enable_zoom

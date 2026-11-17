@@ -3,7 +3,7 @@
 class CircleProgressBarComponent < ViewComponent::Base
 
   def initialize(count: , max: )
-    super
+    super()
     @count = count
     @max = max
   end
