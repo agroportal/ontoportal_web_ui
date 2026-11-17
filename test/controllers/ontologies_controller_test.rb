@@ -110,4 +110,29 @@ class OntologiesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "text/turtle; charset=utf-8" , response.content_type
   end
+
+  test 'should render an untyped node the API cannot serve' do
+    node = 'http://aims.fao.org/aos/agrovoc/xDef_d8a81e42'
+    definition = 'A temporary endeavour with a defined beginning and end.'
+    rdf_value = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#value'
+
+    # The API answers 500 for a node with no owl:NamedIndividual type, like
+    # AGROVOC's reified definitions; only SPARQL knows what it holds
+    stub_request(:get, /instances.*xDef_d8a81e42/).to_return(status: 500, body: '<h1>Internal Server Error</h1>')
+    stub_request(:get, /sparql\.example\.org/).to_return(
+      headers: { 'Content-Type' => 'application/sparql-results+json' },
+      body: { results: { bindings: [{ p: { type: 'uri', value: rdf_value },
+                                       o: { type: 'literal', value: definition, 'xml:lang': 'en' } }] } }.to_json
+    )
+    previous_endpoint = $SPARQL_ENDPOINT_URL
+    $SPARQL_ENDPOINT_URL = 'https://sparql.example.org/sparql'
+    Rails.cache.clear
+
+    get "/ontologies/STY?p=instances&instanceid=#{CGI.escape(node)}"
+
+    assert_response :success
+    assert_includes response.body, definition
+  ensure
+    $SPARQL_ENDPOINT_URL = previous_endpoint
+  end
 end
