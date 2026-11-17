@@ -78,7 +78,8 @@ class SubmissionsController < ApplicationController
     category_attributes["usage"].delete("hasDomain")
     @selected_attributes = Array(params[:properties])
     if @selected_attributes.empty?
-      @categories_order = ['general', 'description', 'dates', 'licensing', 'agents', 'links', 'media', 'community', 'usage' ,'relations', 'content','methodology', 'object description properties']
+      # No 'object description properties': the ontology administration page edits them
+      @categories_order = ['general', 'description', 'dates', 'licensing', 'agents', 'links', 'media', 'community', 'usage' ,'relations', 'content','methodology']
       @category_attributes = category_attributes
     end
     render 'submissions/edit', layout: params[:container_id] ?  nil : 'ontology'

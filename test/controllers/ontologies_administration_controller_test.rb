@@ -47,6 +47,16 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.headers['Content-Disposition'], %(attachment; filename="#{ACRONYM}-latest-submission-log.txt")
   end
 
+  # Moved from the edit page
+  test 'the object description properties have their own section' do
+    post login_index_url, params: { user: PORTAL_ADMIN }
+
+    get "#{PAGE}/object_description"
+    assert_response :success
+    assert_select "turbo-frame#object_description form[action='#{PAGE}/object_description'] input[name=submission_id]"
+    assert_select "turbo-frame#object_description_inputs[src*='properties=']"
+  end
+
   test 'the state of a submission opens its processing details' do
     post login_index_url, params: { user: PORTAL_ADMIN }
 

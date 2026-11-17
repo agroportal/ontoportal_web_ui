@@ -1213,6 +1213,12 @@ fr:
       title: "Page d'administration"
       sections:
         general: "Général"
+        object_description: "Propriétés de description des objets"
+      object_description:
+        save: "Enregistrer"
+        saved: "Propriétés de description des objets de %{acronym} enregistrées."
+        error: "Impossible d'enregistrer les propriétés de description des objets de %{acronym}."
+        no_submission: "%{acronym} n'a pas encore de soumission."
       submissions:
         title: "Soumissions"
         table:

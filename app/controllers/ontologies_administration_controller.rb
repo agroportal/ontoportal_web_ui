@@ -1,6 +1,8 @@
 class OntologiesAdministrationController < ApplicationController
   require 'multi_json'
   include OntologiesHelper
+  # Saves the object description properties as the edit page saves a submission
+  include SubmissionUpdater
   layout 'ontology'
 
   # viewingRestriction: everyone sees a public ontology; a private one, its
@@ -79,6 +81,28 @@ class OntologiesAdministrationController < ApplicationController
       redirect_to ontology_administration_path(acronym), notice: t('ontologies.admin.visibility.accounts.saved', acronym: acronym)
     else
       redirect_to ontology_administration_path(acronym), alert: t('ontologies.admin.visibility.accounts.error', acronym: acronym)
+    end
+  end
+
+  # The object description properties of the latest submission, in their own
+  # section of the page. The inputs come from the edit page (edit_properties)
+  def object_description
+    @submission_id = @ontology.explore.latest_submission(include: 'submissionId').submissionId
+    @attributes = helpers.object_description_attributes
+    render partial: 'ontologies/admin/object_description', layout: false
+  end
+
+  def update_object_description
+    acronym = @ontology.acronym
+    section = ontology_administration_path(acronym, section: t('ontologies.admin.sections.object_description').parameterize)
+
+    # The attributes of the section only, whatever else the form sends
+    values = submission_params(params[:submission] || ActionController::Parameters.new).slice(*helpers.object_description_attributes)
+    _submission, response = update_submission(values.merge(ontology: acronym), params.require(:submission_id), @ontology)
+    if response_error?(response)
+      redirect_to section, alert: t('ontologies.admin.object_description.error', acronym: acronym)
+    else
+      redirect_to section, notice: t('ontologies.admin.object_description.saved', acronym: acronym)
     end
   end
 

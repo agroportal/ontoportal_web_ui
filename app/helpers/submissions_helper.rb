@@ -1,4 +1,7 @@
 module SubmissionsHelper
+  # The submission metadata category of object_description_attributes
+  OBJECT_DESCRIPTION_CATEGORY = 'object description properties'
+
   def metadata_help_link
     content_tag(:div, class: 'edit-ontology-desc') do
       html = content_tag(:div) do
@@ -62,9 +65,17 @@ module SubmissionsHelper
 
   # except: properties another page edits, e.g. [:viewingRestriction]
   def submission_metadata_selector(id: 'search_metadata', name: 'search[metadata]', label: t('submission_inputs.metadata_selector_label'), except: [])
-    properties = submission_editable_properties.reject { |_label, property| except.include?(property) }
+    left_out = except.map(&:to_s)
+    properties = submission_editable_properties.reject { |_label, property| left_out.include?(property.to_s) }
     select_input(id: id, name: name, label: label, values: properties.sort, multiple: true,
                  data: { placeholder: t('submission_inputs.metadata_selector_placeholder') })
+  end
+
+  # Which properties hold the labels, synonyms, definitions… of the classes:
+  # the ontology administration page edits them, not the edit page
+  def object_description_attributes
+    submission_metadata.select { |metadata| metadata['category'] == OBJECT_DESCRIPTION_CATEGORY }
+                       .map { |metadata| metadata['attribute'] }
   end
 
   def ontology_and_submission_id(value)
