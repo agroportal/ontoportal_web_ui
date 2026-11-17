@@ -1,5 +1,0 @@
-= render_in_modal do
-  -# A full page load: the response leaves the modal for the admin page
-  = form_tag accounts_ontology_administration_path(@ontology.acronym), method: :patch, data: { turbo: false } do
-    = select_input(label: t('submission_inputs.accounts_allowed', portal_name: portal_name), name: 'acl', values: @users, selected: @acl, multiple: true)
-    = submit_tag t('ontologies.admin.visibility.accounts.save'), class: 'btn btn-primary mt-3'

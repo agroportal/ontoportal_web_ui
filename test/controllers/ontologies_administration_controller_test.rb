@@ -156,24 +156,6 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
     assert_equal [admin_id], Array(owned_ontology.administeredBy)
   end
 
-  test 'ontology admins choose the accounts allowed to see their ontology' do
-    create_owned_ontology
-    post login_index_url, params: { user: { username: @owner.username, password: @owner.password } }
-
-    get "#{owned_page}/accounts"
-    assert_select "turbo-frame#application_modal_content form[action='#{owned_page}/accounts'] select[name='acl[]']"
-
-    owner_id = LinkedData::Client::Models::User.find_by_username(@owner.username).first.id
-    patch "#{owned_page}/accounts", params: { acl: [owner_id] }
-    assert_redirected_to owned_page
-    assert_equal [owner_id], owned_ontology_acl
-
-    # Without any account selected, the form sends no acl
-    patch "#{owned_page}/accounts"
-    assert_redirected_to owned_page
-    assert_empty owned_ontology_acl
-  end
-
   private
 
   def create_owned_ontology
@@ -190,11 +172,6 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
 
   def owned_ontology
     LinkedData::Client::Models::Ontology.find_by_acronym(OWNED[:acronym], invalidate_cache: true).first
-  end
-
-  # Not among the attributes the API returns by default
-  def owned_ontology_acl
-    Array(LinkedData::Client::HTTP.get("/ontologies/#{OWNED[:acronym]}", include: 'acl', invalidate_cache: true).acl)
   end
 
   # The API answers a missing ontology with an error object, not nil

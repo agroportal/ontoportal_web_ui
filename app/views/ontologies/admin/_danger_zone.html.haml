@@ -4,7 +4,8 @@
   - usernames = ->(user_ids) { Array(user_ids).map { |user_id| user_id.to_s.split('/').last } }
   .danger-zone
     -# The menu offers the other visibility, after a confirmation. A private
-    -# ontology also lists the accounts allowed to see it; the menu edits them
+    -# ontology also lists the accounts allowed to see it; the administrators
+    -# row below grants access instead
     - restricted = @ontology.viewingRestriction == 'private'
     - visibility, other_visibility = restricted ? %w[private public] : %w[public private]
     - accounts = usernames.(@acl)
@@ -21,10 +22,6 @@
           = button_to t("ontologies.admin.visibility.to.#{other_visibility}"), visibility_ontology_administration_path(@ontology.acronym),
                       method: :patch, params: { visibility: other_visibility }, class: 'dropdown-item', form: { data: { turbo: false } },
                       data: { confirm: t("ontologies.admin.visibility.confirm.#{other_visibility}", acronym: @ontology.acronym) }
-          - if restricted
-            = link_to_modal(nil, accounts_ontology_administration_path(@ontology.acronym), class: 'dropdown-item',
-                            data: { show_modal_title_value: t('ontologies.admin.visibility.accounts.title', acronym: @ontology.acronym) }) do
-              = t('ontologies.admin.visibility.accounts.edit')
 
     -# Its button adds and removes administrators in the application modal
     .danger-zone-item

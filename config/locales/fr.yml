@@ -1311,11 +1311,6 @@ fr:
         accounts:
           list: "Comptes autorisés : %{accounts}."
           none: "Aucun compte n'est autorisé en dehors de ses administrateurs."
-          edit: "Choisir qui peut voir cette ontologie"
-          title: "Qui peut voir %{acronym}"
-          save: "Enregistrer"
-          saved: "Comptes autorisés à voir %{acronym} enregistrés."
-          error: "Impossible d'enregistrer les comptes autorisés à voir %{acronym}."
       ontology:
         title: "Supprimer cette ontologie"
         warning: "Supprimer l'ontologie supprime ses soumissions, vues, notes, avis et fichiers. Cette action est irréversible."

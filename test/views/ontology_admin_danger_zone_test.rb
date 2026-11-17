@@ -6,7 +6,6 @@ require 'test_helper'
 # no admin session, so no deletion (agroportal/project-management#765)
 class OntologyAdminDangerZoneTest < ActionView::TestCase
   VISIBILITY_FORM = "form[action='/ontologies/STY/administration/visibility']"
-  ACCOUNTS_LINK = "a.dropdown-item[href='/ontologies/STY/administration/accounts']"
   # As the API lists them: user URIs
   USERS = %w[http://data.example.org/users/alice http://data.example.org/users/bob].freeze
 
@@ -18,8 +17,6 @@ class OntologyAdminDangerZoneTest < ActionView::TestCase
     assert_select '.danger-zone-item p', text: 'This ontology is currently public.'
     assert_select "#{VISIBILITY_FORM} input[name=visibility][value=private]"
     assert_select "#{VISIBILITY_FORM} button[data-confirm]", text: 'Change to private'
-    # Its access list applies once private
-    assert_select ACCOUNTS_LINK, count: 0
   end
 
   test 'offers to make a private ontology public' do
@@ -31,14 +28,15 @@ class OntologyAdminDangerZoneTest < ActionView::TestCase
     assert_select "#{VISIBILITY_FORM} button", text: 'Change to public'
   end
 
-  test 'lists and edits the accounts allowed to see a private ontology' do
+  # Administrators grant access now: the menu only switches the visibility
+  test 'lists the accounts allowed to see a private ontology' do
     @ontology = OpenStruct.new(acronym: 'STY', viewingRestriction: 'private')
     @acl = USERS
 
     render partial: 'ontologies/admin/danger_zone'
 
     assert_select '.danger-zone-item p', text: 'Accounts allowed: alice and bob.'
-    assert_select ACCOUNTS_LINK, text: 'Choose who can see this ontology'
+    assert_select '.dropdown-menu .dropdown-item', count: 1
   end
 
   test 'says when no account is allowed besides the administrators' do

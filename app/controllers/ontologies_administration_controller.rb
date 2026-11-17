@@ -62,26 +62,6 @@ class OntologiesAdministrationController < ApplicationController
     end
   end
 
-  # The accounts allowed to see the private ontology, in the application modal
-  def edit_accounts
-    @acl = ontology_acl
-    @users = user_options
-    render partial: 'ontologies/admin/accounts', layout: false
-  end
-
-  # A form without any account selected sends no acl: it empties the list
-  def update_accounts
-    acronym = @ontology.acronym
-    acl = Array(params[:acl]).compact_blank
-
-    response = @ontology.update(values: { acl: acl }, cache_refresh_all: false)
-    if response_success?(response)
-      redirect_to ontology_administration_path(acronym), notice: t('ontologies.admin.visibility.accounts.saved', acronym: acronym)
-    else
-      redirect_to ontology_administration_path(acronym), alert: t('ontologies.admin.visibility.accounts.error', acronym: acronym)
-    end
-  end
-
   # Administrators see and modify the ontology, even private. The modal lists
   # every account, the current administrators selected
   def edit_administrators
