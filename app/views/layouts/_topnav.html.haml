@@ -69,7 +69,7 @@
               = t('layout.header.support')
           - d.with_section(divide: false) do |s|
             - s.with_item do
-              = link_to(t('layout.header.submit_feedback'), feedback_path(location: encode_param(request.url)), id: "submitFeedbackMenuItem", class: "pop_window")
+              = link_to(t('layout.header.submit_feedback'), feedback_path(location: feedback_location), id: "submitFeedbackMenuItem", class: "pop_window", rel: "nofollow")
           - d.with_section do |s|
             - s.with_item do
               = link_to(t('layout.header.documentation'), $FOOTER_LINKS[:sections][:support][:documentation] , target: "_blank")
