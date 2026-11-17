@@ -4,7 +4,7 @@ class CarouselComponent < ViewComponent::Base
   renders_many :slides
 
   def initialize(images: false, loop: false)
-    super
+    super()
     @images = images
     @loop = loop
   end

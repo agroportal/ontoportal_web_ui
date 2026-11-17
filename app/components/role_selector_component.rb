@@ -3,7 +3,7 @@
 class RoleSelectorComponent < ViewComponent::Base
 
     def initialize(agentOntologies: nil)
-      super
+      super()
       @agentOntologies = agentOntologies
     end
   end

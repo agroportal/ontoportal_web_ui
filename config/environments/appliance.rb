@@ -87,7 +87,7 @@ BioportalWebUi::Application.configure do
 
   # Add custom data attributes to sanitize allowed list
   config.action_view.sanitized_allowed_attributes = ['id', 'class', 'style', 'data-cls', 'data-ont']
-  config.view_component.show_previews = true
+  config.view_component.previews.enabled = true
   # TODO: Fix this?
   # enable json logging format.  Useful for logstash
   # require 'rackstash'
