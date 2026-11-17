@@ -129,6 +129,33 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'ontology admins manage the administrators of their ontology' do
+    create_owned_ontology
+    post login_index_url, params: { user: { username: @owner.username, password: @owner.password } }
+    owner_id, admin_id = [@owner.username, PORTAL_ADMIN[:username]].map do |username|
+      LinkedData::Client::Models::User.find_by_username(username).first.id
+    end
+
+    # Every account, the current administrators selected
+    get "#{owned_page}/administrators"
+    assert_select "turbo-frame#application_modal_content select[name='administrators[]'] option[value='#{owner_id}'][selected]"
+    assert_select "option[value='#{admin_id}']:not([selected])"
+
+    patch "#{owned_page}/administrators", params: { administrators: [owner_id, admin_id] }
+    assert_redirected_to owned_page
+    assert_equal [admin_id, owner_id].sort, Array(owned_ontology.administeredBy).sort
+
+    # The API requires one administrator at least
+    patch "#{owned_page}/administrators"
+    assert_redirected_to owned_page
+    assert_equal 2, Array(owned_ontology.administeredBy).size
+
+    # Who removes themselves can no longer open the admin page
+    patch "#{owned_page}/administrators", params: { administrators: [admin_id] }
+    assert_redirected_to "/ontologies/#{OWNED[:acronym]}"
+    assert_equal [admin_id], Array(owned_ontology.administeredBy)
+  end
+
   test 'ontology admins choose the accounts allowed to see their ontology' do
     create_owned_ontology
     post login_index_url, params: { user: { username: @owner.username, password: @owner.password } }

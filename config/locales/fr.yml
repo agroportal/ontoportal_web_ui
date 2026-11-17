@@ -1282,6 +1282,16 @@ fr:
         parse_error: "Erreur lors de l'analyse du journal : %{message}"
       danger_zone:
         title: "Zone de danger"
+      administrators:
+        title: "Gérer les administrateurs de cette ontologie"
+        description: "Les administrateurs peuvent voir et modifier ses métadonnées, même quand elle est privée."
+        manage: "Gérer les administrateurs"
+        modal_title: "Administrateurs de %{acronym}"
+        picker: "Administrateurs"
+        save: "Enregistrer"
+        saved: "Administrateurs de %{acronym} enregistrés."
+        none: "%{acronym} a besoin d'au moins un administrateur."
+        error: "Impossible d'enregistrer les administrateurs de %{acronym}."
       visibility:
         title: "Changer la visibilité de l'ontologie"
         change: "Changer la visibilité"

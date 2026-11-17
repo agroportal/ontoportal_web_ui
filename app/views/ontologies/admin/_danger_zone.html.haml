@@ -1,11 +1,13 @@
 -# One row per irreversible action, as on GitHub
 = render SummarySectionComponent.new(title: t('ontologies.admin.danger_zone.title'), show_card: false) do
+  -# User URIs end with the username: .../users/alice
+  - usernames = ->(user_ids) { Array(user_ids).map { |user_id| user_id.to_s.split('/').last } }
   .danger-zone
     -# The menu offers the other visibility, after a confirmation. A private
     -# ontology also lists the accounts allowed to see it; the menu edits them
     - restricted = @ontology.viewingRestriction == 'private'
     - visibility, other_visibility = restricted ? %w[private public] : %w[public private]
-    - accounts = Array(@acl).map { |user_id| user_id.to_s.split('/').last }
+    - accounts = usernames.(@acl)
     .danger-zone-item
       %div
         %strong= t('ontologies.admin.visibility.title')
@@ -23,6 +25,15 @@
             = link_to_modal(nil, accounts_ontology_administration_path(@ontology.acronym), class: 'dropdown-item',
                             data: { show_modal_title_value: t('ontologies.admin.visibility.accounts.title', acronym: @ontology.acronym) }) do
               = t('ontologies.admin.visibility.accounts.edit')
+
+    -# Its button adds and removes administrators in the application modal
+    .danger-zone-item
+      %div
+        %strong= t('ontologies.admin.administrators.title')
+        %p= t('ontologies.admin.administrators.description')
+      = link_to_modal(nil, administrators_ontology_administration_path(@ontology.acronym), class: 'btn btn-outline-danger',
+                      data: { show_modal_title_value: t('ontologies.admin.administrators.modal_title', acronym: @ontology.acronym) }) do
+        = t('ontologies.admin.administrators.manage')
 
     -# Ontology admins may not delete their ontology yet (agroportal/project-management#765).
     -# Its button opens the confirmation in the application modal

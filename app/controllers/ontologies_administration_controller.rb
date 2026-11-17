@@ -65,9 +65,7 @@ class OntologiesAdministrationController < ApplicationController
   # The accounts allowed to see the private ontology, in the application modal
   def edit_accounts
     @acl = ontology_acl
-    @users = LinkedData::Client::Models::User.all(include: 'username')
-                                             .map { |user| [user.username, user.id] }
-                                             .sort_by { |username, _id| username.downcase }
+    @users = user_options
     render partial: 'ontologies/admin/accounts', layout: false
   end
 
@@ -82,6 +80,28 @@ class OntologiesAdministrationController < ApplicationController
     else
       redirect_to ontology_administration_path(acronym), alert: t('ontologies.admin.visibility.accounts.error', acronym: acronym)
     end
+  end
+
+  # Administrators see and modify the ontology, even private. The modal lists
+  # every account, the current administrators selected
+  def edit_administrators
+    @users = user_options
+    render partial: 'ontologies/admin/administrators', layout: false
+  end
+
+  # Replaces the administrators. The API requires one at least
+  def update_administrators
+    acronym = @ontology.acronym
+    page = ontology_administration_path(acronym)
+    administrators = Array(params[:administrators]).compact_blank
+    return redirect_to(page, alert: t('ontologies.admin.administrators.none', acronym: acronym)) if administrators.empty?
+
+    response = @ontology.update(values: { administeredBy: administrators }, cache_refresh_all: false)
+    return redirect_to(page, alert: t('ontologies.admin.administrators.error', acronym: acronym)) unless response_success?(response)
+
+    # Who removed themselves can no longer open this page: the ontology page instead
+    page = ontology_path(acronym) unless administrators.include?(session[:user].id) || current_user_admin?
+    redirect_to page, notice: t('ontologies.admin.administrators.saved', acronym: acronym)
   end
 
   # The object description properties of the latest submission, in their own
@@ -143,6 +163,14 @@ class OntologiesAdministrationController < ApplicationController
   end
 
   private
+
+  # [username, user URI] pairs for a user picker, by username
+  def user_options(except: [])
+    LinkedData::Client::Models::User.all(include: 'username')
+                                    .reject { |user| except.include?(user.id) }
+                                    .map { |user| [user.username, user.id] }
+                                    .sort_by { |username, _id| username.downcase }
+  end
 
   # User URIs. The API leaves acl out of an ontology unless asked for it
   def ontology_acl

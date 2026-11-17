@@ -81,6 +81,8 @@ Rails.application.routes.draw do
       patch 'visibility', action: :update_visibility, as: :visibility
       get 'accounts', action: :edit_accounts, as: :accounts
       patch 'accounts', action: :update_accounts
+      get 'administrators', action: :edit_administrators, as: :administrators
+      patch 'administrators', action: :update_administrators
       get 'object_description', action: :object_description, as: :object_description
       patch 'object_description', action: :update_object_description
     end

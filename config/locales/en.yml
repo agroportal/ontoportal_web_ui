@@ -1250,6 +1250,16 @@ en:
         parse_error: "Error parsing log: %{message}"
       danger_zone:
         title: "Danger Zone"
+      administrators:
+        title: "Manage the administrators of this ontology"
+        description: "Administrators can see and modify its metadata, even when it is private."
+        manage: "Manage administrators"
+        modal_title: "Administrators of %{acronym}"
+        picker: "Administrators"
+        save: "Save"
+        saved: "Administrators of %{acronym} saved."
+        none: "%{acronym} needs one administrator at least."
+        error: "Could not save the administrators of %{acronym}."
       visibility:
         title: "Change ontology visibility"
         change: "Change visibility"

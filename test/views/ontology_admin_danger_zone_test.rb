@@ -50,12 +50,24 @@ class OntologyAdminDangerZoneTest < ActionView::TestCase
     assert_select '.danger-zone-item p', text: 'No account is allowed besides its administrators.'
   end
 
+  test 'manages the administrators' do
+    @ontology = OpenStruct.new(acronym: 'STY', viewingRestriction: 'public', administeredBy: USERS)
+
+    render partial: 'ontologies/admin/danger_zone'
+
+    assert_select '.danger-zone-item p', text: 'Administrators can see and modify its metadata, even when it is private.'
+    # The modal lists them
+    assert_not_includes rendered, 'alice'
+    assert_select "a.btn-outline-danger[href='/ontologies/STY/administration/administrators']", text: 'Manage administrators'
+  end
+
   test 'leaves the deletion to portal admins' do
     @ontology = OpenStruct.new(acronym: 'STY', viewingRestriction: 'public')
 
     render partial: 'ontologies/admin/danger_zone'
 
-    assert_select '.danger-zone-item', count: 1
+    # Visibility and administrators
+    assert_select '.danger-zone-item', count: 2
     assert_select "a[href='/ontologies/STY/administration/delete']", count: 0
   end
 end
