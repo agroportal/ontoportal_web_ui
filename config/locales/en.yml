@@ -1269,8 +1269,8 @@ en:
         accounts:
           list: "Accounts allowed: %{accounts}."
           none: "No account is allowed besides its administrators."
-          edit: "Edit the accounts allowed"
-          title: "Accounts allowed to see %{acronym}"
+          edit: "Choose who can see this ontology"
+          title: "Who can see %{acronym}"
           save: "Save"
           saved: "Accounts allowed to see %{acronym} saved."
           error: "Could not save the accounts allowed to see %{acronym}."

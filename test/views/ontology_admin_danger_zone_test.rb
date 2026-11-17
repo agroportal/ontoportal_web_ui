@@ -38,7 +38,7 @@ class OntologyAdminDangerZoneTest < ActionView::TestCase
     render partial: 'ontologies/admin/danger_zone'
 
     assert_select '.danger-zone-item p', text: 'Accounts allowed: alice and bob.'
-    assert_select ACCOUNTS_LINK, text: 'Edit the accounts allowed'
+    assert_select ACCOUNTS_LINK, text: 'Choose who can see this ontology'
   end
 
   test 'says when no account is allowed besides the administrators' do

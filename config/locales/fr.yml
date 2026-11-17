@@ -1301,8 +1301,8 @@ fr:
         accounts:
           list: "Comptes autorisés : %{accounts}."
           none: "Aucun compte n'est autorisé en dehors de ses administrateurs."
-          edit: "Modifier les comptes autorisés"
-          title: "Comptes autorisés à voir %{acronym}"
+          edit: "Choisir qui peut voir cette ontologie"
+          title: "Qui peut voir %{acronym}"
           save: "Enregistrer"
           saved: "Comptes autorisés à voir %{acronym} enregistrés."
           error: "Impossible d'enregistrer les comptes autorisés à voir %{acronym}."
