@@ -1329,7 +1329,7 @@ fr:
     natural_languages: Langues naturelles
     new_ontology_is_processing: L'ontologie est en cours de traitement. Des sections
       comme %{ontology} seront disponibles une fois le traitement terminé.
-    new_versions_loaded: Nouvelles soumissions chargées chaque nuit.
+    new_versions_loaded: Nouvelles soumissions chargées chaque nuit. Notez que cette URL sera exposée publiquement dans l'API si l'ontologie est elle-même publique.
     nginx_redirection:
       instruction_1: 'Accéder au fichier de configuration Nginx:'
       instruction_1_content: L'emplacement de ce fichier peut varier en fonction de
