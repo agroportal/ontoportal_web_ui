@@ -4,7 +4,7 @@ class StatisticsController < ApplicationController
   layout :determine_layout
 
   def index
-    @merged_data, @year_month_visits = Rails.cache.fetch("statistics_index_data-#{$SITE}", expires_in: 24.hours) do
+    @merged_data, @year_month_visits = statistics_cache.fetch("statistics_index_data-#{$SITE}", expires_in: 24.hours) do
       projects = LinkedData::Client::Models::Project.all({include: 'created'})
       users = LinkedData::Client::Models::User.all({include: 'created'})
       agents = LinkedData::Client::Models::Agent.all({include: 'created'})
@@ -25,5 +25,13 @@ class StatisticsController < ApplicationController
 
       [merged_data, year_month_visits]
     end
+  end
+
+  private
+
+  # Slice requests send NCBO-Slice: the API scopes the data to the slice's
+  # ontologies. Only the main domain fills the portal-wide cache.
+  def statistics_cache
+    @subdomain_filter[:active] ? ActiveSupport::Cache::NullStore.new : Rails.cache
   end
 end
