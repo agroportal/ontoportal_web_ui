@@ -160,6 +160,9 @@ Rails.application.routes.draw do
   get 'sparql', to: 'sparql_endpoint#index', as: 'sparql_endpoint'
   get 'sparql/edit_sample_queries', to: 'sparql_endpoint#edit_sample_queries', as: 'edit_sample_queries'
 
+  # MCP
+  get 'mcp', to: 'mcp#index', as: 'mcp'
+
 
 
   # Top-level pages
@@ -226,7 +229,6 @@ Rails.application.routes.draw do
   get '/ajax/fair_score/html' => 'fair_score#details_html'
   get '/ajax/submission/show_licenses/:id' => 'ontologies#show_licenses'
   get '/ajax/fair_score/json' => 'fair_score#details_json'
-  get '/ajax/fair_score/foops_json' => 'fair_score#foops_json'
   get '/ajax/ontologies', to: 'ontologies#ajax_ontologies'
   get '/ajax/agents', to: 'agents#ajax_agents'
   get '/ajax/agents/list', to: 'agents#ajax_agents_list'
@@ -253,8 +255,13 @@ Rails.application.routes.draw do
   get 'check_resolvability' => 'check_resolvability#index'
   get 'check_url_resolvability' => 'check_resolvability#check_resolvability'
 
-  # Install the default route as the lowest priority.
-  get '/:controller(/:action(/:id))'
+  # Pages the removed /:controller(/:action(/:id)) catch-all used to serve
+  get 'landscape' => 'landscape#index'
+  get 'content_finder' => 'content_finder#index'
+  get 'my-ontologies' => 'my_ontologies#index'
+  get 'statistics' => 'statistics#index'
+  get 'admin/metadata_administration' => 'admin#metadata_administration'
+  get 'search/json_search(/:id)' => 'search#json_search'
 
   mount Lookbook::Engine, at: '/lookbook'
 end

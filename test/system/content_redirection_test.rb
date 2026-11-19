@@ -1,5 +1,8 @@
 require "application_system_test_case"
 require 'webmock/minitest'
+require 'json/ld'
+require 'rdf/rdfxml'
+require 'rdf/turtle'
 
 class ContentRedirectionTest < ApplicationSystemTestCase
   def setup
@@ -48,21 +51,30 @@ class ContentRedirectionTest < ApplicationSystemTestCase
 
     # test formats content
     ["json", "xml", "ntriples", "turtle"].each do |format|
-      find("a#resource_content_#{format}", visible: true).click
+      click_still("a#resource_content_#{format}", visible: true)
       assert_selector("div#resource_content_modal", visible: true, wait: 10)
       content = find("div#resource_content_modal pre code", visible: true).text.strip
       case format
       when "json"
-        assert_equal JSON.parse(content), @json_response
+        assert_equal triples(@json_response.to_json, :jsonld), triples(content, :jsonld)
       when "xml"
-        assert_equal content, @xml_response
+        assert_equal triples(@xml_response, :rdfxml), triples(content, :rdfxml)
       when "ntriples"
-        assert_equal content, @ntriples_response
+        assert_equal triples(@ntriples_response, :ntriples), triples(content, :ntriples)
       when "turtle"
-        assert_equal content, @turtle_response
+        assert_equal triples(@turtle_response, :turtle), triples(content, :turtle)
       end
       find('button.close[data-action="turbo-modal#hide"]').click
     end
+  end
+
+  private
+
+  # Parse an RDF document into sorted N-Triples lines. The API emits
+  # triples in SPARQL result order, which varies between runs, so only
+  # the set of triples is stable.
+  def triples(content, format)
+    RDF::Reader.for(format).new(content).map(&:to_s).uniq.sort
   end
 
 end

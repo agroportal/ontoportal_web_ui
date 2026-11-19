@@ -27,7 +27,7 @@ Browser ──> Rails UI (this repo) ──ontologies_api_client──> OntoPort
 - **Database**: MySQL 8.0 (`mysql2`)
 - **Cache**: Memcached (`dalli`), also the session store
 - **Templates**: Haml 5
-- **View Components**: ViewComponent 2.83 + Lookbook 1.5 (`/lookbook`)
+- **View Components**: ViewComponent 4 + Lookbook 2 (`/lookbook`)
 - **JavaScript**: esbuild (`jsbundling-rails`), Stimulus 3, Turbo (Drive
   disabled); legacy jQuery scripts through Sprockets
 - **CSS**: SCSS (`sassc-rails`), Bootstrap 4.2
@@ -49,8 +49,8 @@ the stage API, with the API key from `.env`:
   and key into `.env`.
 - Runs compose services `dev` (Rails, http://localhost:3000), `node`
   (`yarn build --watch`), `db` (MySQL 8.0) and `cache` (Memcached).
-- Interactive: opens `nano` on the Rails credentials before booting; exit it
-  to continue. Agents should ask a human to run it.
+- Runs `dev` with `-it`, so it needs a TTY. Agents should ask a human to run
+  it.
 - `--api-client-path ../ontologies_api_ruby_client` mounts a local API client
   checkout.
 - `--reset-cache` runs `docker compose down --volumes`: deletes the database,
@@ -88,11 +88,17 @@ bundle exec rspec
 
 ### Notes
 
-- `bin/run_api` clones `ontoportal-lirmm/ontoportal_docker` into
-  `tmp/ontoportal_docker` and boots the API with `STARTER_ONTOLOGY`. Options
-  come from `.env` (`OP_API_KEY`, `OP_API_URL`, `API_IMAGE_REPOSITORY`,
-  `API_IMAGE_TAG`) or flags (`bin/run_api -h`). `bin/stop_api` stops it and
-  deletes its volumes.
+- `bin/run_api` re-clones `agroportal/ontoportal_docker@main` into
+  `tmp/ontoportal_docker` and runs `./ontoportal start api`: it wipes the
+  previous stack and loads the admin user and a bundled STY. Every run starts
+  fresh; `bin/ontoportal test --api-url http://localhost:9393` reuses a
+  running API. `bin/stop_api` removes its containers and volumes.
+- The test API follows `ontoportal_docker@main` and the `:master` images,
+  unpinned on purpose, so the tests catch the backend commit that breaks the
+  UI. `bin/run_api` prints the commits tested (GitHub job summary in CI).
+  Don't pin them.
+- One test API per machine: the compose project name and ports are fixed.
+  Don't run two suites against it at once.
 - Memcached must listen on `localhost:11211`; `config/environments/test.rb`
   hard-codes it.
 - System tests use a remote Selenium at `http://localhost:4444` (compose
@@ -156,6 +162,9 @@ spec/                      # RSpec
   `app/helpers/check_resolvability_helper.rb`.
 - New UI: a ViewComponent plus a Lookbook preview in
   `test/components/previews/`.
+- Component initializers call `super()`, never bare `super`: ViewComponent 4
+  has no catch-all initializer. Gem helpers missing in components go in
+  `config/initializers/view_component.rb`.
 - Stimulus: register page controllers in `app/javascript/controllers/index.js`,
   component controllers in `app/javascript/component_controllers/index.js`.
 - Turbo Drive is off (`app/javascript/application_esbuild.js`); use Turbo

@@ -4,7 +4,7 @@ class OntologyBrowseCardComponent < ViewComponent::Base
   include ApplicationHelper, OntologiesHelper, FederationHelper, ComponentsHelper
 
   def initialize(ontology: nil, onto_link: nil, text_color: nil, bg_light_color: nil, portal_name: nil)
-    super
+    super()
     @ontology = ontology
     @text_color = text_color
     @bg_light_color =  bg_light_color

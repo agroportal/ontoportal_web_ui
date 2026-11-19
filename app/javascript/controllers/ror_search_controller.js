@@ -63,7 +63,8 @@ export default class extends Controller {
     }
 
     renderResults(items) {
-        if (items.length === 0) {
+        // The user left the name field before ROR answered: results would cover the form
+        if (items.length === 0 || document.activeElement !== this.nameInputTarget) {
             this.hideResults()
             return
         }

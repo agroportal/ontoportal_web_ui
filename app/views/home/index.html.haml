@@ -188,7 +188,7 @@
               .home-slice-name
                 = "#{slice.name} (#{slice.acronym})"
         = render Buttons::RegularButtonComponent.new(id:'regular-button', value: t('home.suggest_slice'), variant: "secondary", state: "regular", href: '/feedback') do |btn|
-          - btn.icon_right do
+          - btn.with_icon_right do
             = inline_svg_tag "icons/plus.svg"
 
   .home-ontoportal-instances

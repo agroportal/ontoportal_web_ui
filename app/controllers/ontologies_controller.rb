@@ -198,8 +198,10 @@ class OntologiesController < ApplicationController
 
     params[:instanceid] = params[:instanceid] || search_first_instance_id
 
+    # Same lookup as InstancesController#show: an untyped node (a reified
+    # definition) is unknown to REST, SPARQL still knows it
     if params[:instanceid]
-      @instance = helpers.get_instance_details_json(@ontology.acronym, params[:instanceid], {include: 'all'})
+      @instance = ResourceLookupService.call(@ontology.acronym, params[:instanceid])
     end
 
     render partial: 'instances/instances', locals: { id: 'instances-data-table' }, layout: 'ontology_viewer'
@@ -386,8 +388,8 @@ class OntologiesController < ApplicationController
     tmp = fairness_service_enabled? ? get_fair_score(@ontology.acronym) : nil
     @fair_scores_data = create_fair_scores_data(tmp.values.first) unless tmp.nil?
 
-    # FOOPS! (technical) fairness score — loaded asynchronously by foops_score_summary_controller.js
-    # No synchronous call here to avoid blocking the page
+    # FOOPS! (technical) fairness score, as stored by the API; nil hides the FOOPS! tab
+    @foops_scores_data = create_foops_raw_scores_data(get_foops_score(@ontology))
 
     @views = get_views(@ontology)
     @view_decorators = @views.map { |view| ViewDecorator.new(view, view_context) }

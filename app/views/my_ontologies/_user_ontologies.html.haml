@@ -17,7 +17,7 @@
                                              onto_link: ontoportal_ui_link(ontology[:id]),
                                              text_color: config[:color],
                                              bg_light_color: config[:'light-color'])
-  - c.loader do
+  - c.with_loader do
     - browser_counter_loader
-  - c.error do
+  - c.with_error do
     = render Display::EmptyStateComponent.new(text: t("ontologies.user_ontologies.no_ontology_found"))

@@ -10,7 +10,7 @@
     = submit_to_modal("Edit metadata values" , id:"show_bulk_edit_from_btn", class: "d-none",
       data: { show_modal_title_value: "Metadata curator editor", show_modal_size_value: 'modal-xl' })
     = render TableComponent.new(id: 'metadata-curator-table', custom_class: 'border rounded p-1') do |t|
-      - t.header do |h|
+      - t.with_header do |h|
         - h.th {'Ontologies'}
         - @metadata_sel.each do |meta|
           - h.th do

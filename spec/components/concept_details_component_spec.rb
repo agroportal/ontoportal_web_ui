@@ -147,4 +147,37 @@ RSpec.describe ConceptDetailsComponent, type: :component do
       expect(row_name).to eq("IAO_0000115")
     end
   end
+
+  # A collection orders none of its rows last, and still has rows to show.
+  describe "raw rows" do
+    it "are listed when no row is ordered last" do
+      rendered = render_inline(
+        described_class.new(id: "collection-label", acronym: "BIODIVTHES", concept_id: concept, bottom_keys: [],
+                            properties: OpenStruct.new("http://purl.org/iso25964/skos-thes#superGroup" =>
+                                                         ["http://data.loterre.fr/ark:/67375/BLH-MDI"]))
+      )
+
+      expect(rendered.css("th").map { |th| th.text.strip }).to include("superGroup")
+    end
+  end
+
+  # A class page takes the scheme and SKOS-XL rows out of the listed ones, then
+  # adds them back from its view, one section each.
+  describe "#add_sections" do
+    let(:top_concept_of) { "http://www.w3.org/2004/02/skos/core#topConceptOf" }
+    let(:scheme) { "http://opendata.inrae.fr/thesaurusINRAE/mt_1" }
+
+    it "lists each added row in the Raw block" do
+      rendered = render_inline(
+        described_class.new(id: "concept-details", acronym: "INRAETHES", concept_id: concept,
+                            exclude_keys: %w[topConceptOf],
+                            properties: OpenStruct.new(top_concept_of => [scheme]))
+      ) do |c|
+        c.add_sections(%w[topConceptOf]) { |value| value }
+      end
+
+      expect(rendered.css("th").map { |th| th.text.strip }).to include("topConceptOf")
+      expect(rendered.css("td").text).to include(scheme)
+    end
+  end
 end

@@ -1,25 +1,23 @@
 # frozen_string_literal: true
 
-if $SENTERY_DSN
+# Report errors to Sentry, plus a share of the requests' traces and profiles.
+if $SENTRY_DSN
   Sentry.init do |config|
-    config.dsn = $SENTERY_DSN
+    config.dsn = $SENTRY_DSN
+    config.environment = $SENTRY_ENVIRONMENT || config.environment
     config.breadcrumbs_logger = [:active_support_logger, :http_logger]
 
-    # Add data like request headers and IP for users,
-    # see https://docs.sentry.io/platforms/ruby/data-management/data-collected/ for more info
+    # Span the API calls: the API client talks over Faraday + excon,
+    # which the default patches (Net::HTTP only) don't see
+    config.enabled_patches << :excon
+
+    # Attach cookies, client IPs and request bodies: passwords included
     config.send_default_pii = true
 
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for tracing.
-    # We recommend adjusting this value in production.
-    config.traces_sample_rate = 1.0
-    # or
-    config.traces_sampler = lambda do |context|
-      true
-    end
-    # Set profiles_sample_rate to profile 100%
-    # of sampled transactions.
-    # We recommend adjusting this value in production.
-    config.profiles_sample_rate = 1.0
+    # Unset means off. e.g. 0.1 traces 10% of the requests
+    config.traces_sample_rate = $SENTRY_TRACES_SAMPLE_RATE
+    # Share of the traced requests that are also profiled
+    config.profiles_sample_rate = $SENTRY_PROFILES_SAMPLE_RATE
   end
+  Sentry.set_tags(application: 'ui')
 end

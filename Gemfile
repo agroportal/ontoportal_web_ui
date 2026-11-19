@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 # Main Rails gem
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '7.0.8'
+gem 'rails', '~> 8.1.0'
 
 # JavaScript bundling for Rails
 gem 'jsbundling-rails'
@@ -62,11 +62,11 @@ gem 'dalli'
 gem 'graphql-client'
 
 # Haml template engine for Ruby on Rails
-gem 'haml', '~> 5.1'
+gem 'haml', '~> 6.3'
 
 # Internationalization (i18n)
 gem 'i18n'
-gem 'rails-i18n', '~> 7.0.0'
+gem 'rails-i18n', '~> 8.0'
 
 # MySQL database adapter
 gem 'mysql2'
@@ -82,8 +82,8 @@ gem 'recaptcha', '~> 5.9.0'
 gem 'rest-client'
 
 # View components framework for Rails
-gem 'lookbook', '~> 1.5.5'
-gem 'view_component', '~> 2.72'
+gem 'lookbook', '~> 2.3'
+gem 'view_component', '~> 4.1', '>= 4.1.1'
 
 # Pagination library for Rails
 gem 'will_paginate', '~> 3.0'
@@ -100,7 +100,7 @@ gem 'iso-639', '~> 0.3.6'
 gem 'countries', '~> 5.7'
 
 # Custom API client
-gem 'ontologies_api_client', git: 'https://github.com/agroportal/ontologies_api_ruby_client.git', branch: 'development'
+gem 'ontologies_api_client', git: 'https://github.com/agroportal/ontologies_api_ruby_client.git', branch: 'master'
 
 # SSRF protection for the URI resolvability checker
 gem 'ssrf_filter', '~> 1.5'
@@ -113,7 +113,7 @@ gem 'net-http', '~> 0.3.2'
 
 # Multi-Provider Authentication
 gem 'omniauth'
-gem 'omniauth-rails_csrf_protection'
+gem 'omniauth-rails_csrf_protection', '~> 2.0'
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-keycloak'
@@ -183,14 +183,22 @@ group :test do
   # Mock HTTP requests in tests
   gem 'webmock'
 
+  # Compare RDF serializations as graphs: the API orders triples at random
+  gem 'json-ld'
+  gem 'rdf-rdfxml'
+  gem 'rdf-turtle'
+
   # Testing framework for Rails
   gem 'rspec-rails'
+
+  # minitest 6 drops minitest/mock, which several tests stub with
+  gem 'minitest', '~> 5.27'
 end
 
 gem 'concurrent-ruby', '1.3.4'
 
 # pinned gems for Centos 7 to remove when no more needed
-gem 'nokogiri', '~> 1.13.10'
+gem 'nokogiri', '~> 1.18'
 gem 'rexml'
 gem "sparql", "~> 3.3"
 

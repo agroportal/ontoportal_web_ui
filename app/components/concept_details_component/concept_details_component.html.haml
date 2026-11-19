@@ -5,7 +5,7 @@
   %div.raw-table
     = render DropdownContainerComponent.new(title: 'Raw data', id: "accordion-#{@id}") do
       = render TableComponent.new(stripped: true) do |t|
-        - if @bottom_keys.present?
+        - if @concept_properties.present?
           - top_set, leftover_set, bottom_set = filter_properties(@top_keys, @bottom_keys, @exclude_keys, prefix_properties(@concept_properties))
           - leftover_set = convert_dates(leftover_set)
           - row_hash_properties(top_set, @acronym).each do |row|
@@ -16,7 +16,7 @@
 
 
           - sections.each do |section|
-            - t.row do
+            - t.with_row do
               = section
 
 
@@ -24,7 +24,7 @@
             - t.add_row(*row)
 
         - if @concept_id
-          - t.row do |r|
+          - t.with_row do |r|
             - r.td(colspan: 2) do
               %div.d-flex.justify-content-center.p-2#content_resource_formats
                 - [["json","json-ld-file"], ["xml","rdf-xml-file"] , ["ntriples","ntriples-file"], ["turtle","turtle-file"]].each do |format, icon|

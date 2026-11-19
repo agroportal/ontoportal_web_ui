@@ -644,9 +644,8 @@ fr:
   fair_score:
     fairness_unreachable_warning: Problème d'accès au service d'évaluation du niveau
       de FAIRness
-    foops_unreachable_warning: Problème d'accès au service d'évaluation FOOPS!
-    foops_private_ontology_warning: FOOPS! est un service externe à %{portal_name}.
-    foops_private_ontology_hint: Cette ontologie devrait être publique pour permettre l'évaluation.
+    foops_unreachable_warning: Évaluation FAIR non disponible pour cette ontologie
+    foops_no_assessment_warning: L'évaluation FAIR n'a pas pu être faite pour cette ontologie.
     foops_no_file_hint: Cette ontologie devrait avoir un fichier téléchargeable pour permettre l'évaluation.
     foops_description: 'Score d''évaluation FAIR calculé avec l''outil FOOPS! (Ontology
       Pitfall Scanner for FAIR) à partir du fichier déposé dans le portail. Plus de détails
@@ -931,6 +930,7 @@ fr:
       support: Support
       agents : Agents
       sparql_editor: Editeur SPARQL
+      mcp_server: "Serveur MCP"
       explore: Explorer
     notices:
       at: à
@@ -1071,6 +1071,92 @@ fr:
         skos:closeMatch)
     upload_mappings: Charger des mappings
   no_result_was_found: Aucun résultat n'a été trouvé
+  mcp:
+    title: "Serveur MCP"
+    description: "Interrogez %{portal} en langage naturel depuis votre assistant IA. Il répond en interrogeant le point d'accès SPARQL en direct."
+    url:
+      title: "URL du serveur"
+      note: "Transport Streamable HTTP. Aucun compte ni clé d'API requis."
+    approach:
+      title: "L'approche : MCP au-dessus de SPARQL"
+      intro: "Le Model Context Protocol (MCP) permet à un assistant IA d'appeler des outils sur un serveur. Ce serveur donne à l'assistant un accès en lecture seule au point d'accès SPARQL de %{portal} : il écrit lui-même les requêtes et répond à partir des données en direct, pas de ce qu'il a mémorisé."
+      flow:
+        assistant: "Votre assistant IA"
+        assistant_detail: "Écrit le SPARQL, lit les conseils, réessaie"
+        server: "Serveur MCP"
+        server_detail: "Fiche du schéma, recherche d'ontologies, garde-fous"
+        endpoint: "Point d'accès SPARQL"
+        endpoint_detail: "Données %{portal} en direct"
+      pitfalls: "Il est facile de se tromper en SPARQL sur %{portal} : les champs qui ressemblent à du Dublin Core sont ici en OMV, les métadonnées sont réparties entre plusieurs graphes nommés, et une requête sur le mauvais graphe renvoie zéro résultat sans erreur. Le serveur ne se contente donc pas de transmettre les requêtes. Il fournit à l'assistant :"
+      aids:
+        schema_card: "Une fiche du schéma : chaque graphe de métadonnées avec tous ses prédicats, l'organisation des graphes et des modèles de requêtes éprouvés."
+        grounding: "Une recherche d'ontologies, pour qu'un nom ou un acronyme mène au vrai IRI et au contenu actuel plutôt qu'à une supposition."
+        guardrails: "Une exécution encadrée. Les écritures sont refusées, la taille des résultats est plafonnée, et chaque échec ou résultat vide revient avec des conseils pour corriger la requête."
+      not_rag: "Pourquoi pas la recherche augmentée (RAG) ? Les données sont ici très structurées : des enregistrements typés dans des graphes nommés, reliés par un ensemble fixe de prédicats. Les questions qu'on leur pose se résolvent par des jointures, des filtres et des comptages exacts, que SPARQL calcule et qu'une recherche par similarité ne sait pas faire. Et le vocabulaire utile, environ 200 prédicats répartis sur 13 graphes, tient dans le contexte de l'assistant : une recherche sur ce qui tient déjà ne peut que perdre le prédicat nécessaire. Les erreurs réelles (prédicats inventés, mauvais graphe, requêtes trop coûteuses pour le point d'accès) se corrigent avec une liste complète des prédicats, la recherche d'ontologies, des garde-fous et une boucle de correction."
+    tools:
+      title: "Outils"
+      get_schema_card: "Chaque graphe de métadonnées avec ses prédicats et leur nombre d'usages, l'organisation des graphes, les catégories, les groupes et des modèles de requêtes éprouvés."
+      resolve_ontology: "Un nom ou un acronyme d'ontologie → son IRI et le graphe nommé qui contient son contenu actuel."
+      run_sparql: "Exécution encadrée en lecture seule. Renvoie les résultats, ou un échec avec des conseils de correction."
+      list_terms: "Les catégories thématiques ou les groupes, avec leurs IRI."
+    privacy: "Chaque appel d'outil, requête comprise, est journalisé pour améliorer le service. Aucune adresse IP ni aucun compte n'est enregistré."
+    setup:
+      title: "Configuration"
+      intro: "Ajoutez l'URL du serveur à votre client MCP. Les clients qui chargent les serveurs au démarrage doivent être redémarrés."
+      clients:
+        claude_code: "Claude Code"
+        opencode: "opencode"
+        vscode: "VS Code, dans .vscode/mcp.json"
+        claude_app: "Claude (applications web et bureau)"
+        other: "Autres clients"
+      claude_app_steps: "Paramètres → Connecteurs → Ajouter un connecteur personnalisé, puis collez l'URL du serveur."
+      other_steps: "Tout client compatible avec le transport Streamable HTTP fonctionne. Utilisez l'URL du serveur, sans authentification."
+    examples:
+      title: "Questions à essayer"
+      intro: "Chacune cible une erreur fréquente des assistants IA sur %{portal}."
+      groups:
+        size: "Taille et version actuelle"
+        catalogue: "Catégories, groupes et licences"
+        people: "Personnes et organisations"
+        links: "Projets"
+        content: "Contenu"
+        missing: "Données manquantes et versions en échec"
+      plants_classes:
+        question: "Sur %{portal}, quelles sont les 5 ontologies de la catégorie Plants qui ont le plus de classes, en ne comptant que leur version actuelle ?"
+        note: "Les tailles sont dans le graphe Metrics, pas dans omv:numberOfClasses. Seule la version actuelle compte, et les valeurs doivent être triées comme des nombres."
+      largest_in_group:
+        question: "Sur %{portal}, quelle est la plus grande ontologie du groupe INRAE, et combien de propriétés a-t-elle ?"
+        note: "Relie un groupe aux tailles, et demande une autre taille que le nombre de classes."
+      soil_inrae:
+        question: "Sur %{portal}, quelles ontologies de la catégorie Sol font aussi partie du groupe INRAE ?"
+        note: "Une catégorie et un groupe sur la même fiche : deux vocabulaires d'IRI, reliés par deux prédicats différents."
+      wheat_licenses:
+        question: "Sur %{portal}, quelles ontologies du groupe Wheat Data Interoperability sont sous licence CC BY 4.0 ?"
+        note: "La licence est portée par la version actuelle, écrite comme un IRI de deux façons (http et https) : une correspondance exacte n'en trouve que la moitié."
+      ror_organizations:
+        question: "Sur %{portal}, quelles organisations sont liées au plus grand nombre d'ontologies, et quels sont leurs identifiants ROR ?"
+        note: "Organisations ou personnes, créateurs ou contributeurs."
+      shared_projects:
+        question: "Sur %{portal}, quels projets utilisent à la fois AGROVOC et une ontologie du groupe Crop Ontology ?"
+        note: "Les projets pointent vers les ontologies, pas l'inverse, et il faut une double jointure."
+      maize_labels:
+        question: "Sur %{portal}, quels sont les libellés français et espagnols du concept AGROVOC « maïs » ?"
+        note: "Lit le contenu propre de l'ontologie et ses étiquettes de langue."
+      crushing_definition:
+        question: "Sur %{portal}, quel terme désigne « l'action de réduire en fragments plus petits par pression ou chocs » ?"
+        note: "Une recherche par le sens, en français. La définition exacte existe, donc une paraphrase est une mauvaise réponse."
+      milling_narrower:
+        question: "Sur %{portal}, quels concepts sont plus spécifiques que « milling » dans le thésaurus INRAE ?"
+        note: "« milling » n'est qu'un libellé alternatif de broyage : une recherche sur les libellés préférés ne trouve rien. Puis un pas vers le bas de la hiérarchie, pas vers le haut."
+      air_temperature_variables:
+        question: "Sur %{portal}, trouvez 10 variables décrivant la température de l'air, en indiquant l'ontologie source de chaque variable."
+        note: "Une recherche par libellé dans le contenu de toutes les ontologies. Un terme importé figure aussi dans chaque ontologie qui l'importe : la température de l'air de SAREF4AGRI est dans quatre ontologies, mais seule SAREF4AGRI la définit."
+      missing_license:
+        question: "Sur %{portal}, quelles ontologies n'ont pas de licence dans leur version actuelle ?"
+        note: "Un champ absent, sans reprendre la licence d'une version archivée."
+      failed_parse:
+        question: "Sur %{portal}, quelles ontologies ont une version dont l'analyse a échoué ?"
+        note: "Le statut de version, que les modèles de requêtes couvrent à peine."
   notes:
     change_property_value_proposal: Proposition de changement de valeur de propriété
     comment: Commentaire
@@ -1243,7 +1329,7 @@ fr:
     natural_languages: Langues naturelles
     new_ontology_is_processing: L'ontologie est en cours de traitement. Des sections
       comme %{ontology} seront disponibles une fois le traitement terminé.
-    new_versions_loaded: Nouvelles soumissions chargées chaque nuit.
+    new_versions_loaded: Nouvelles soumissions chargées chaque nuit. Notez que cette URL sera exposée publiquement dans l'API si l'ontologie est elle-même publique.
     nginx_redirection:
       instruction_1: 'Accéder au fichier de configuration Nginx:'
       instruction_1_content: L'emplacement de ce fichier peut varier en fonction de
@@ -1843,7 +1929,9 @@ fr:
       “Parcourir” d'%{portal} pour filtrer la liste des ontologies.
     groups_and_categories: Groupes et Catégories
     no_taxonomy_created: Aucun %{type} n'a encore été créé
-    show_sub_categories: Afficher les sous-catégories
+    show_sub_categories: Afficher les sous-catégories (%{count})
+    ontologies_count: "%{count} ontologies"
+    see_all_ontologies: Voir toutes les ontologies ...
     groups: Groupes
     categories: Catégories
   tools:

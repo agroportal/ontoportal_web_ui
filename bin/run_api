@@ -1,69 +1,98 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Boot a fresh OntoPortal API on http://localhost:9393 for the UI tests.
+#
+# The stack comes from ontoportal_docker@main and its images follow master,
+# both unpinned on purpose: the UI tests must catch the backend commit that
+# breaks them. Each run therefore prints the backend commits it tested and,
+# in GitHub Actions, adds them to the job summary.
+#
+#   bin/run_api ──clone──> tmp/ontoportal_docker ──./ontoportal start api──>
+#     nginx :9393 -> api, ncbo_cron, redis, solr, virtuoso, mgrep, fairness
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+readonly REPO="agroportal/ontoportal_docker"
+readonly BRANCH="main"
+readonly CLONE_DIR="tmp/ontoportal_docker"
+readonly REVISION_LABEL="org.opencontainers.image.revision"
+readonly SOURCE_LABEL="org.opencontainers.image.source"
+readonly UNKNOWN="unknown"
+readonly BACKEND_IMAGES="ontologies_api ncbo_cron"
+
 display_help() {
-  echo "Usage: $0 [options]"
-  echo "Options:"
-  echo "  -f             Remove tmp/ontoportal_docker"
-  echo "  -k API_KEY     API key"
-  echo "  -r REPOSITORY  Image repository"
-  echo "  -t TAG         Image tag"
-  echo "  -s ONTOLOGY    Starter ontology"
-  echo "  -u URL         Remote API URL"
-  echo "  -h             Display this help message"
-  exit 0
+  echo "Usage: $0 [-h]"
+  echo "Boot a fresh OntoPortal API on http://localhost:9393 from $REPO@$BRANCH."
+  echo "Every run wipes the previous stack and loads the admin user and STY."
 }
 
+# Label of a backend image of the stack, e.g.
+#   image_label ncbo_cron "$REVISION_LABEL"  ->  b9623d9b6fb4...
+image_label() {
+  local image
+  image=$(cd "$CLONE_DIR" && docker compose config --images 2>/dev/null | grep -m1 "/$1:") || {
+    echo "$UNKNOWN"
+    return
+  }
 
-env_file_path="$(realpath "$(dirname "$0")")/../.env"
+  docker image inspect --format "{{index .Config.Labels \"$2\"}}" "$image" 2>/dev/null || echo "$UNKNOWN"
+}
 
-# Read and parse the .env file
-if [ -f "$env_file_path" ]; then
-  while IFS='=' read -r key value; do
-    [[ "$key" =~ ^\s*# ]] && continue  # Skip commented lines
-    [[ "$value" ]] || continue  # Skip lines without values
-    export "$key"="$value"
-  done < "$env_file_path"
-fi
+# One "name sha url" line per backend component under test
+backend_versions() {
+  local sha
+  sha=$(git -C "$CLONE_DIR" rev-parse HEAD)
+  echo "ontoportal_docker $sha https://github.com/$REPO/commit/$sha"
 
+  local name revision source
+  for name in $BACKEND_IMAGES; do
+    revision=$(image_label "$name" "$REVISION_LABEL")
+    source=$(image_label "$name" "$SOURCE_LABEL")
+    echo "$name $revision $source/commit/$revision"
+  done
+}
 
-while getopts ":k:r:t:s:u:fh" opt; do
+# Runs on exit, success or failure: a provisioning failure is a backend
+# break too, and its versions matter as much as a red test's
+print_versions() {
+  if [ ! -d "$CLONE_DIR/.git" ]; then
+    return
+  fi
+
+  local versions
+  versions=$(backend_versions)
+
+  echo "[+] Backend versions under test:"
+  echo "$versions" | awk '{ printf "    %-18s %s\n", $1, $2 }'
+
+  if [ -z "${GITHUB_STEP_SUMMARY:-}" ]; then
+    return
+  fi
+
+  {
+    echo "### Backend versions under test"
+    echo
+    echo "| Component | Commit |"
+    echo "|---|---|"
+    echo "$versions" | awk '{ printf "| %s | [%s](%s) |\n", $1, substr($2, 1, 7), $3 }'
+  } >>"$GITHUB_STEP_SUMMARY"
+}
+
+while getopts ":h" opt; do
   case $opt in
-    k) api_key="$OPTARG" ;;
-    r) image_repository="$OPTARG" ;;
-    t) image_tag="$OPTARG" ;;
-    s) starter_ontology="$OPTARG" ;;
-    u) remote_api_url="$OPTARG" ;;
-    f) rm -fr tmp/ontoportal_docker ;;
-    h) display_help ;;
-    \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
-    :) echo "Option -$OPTARG requires an argument." >&2; exit 1 ;;
+    h) display_help; exit 0 ;;
+    \?) echo "Invalid option: -$OPTARG" >&2; display_help >&2; exit 1 ;;
   esac
 done
 
+trap print_versions EXIT
 
+# Fresh clone: a pulled one keeps its gitignored .env, which may come from an
+# older layout of ontoportal_docker
+rm -rf "$CLONE_DIR"
+git clone --quiet --depth=1 --branch "$BRANCH" "https://github.com/$REPO.git" "$CLONE_DIR"
 
-if [ ! -d "tmp/ontoportal_docker" ]; then
-  git clone --depth=1 -b  development https://github.com/ontoportal-lirmm/ontoportal_docker.git tmp/ontoportal_docker
-fi
-
-# If an option is not provided, check and use the corresponding value from the environment variables
-api_key="${api_key:-$OP_API_KEY}"
-image_repository="${image_repository:-$API_IMAGE_REPOSITORY}"
-image_tag="${image_tag:-$API_IMAGE_TAG}"
-starter_ontology="${starter_ontology:-$STARTER_ONTOLOGY}"
-remote_api_url="${remote_api_url:-$OP_API_URL}"
-
-if curl -sSf http://localhost:9393 > /dev/null 2>&1; then
-  echo "API is already running in http://localhost:9393"
-  exit 0
-fi
-
-# Check if the Docker Compose service exists
-docker compose ls -a --filter "name=ontoportal_docker" | grep -q "ontoportal_docker" && no_provision=true || no_provision=false
-(
-  cd tmp/ontoportal_docker || exit 1
-  command="./run -k $api_key -r $image_repository -t $image_tag -s $starter_ontology -u $remote_api_url"
-  [ "$no_provision" = true ] && command="$command"
-  echo "Run: $command"
-  eval "$command"
-)
-
+# Wipes the previous stack (containers and volumes), pulls master, loads the
+# admin user and STY, then waits for the API
+(cd "$CLONE_DIR" && ./ontoportal start api)

@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Copy the logs of the API stack booted by bin/run_api into a directory.
+#
+#   bin/api_logs tmp/api_logs
+#     compose.log      stdout of every service: nginx access log, ncbo_cron jobs
+#     ontologies_api/  unicorn log: status and duration of every API call
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+readonly CLONE_DIR="tmp/ontoportal_docker"
+readonly API_LOG_DIR="/srv/ontoportal/ontologies_api/log"
+
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 OUTPUT_DIR" >&2
+  exit 1
+fi
+
+if [ ! -f "$CLONE_DIR/docker-compose.yml" ]; then
+  echo "No API stack in $CLONE_DIR; run bin/run_api first." >&2
+  exit 1
+fi
+
+mkdir -p "$1"
+out=$(cd "$1" && pwd)
+
+cd "$CLONE_DIR"
+
+# Keep going on errors: a partial set of logs still helps
+docker compose logs --no-color --timestamps >"$out/compose.log" 2>&1 || echo "[-] docker compose logs failed"
+docker compose cp "api:$API_LOG_DIR" "$out/ontologies_api" || echo "[-] Copying the API logs failed"
+
+echo "[+] API stack logs written to $out"

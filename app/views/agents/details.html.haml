@@ -31,23 +31,23 @@
 
                 = render Layout::ListComponent.new do |l|
                   - unless @agent.identifiers.nil? || @agent.identifiers.empty?
-                    - l.row do
+                    - l.with_row do
                       = render FieldContainerComponent.new(label: t("agents.profile.identifier")) do
                         = raw display_identifiers(@agent.identifiers, icon:false)
                         %span.clickable-identifier-icon
                           = raw display_identifiers(@agent.identifiers)
                   - unless @agent.email.blank?
-                    - l.row do
+                    - l.with_row do
                       = render FieldContainerComponent.new(label: t("agents.form.email")) do
                         = mail_to @agent.email, @agent.email
                   - unless @agent.homepage.blank?
-                    - l.row do
+                    - l.with_row do
                       = render FieldContainerComponent.new(label: t("agents.form.homepage")) do
                         .chip_button_container_clickable
                           = link_to @agent.homepage, target: "_blank" do
                             = render ExternalLinkTextComponent.new(text: @agent.homepage)
                   - unless @agent.affiliations.nil? || @agent.affiliations.empty?
-                    - l.row do
+                    - l.with_row do
                       = render FieldContainerComponent.new(label: t("agents.form.affiliations")) do
                         = raw @agent.affiliations.map{|i| display_agent(i, target: nil)}.join('')
       %br
@@ -89,19 +89,19 @@
           %div{ style: 'padding: 20px 0px 0px 0px;' }
             = render Layout::ListComponent.new do |l|
               - unless @agent.categories.nil? || @agent.categories.empty?
-                - l.row do 
+                - l.with_row do 
                   = render FieldContainerComponent.new(label: t("ontologies.sections.metadata.categories")) do
                     = horizontal_list_container(@agent.categories) do |v|
                       - category_acronym = v.split("/").last
                       = category_chip(category_acronym)
               - unless @agent.subjects.nil? || @agent.subjects.empty?
-                - l.row do 
+                - l.with_row do 
                   = render FieldContainerComponent.new(label: t("ontologies.sections.metadata.subjects")) do
                     - theme_taxonomy_ontologies = get_theme_taxonomy_ontologies() || []
                     = horizontal_list_container(@agent.subjects) do |subject|
                       = subject_chip(subject, theme_taxonomy_ontologies)
               - unless @agent.keywords.nil? || @agent.keywords.empty?
-                - l.row do 
+                - l.with_row do 
                   = render FieldContainerComponent.new(label: t("agents.profile.keywords")) do
                     - keywords =  @agent.keywords.map{|x| x.split(',')}.flatten.map(&:downcase).uniq
                     = horizontal_list_container(keywords) do |v|    

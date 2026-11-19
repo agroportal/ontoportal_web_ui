@@ -10,6 +10,11 @@ require 'active_support/core_ext/integer/time'
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Without config/credentials/test.key, Rails 7.1+ falls back to the committed
+  # master.key, which can't decrypt test.yml.enc. Keep 7.0's behaviour: no key,
+  # empty credentials.
+  config.credentials.key_path = root.join('config/credentials/test.key')
+
   # Turn false under Spring and add config.action_view.cache_template_loading = true.
   config.cache_classes = true
 
@@ -27,7 +32,7 @@ Rails.application.configure do
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
-  config.cache_store = ActiveSupport::Cache::MemCacheStore.new('localhost:11211', namespace: 'BioPortal')
+  config.cache_store = :mem_cache_store, 'localhost:11211', { namespace: 'BioPortal' }
 
   # Raise exceptions instead of rendering exception templates.
   config.action_dispatch.show_exceptions = false

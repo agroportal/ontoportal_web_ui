@@ -3,7 +3,7 @@
 class OntologySubscribeButtonComponent < ViewComponent::Base
   include InternationalisationHelper
   def initialize(id: '', ontology_id:, subscribed:, user_id:, count: 0, link: 'javascript:void(0);')
-    super
+    super()
     @id = id
     @subscribed = subscribed
     @sub_text = subscribed ? t('components.unwatch') : t('components.watch')

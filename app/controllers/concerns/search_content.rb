@@ -88,7 +88,7 @@ module SearchContent
       query = "*#{query}*"
     end
 
-    results = search_content( q: query, qf: qf.join(' '), ontologies: acronyms.join(','), types: types.join(','))
+    results = search_content( q: query, qf: qf.join(' '), page: page, ontologies: acronyms.join(','), types: types.join(','))
     [search_content_result_to_json(original_query, query, results, ontologies, selected_onto, show_ontologies), results.page,results.nextPage, results.totalCount]
   end
 

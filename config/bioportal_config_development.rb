@@ -38,6 +38,7 @@ $API_KEY = ENV['API_KEY']
 $REST_URL = ENV['API_URL']
 
 $SPARQL_ENDPOINT_URL = ENV['SPARQL_ENDPOINT_URL'] || nil
+$MCP_URL = ENV['MCP_URL'] || nil
 
 $SIDEKIQ_UI_URL = ENV['SIDEKIQ_UI_URL'] || $REST_URL + "sidekiq"
 # Annotator REST service address
@@ -51,9 +52,6 @@ $NCBO_API_KEY = ENV['NCBO_API_KEY']
 # Fairness Assessment.
 $FAIRNESS_DISABLED = ENV['FAIRNESS_DISABLED']
 $FAIRNESS_URL = ENV['FAIRNESS_URL']
-
-# FOOPS! FAIR assessment endpoint.
-$FOOPS_URL = ENV['FOOPS_URL'] || 'https://foops.linkeddata.es/assessOntology'
 
 # Used to define other bioportal that can be mapped to
 # Example to map to ncbo bioportal : {"ncbo" => {"api" => "http://data.bioontology.org", "ui" => "http://bioportal.bioontology.org", "apikey" => ""}
@@ -263,7 +261,9 @@ $FOOTER_LINKS = {
 }
 
 # Monitoring
-$SENTERY_DSN = ENV['SENTRY_DSN'] # if you want to use sentery.io
+$SENTRY_DSN = ENV['SENTRY_DSN'] # if you want to use sentry.io
+$SENTRY_TRACES_SAMPLE_RATE = ENV['SENTRY_TRACES_SAMPLE_RATE']&.to_f
+$SENTRY_PROFILES_SAMPLE_RATE = ENV['SENTRY_PROFILES_SAMPLE_RATE']&.to_f
 $NEW_RELIC_LICENSE_KEY = ENV['NEW_RELIC_LICENSE_KEY'] # if you want to use newrelic.io
 
 $UI_THEME = ENV['UI_THEME'] || 'ontoportal'

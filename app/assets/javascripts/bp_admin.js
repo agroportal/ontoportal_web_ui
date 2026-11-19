@@ -355,7 +355,8 @@ function ProcessOntologies(action) {
     process_annotator: "PROCESSING OF ONTOLOGY FOR ANNOTATOR",
     diff: "CALCULATION OF ONTOLOGY DIFFS",
     index_search: "PROCESSING OF ONTOLOGY FOR SEARCH",
-    run_metrics: "CALCULATION OF ONTOLOGY METRICS"
+    run_metrics: "CALCULATION OF ONTOLOGY METRICS",
+    generate_foops: "FAIRNESS ASSESSMENT WITH FOOPS!"
   };
   AjaxAction.call(this, "PUT", actions[action], "ontologies", false, {actions: action});
   this.setSelectedOntologies();
@@ -613,7 +614,7 @@ jQuery(".admin.index").ready(function() {
   displayOntologies({}, DUMMY_ONTOLOGY);
 
 
-  jQuery("div.ontology_nav").html('<span class="toggle-row-display">' + showOntologiesToggleLinks(problemOnly) + '</span><span style="padding-left:30px;">Apply to Selected Rows:&nbsp;&nbsp;&nbsp;&nbsp;<select id="admin_action" name="admin_action"><option value="">Please Select</option><option value="delete">Delete</option><option value="all">Process</option><option value="process_annotator">Annotate</option><option value="diff">Diff</option><option value="index_search">Index</option><option value="run_metrics">Metrics</option></select>&nbsp;&nbsp;&nbsp;&nbsp;<a class="link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" href="javascript:;" id="admin_action_submit"><span class="ui-button-text">Go</span></a></span>');
+  jQuery("div.ontology_nav").html('<span class="toggle-row-display">' + showOntologiesToggleLinks(problemOnly) + '</span><span style="padding-left:30px;">Apply to Selected Rows:&nbsp;&nbsp;&nbsp;&nbsp;<select id="admin_action" name="admin_action"><option value="">Please Select</option><option value="delete">Delete</option><option value="all">Process</option><option value="process_annotator">Annotate</option><option value="diff">Diff</option><option value="index_search">Index</option><option value="run_metrics">Metrics</option><option value="generate_foops">FOOPS!</option></select>&nbsp;&nbsp;&nbsp;&nbsp;<a class="link_button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" href="javascript:;" id="admin_action_submit"><span class="ui-button-text">Go</span></a></span>');
 
   // toggle between all and problem ontologies
   jQuery.fn.dataTable.ext.search.push(

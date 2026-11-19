@@ -28,8 +28,7 @@ export default class extends Controller {
   handleHighlightedChange(){
     let recommandations_area = this.resultTarget
     let jsonString = document.querySelector('input[name="highlighted_recommendation"]:checked').value;
-    let jsonStringModified = jsonString.replace(/:text/g, '"text"').replace(/:link/g, '"link"').replace(/=>/g, ':');
-    let jsonArray = JSON.parse(jsonStringModified);
+    let jsonArray = JSON.parse(jsonString);
     var words = recommandations_area.textContent.split(/\s+/);
     for (var i = 0; i < words.length; i++) {
         var word = words[i].replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '').toLowerCase(); // Remove punctuation and convert to lowercase
