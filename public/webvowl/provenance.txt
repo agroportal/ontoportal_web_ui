@@ -1,0 +1,22 @@
+WebVOWL viewer (public/webvowl) — provenance
+============================================
+
+Base
+----
+Unmodified copy of the WebVOWL 1.1.7 build that Widoco ships:
+Release:   https://github.com/dgarijo/Widoco/releases/tag/v1.4.25
+Asset:     https://github.com/dgarijo/Widoco/releases/download/v1.4.25/widoco-1.4.25-jar-with-dependencies_JDK-11.jar
+Path:      webvowl_1.1.7_patched/ in the jar
+Source:    dgarijo/Widoco @ e6dbf9ffe08f92ab6fc3b24a441377be6b37b81b, src/main/resources/webvowl_1.1.7_patched
+Upstream:  VisualDataWeb/WebVOWL 1.1.7
+
+The eight files added by the first commit (index.html, favicon.ico,
+license.txt, css/webvowl.css, css/webvowl.app.css, js/d3.min.js,
+js/webvowl.js, js/webvowl.app.js) are byte-identical to that folder.
+
+Local changes
+-------------
+Kept as separate commits on top of the base:
+4eae285d  perf(webvowl): build the graph in linear time to load large ontologies
+807c2954  perf(webvowl): count nodes per degree instead of refiltering the graph
+4fb6c546  feat(webvowl): receive the graph data from the portal page
