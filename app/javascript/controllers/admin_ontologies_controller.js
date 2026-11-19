@@ -64,8 +64,11 @@ export default class extends Controller {
     if (action !== "delete") body.append("actions", action)
 
     const data = await this.#request(this.processUrlValue, action === "delete" ? "DELETE" : "PUT", body)
-    this.#showMessage(data)
-    this.#reloadFrame()
+    if (action === "delete") {
+      this.#reloadFrame(data)
+    } else {
+      this.#showMessage(data)
+    }
   }
 
   async refresh(event) {
@@ -83,7 +86,7 @@ export default class extends Controller {
     }
 
     await this.#waitForNewReport(previousDate)
-    this.#reloadFrame()
+    this.#reloadFrame(data)
   }
 
   async #waitForNewReport(previousDate) {
@@ -130,9 +133,11 @@ export default class extends Controller {
     box.appendChild(alert)
   }
 
-  #reloadFrame() {
+  #reloadFrame(data) {
     const frame = this.element.closest("turbo-frame")
-    if (frame && typeof frame.reload === "function") frame.reload()
+    if (!frame || typeof frame.reload !== "function") return
+    frame.addEventListener("turbo:frame-load", () => this.#showMessage(data), { once: true })
+    frame.reload()
   }
 
   #rows() {
