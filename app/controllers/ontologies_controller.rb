@@ -258,19 +258,7 @@ class OntologiesController < ApplicationController
       base_tag = "<base href=\"/ontologies/#{acronym}/documentation/\">"
       body = body.sub(/<head[^>]*>/i) { |m| "#{m}#{base_tag}" }
     end
-    send_data body, type: documentation_content_type(path), disposition: 'inline'
-  end
-
-  DOCUMENTATION_MIME = {
-    '.html' => 'text/html', '.css' => 'text/css', '.js' => 'application/javascript',
-    '.json' => 'application/json', '.jsonld' => 'application/ld+json', '.svg' => 'image/svg+xml',
-    '.png' => 'image/png', '.jpg' => 'image/jpeg', '.jpeg' => 'image/jpeg', '.gif' => 'image/gif',
-    '.ico' => 'image/x-icon', '.txt' => 'text/plain', '.ttl' => 'text/turtle', '.nt' => 'application/n-triples',
-    '.owl' => 'application/rdf+xml', '.xml' => 'application/xml', '.woff' => 'font/woff', '.woff2' => 'font/woff2'
-  }.freeze
-
-  def documentation_content_type(path)
-    DOCUMENTATION_MIME.fetch(File.extname(path).downcase, 'application/octet-stream')
+    send_data body, type: res['Content-Type'], disposition: 'inline'
   end
 
   def content_serializer
