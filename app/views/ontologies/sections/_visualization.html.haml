@@ -5,7 +5,7 @@
         .p-3
           = render LoaderComponent.new(type: 'pulsing')
       %iframe#webvowl_frame{ src: "#{LinkedData::Client.settings.rest_url.to_s.chomp('/')}/webvowl/index.html#ontology",
-                             data: { json: "/ontologies/#{@ontology.acronym}/vowl/data/ontology.json" },
+                             data: { json: "#{LinkedData::Client.settings.rest_url.to_s.chomp('/')}/ontologies/#{@ontology.acronym}/vowl?apikey=#{get_apikey}" },
                              style: "width: 100%; height: 100%; border: none;",
                              title: t('submissions.vowl') }
     %template#webvowl_failure
