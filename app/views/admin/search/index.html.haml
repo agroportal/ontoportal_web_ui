@@ -15,11 +15,11 @@
       = t('admin.search.index.collections_management')
     %dive.site-admin-page-section
       = render TableComponent.new(id: 'search_collections', custom_class: 'border rounded my-2 mx-3') do |t|
-        - t.header do |h|
+        - t.with_header do |h|
           - h.th { t('admin.search.index.name') }
           - h.th { t('admin.search.index.actions') }
         - @collections.each do |c|
-          - t.row do |r|
+          - t.with_row do |r|
             - r.td{ c }
             - r.td do
               .d-flex.align-items-center

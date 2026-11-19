@@ -196,8 +196,10 @@ class OntologiesController < ApplicationController
 
     params[:instanceid] = params[:instanceid] || search_first_instance_id
 
+    # Same lookup as InstancesController#show: an untyped node (a reified
+    # definition) is unknown to REST, SPARQL still knows it
     if params[:instanceid]
-      @instance = helpers.get_instance_details_json(@ontology.acronym, params[:instanceid], {include: 'all'})
+      @instance = ResourceLookupService.call(@ontology.acronym, params[:instanceid])
     end
 
     render partial: 'instances/instances', locals: { id: 'instances-data-table' }, layout: 'ontology_viewer'

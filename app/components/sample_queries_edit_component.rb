@@ -2,7 +2,7 @@
 class SampleQueriesEditComponent < ViewComponent::Base
   include ModalHelper, ApplicationHelper
   def initialize(graph: nil)
-    super
+    super()
     @graph = graph
   end
 end

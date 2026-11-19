@@ -61,10 +61,10 @@ class Display::SearchResultComponent < ViewComponent::Base
         inline_svg_tag('icons/ontology.svg') +
         content_tag(:div, class: 'text d-flex') do
           render(TurboFrameComponent.new(id: 'mapping_count', src: "/ajax/mappings/get_concept_table?ontologyid=#{@ontology_acronym}&conceptid=#{escape(@uri)}", loading: "lazy")) do |t|
-            t.loader do
+            t.with_loader do
              render LoaderComponent.new(small: true)
             end
-            t.error do
+            t.with_error do
               "-1"
             end
           end + content_tag(:div, 'mappings', class: 'ml-1')

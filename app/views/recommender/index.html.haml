@@ -75,7 +75,7 @@
 
         .recommender-page-button{class: is_input ? "d-none" : "", 'data-action': 'click->recommender#edit', id: 'recommender-edit-button'}
           = render Buttons::RegularButtonComponent.new(id:'edit-recommender', value: t('recommender.edit'), variant: "primary") do |btn|
-            - btn.icon_left do
+            - btn.with_icon_left do
               = inline_svg_tag "edit.svg"
     - if @results && @results.empty?
       = empty_state
@@ -85,12 +85,12 @@
           = t('recommender.results_title')
         .recommender-table-container
           = render TableComponent.new(id: 'recommender-table', borderless: true, layout_fixed: true, small_text: true, outline: true, sort_column: '1') do |t|
-            - t.header do |h|
+            - t.with_header do |h|
               - @results_table_header.each do |header|
                 - h.th do
                   = header
             - @results.each do |result|
-              - t.row do |r|
+              - t.with_row do |r|
                 - r.td do
                   - ontologies = ""
                   - result[:ontologies].each do |ontology|
@@ -108,18 +108,18 @@
                   = render Display::ProgressBarComponent.new(progress: result[:specialization_score])
                 - r.td do
                   .recommender-result-highlighted{'data-action': 'change->recommender#handleHighlightedChange'}
-                    = render Input::RadioChipComponent.new(label: result[:annotations].length.to_s+' annotations', name: 'highlighted_recommendation', value: result[:annotations], checked: result[:highlighted])
+                    = render Input::RadioChipComponent.new(label: result[:annotations].length.to_s+' annotations', name: 'highlighted_recommendation', value: result[:annotations].to_json, checked: result[:highlighted])
         .recommender-bottom-actions
           .json-button
             - json_href, json_target = api_button_link_and_target(@json_link)
             = render Buttons::RegularButtonComponent.new(id:'recommender_cite_json', value: "JSON", variant: "secondary", href: json_href, size: "slim", target: json_target, state: "regular") do |btn|
-              - btn.icon_left do
+              - btn.with_icon_left do
                 = inline_svg_tag "json.svg"
           .cite-us-button
             = render Buttons::RegularButtonComponent.new(id:'recommender_cite_us', value: t('recommender.cite'), variant: "secondary", href: $CITE_RECOMMENDER, size: "slim", target: '_blank', state: "regular") do |btn|
-              - btn.icon_left do
+              - btn.with_icon_left do
                 = inline_svg_tag "icons/cite.svg"
           .go-to-annotator
             = render Buttons::RegularButtonComponent.new(id:'recommender_go_annotator', value: t('recommender.call_annotator'), variant: "secondary", href: "/annotator?text=#{params[:input]}&ontologies=#{params[:ontologies]}", size: "slim", target: '_blank', state: "regular") do |btn|
-              - btn.icon_right do
+              - btn.with_icon_right do
                 = inline_svg_tag "arrow-right-outlined.svg"

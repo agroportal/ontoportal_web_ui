@@ -5,7 +5,7 @@
   = render ConceptDetailsComponent.new(id: 'instance-details', acronym: @ontology.acronym,
                                        concept_id: @instance["@id"], properties: @instance[:properties],
                                        bottom_keys: %w[created modified]) do |c|
-    - c.header(stripped: true) do |t|
+    - c.with_header(stripped: true) do |t|
       - t.add_row({ th: t("instances.id") }, { td: link_to_with_actions(@instance["@id"], acronym: @ontology.acronym) })
 
       -# Under `lang=all` a label arrives as {lang => value}, not as a list, so

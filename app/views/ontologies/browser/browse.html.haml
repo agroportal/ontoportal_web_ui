@@ -53,13 +53,13 @@
                   %div{key.eql?(:categories) ? {'data-parent-categories-selector-target': "chips"} : {}}
                     - objects, checked_values, count = values
                     = dropdown_component(id: "browse-#{key}-filter", is_open: count.positive?) do |d|
-                      - d.title { browse_filter_section_header(key: key, count: count)}
+                      - d.with_title { browse_filter_section_header(key: key, count: count)}
                       = browse_filter_section_body(key: key, checked_values: checked_values, objects: objects)
 
             - if federation_enabled?
               %div{ data:{action: "change->browse-filters#federationChange"}}
                 = dropdown_component(id: "browse-portal-filter", is_open: !request_portals.empty?) do |d|
-                  - d.title { browse_filter_section_header(title: t('federation.results_from_external_portals'))}
+                  - d.with_title { browse_filter_section_header(title: t('federation.results_from_external_portals'))}
                   .px-1.browse-federation-input-chips
                     = federation_input_chips(name: "portals")
 
@@ -75,6 +75,6 @@
                   = options_for_select(@sorts_options, @sort_by)
           .browse-ontologies
             = render TurboFrameComponent.new(id: "ontologies_list_view-page-1" , src: "/ontologies_filter?page=1&#{request.original_url.split('?').last}", data:{"turbo-frame-target":"frame", "turbo-frame-url-value": "/ontologies_filter"}) do |list|
-              - list.loader do
+              - list.with_loader do
                 = browser_counter_loader
                 - ontologies_browse_skeleton

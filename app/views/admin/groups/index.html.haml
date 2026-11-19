@@ -13,7 +13,7 @@
     = render_alerts_container
 
   = render TableComponent.new(id: 'admin_groups', custom_class: 'border rounded p-1') do |t|
-    - t.header do |h|
+    - t.with_header do |h|
       - h.th {t('admin.groups.form.name')}
       - h.th {t('admin.groups.form.description')}
       - h.th {t('admin.groups.form.created')}

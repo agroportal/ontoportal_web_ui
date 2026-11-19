@@ -46,4 +46,14 @@ module UrlsHelper
     def encode_param(string)
         escape(string)
     end
+
+    # Page a feedback is about. /feedback keeps the page it already reports:
+    # wrapping its own URL nests one level per click, an endless crawler trap.
+    # e.g. /feedback?location=/ontologies/X must not link to
+    #      /feedback?location=/feedback?location=/ontologies/X
+    def feedback_location
+        return params[:location] if request.path == feedback_path
+
+        encode_param(request.url)
+    end
 end

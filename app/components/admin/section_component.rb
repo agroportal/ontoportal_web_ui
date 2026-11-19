@@ -3,7 +3,7 @@
 class Admin::SectionComponent < ViewComponent::Base
 
   def initialize(title:, description: nil, id: nil)
-    super
+    super()
     @title = title
     @description = description
     @id = id

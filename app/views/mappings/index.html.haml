@@ -11,13 +11,13 @@
     .mappings-page-decription
       = t('mappings.description')
     = render TabsContainerComponent.new do |c|
-      - c.item(title: t('mappings.tabs.bubble_view'), selected: true)
-      - c.item_content do
+      - c.with_item(title: t('mappings.tabs.bubble_view'), selected: true)
+      - c.with_item_content do
         = render partial: '/mappings/tab_sections/bubble_view'
 
-      - c.item(title: t('mappings.tabs.table_view'))
-      - c.item_content do
+      - c.with_item(title: t('mappings.tabs.table_view'))
+      - c.with_item_content do
         = render partial: '/mappings/tab_sections/table_view'
-      - c.item(title: t('mappings.tabs.upload_mappings'))
-      - c.item_content do    
+      - c.with_item(title: t('mappings.tabs.upload_mappings'))
+      - c.with_item_content do    
         = render partial: '/mappings/tab_sections/upload_mappings'

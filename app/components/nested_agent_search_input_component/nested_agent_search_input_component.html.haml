@@ -1,18 +1,18 @@
 = render NestedFormInputsComponent.new do |c|
-  - c.header do
+  - c.with_header do
     = @label
-  - c.template do
+  - c.with_template do
     = render TurboFrameComponent.new(id: agent_id_frame_id('NEW_RECORD', @parent_id)) do
       = render AgentSearchInputComponent.new(id: 'NEW_RECORD', agent_type: @agent_type,
                                                name_prefix: @name_prefix, show_affiliations: @show_affiliations,
                                                parent_id: @parent_id, editable: @editable, edit_on_modal: @edit_on_modal, create_new_agent_action: @create_new_agent_action)
 
-  - c.empty_state do
+  - c.with_empty_state do
     = hidden_field_tag agent_field_name('',  @name_prefix+"[#{Array(@agents).size}]")
   - Array(@agents).each_with_index do |agent, i|
     - if agent.is_a?(String)
-      - c.row do
+      - c.with_row do
         = agent
     - elsif agent&.agentType
-      - c.row do
+      - c.with_row do
         = render partial: 'agents/agent_show', locals: {agent_id: i, agent: agent, name_prefix: @name_prefix, editable: @editable, edit_on_modal: @edit_on_modal, parent_id: @parent_id}

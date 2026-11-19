@@ -9,5 +9,5 @@
     %div{key.eql?(:categories) ? {'data-parent-categories-selector-target': "chips"} : {}}
       - objects, checked_values, count = values
       = dropdown_component(id: "browse-#{key}-filter", is_open: count.positive?) do |d|
-        - d.title { browse_filter_section_header(key: key, count: count) }
+        - d.with_title { browse_filter_section_header(key: key, count: count) }
         = browse_filter_section_body(key: key, checked_values: checked_values, objects: objects)

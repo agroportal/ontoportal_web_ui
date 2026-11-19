@@ -11,7 +11,7 @@
 
     = render_alerts_container(AgentsController)
     = render TableComponent.new(id: 'agents-table', borderless: true, outline: true, paging: true, searching: true, sort_column: '4', search_placeholder: t('agents.index.search_placeholder'), page: @page) do |t|
-      - t.header do |h|
+      - t.with_header do |h|
         - h.th {t("agents.form.name")}
         - h.th {t("agents.form.acronym")}
         - h.th {t("agents.form.affiliations")}

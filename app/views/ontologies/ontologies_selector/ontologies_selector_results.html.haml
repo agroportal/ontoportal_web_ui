@@ -15,5 +15,5 @@
             = save_button_component(class_name: 'button', id:'apply-selector', value: t('ontologies_selector.apply'), data: {action: "click->ontologies-selector#apply"})
 
 
-    - container.loader do
+    - container.with_loader do
         = render LoaderComponent.new(type: 'pulsing') 

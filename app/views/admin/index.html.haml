@@ -15,28 +15,28 @@
     - sections << t('admin.index.sparql') if sparql_enabled?
     - selected = params[:section] || sections.first.downcase
     = render Layout::VerticalTabsComponent.new(header:  t('admin.index.administration_console'), titles: sections, selected: selected, url_parameter: 'section') do |t|
-      - t.item_content do
+      - t.with_item_content do
         = render TurboFrameComponent.new(id: 'analytics-tab', src: admin_analytics_path, loading: 'lazy')
-      - t.item_content do
+      - t.with_item_content do
         = render 'main'
-      - t.item_content do
+      - t.with_item_content do
         = render TurboFrameComponent.new(id: 'catalog-config', src: admin_catalog_configuration_path, loading: 'lazy')
-      - t.item_content do
+      - t.with_item_content do
         = render TurboFrameComponent.new(id: 'licenses-tab', src: admin_licenses_path, loading: 'lazy')
-      - t.item_content do
+      - t.with_item_content do
         = render partial: 'ontology_administration'
-      - t.item_content do
+      - t.with_item_content do
         = render TurboFrameComponent.new(id: 'metadata-administration-tab', src: '/admin/metadata_administration', loading: 'lazy')
-      - t.item_content do
+      - t.with_item_content do
         = render TurboFrameComponent.new(id: 'users-list', src: users_path, loading: 'lazy')
-      - t.item_content do
+      - t.with_item_content do
         = render TurboFrameComponent.new(id: 'groups-list', src: admin_groups_path, loading: 'lazy')
-      - t.item_content do
+      - t.with_item_content do
         = render TurboFrameComponent.new(id: 'categories-list', src: admin_categories_path, loading: 'lazy')
-      - t.item_content do
+      - t.with_item_content do
         = render TurboFrameComponent.new(id: 'agents-list', src: admin_agents_path(page: params[:page]), loading: 'lazy')
-      - t.item_content do
+      - t.with_item_content do
         = render TurboFrameComponent.new(id: 'search-admin', src: '/admin/search', loading: 'lazy')
       - if sparql_enabled?
-        - t.item_content do
+        - t.with_item_content do
           = sparql_query_container

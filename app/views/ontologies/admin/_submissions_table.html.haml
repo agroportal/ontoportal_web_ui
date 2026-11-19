@@ -1,7 +1,7 @@
 = turbo_frame_tag "admin_submissions_frame" do
   = form_tag submissions_ontology_administration_path(@ontology.acronym), method: :delete, id: "bulk_delete_form", data: { turbo_frame: "_top" } do
     = render TableComponent.new(id: 'submissions_table', stripped: true) do |t|
-      - t.header do |h|
+      - t.with_header do |h|
         - h.th { t('ontologies.admin.submissions.table.select') }
         - h.th { t('ontologies.admin.submissions.table.submission_id') }
         - h.th { t('ontologies.admin.submissions.table.release_date') }
@@ -11,7 +11,7 @@
       - submissions = @ontology.explore.submissions(invalidate_cache: true, include: 'submissionId,released,status')
       - latest_sub_id = submissions.map(&:submissionId).max
       - submissions.each do |sub|
-        - t.row do |r|
+        - t.with_row do |r|
           - if sub.submissionId != latest_sub_id
             - r.td { check_box_tag "ids[]", sub.submissionId}
           - else

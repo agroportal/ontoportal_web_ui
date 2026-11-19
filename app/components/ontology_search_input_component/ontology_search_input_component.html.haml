@@ -3,7 +3,7 @@
           item_base_url: '/ontologies/', id_key:'acronym',
           actions_links: {search_ontology_content: "/search?query=o",  browse_all_ontologies: "/ontologies?search=o"}) do |s|
 
-  - s.template do
+  - s.with_template do
     %a{href: "LINK", class: "search-content", 'data-turbo-frame': '_top'}
       %p.search-element.home-searched-ontology
         NAME(ACRONYM)

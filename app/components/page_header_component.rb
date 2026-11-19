@@ -2,7 +2,7 @@
 
 class PageHeaderComponent < ViewComponent::Base  
     def initialize(title: , description:)
-      super
+      super()
       @title = title
       @description = description
     end  

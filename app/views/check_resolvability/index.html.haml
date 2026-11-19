@@ -5,7 +5,7 @@
 
 
       = render(Layout::RevealComponent.new(toggle: true, selected: false)) do |c|
-        - c.button do
+        - c.with_button do
           .d-flex.justify-content-end
             .search-page-advanced-button.show-options
               .icon
@@ -13,7 +13,7 @@
               .text
                 = t("check_resolvability.show_help")
 
-        - c.container do
+        - c.with_container do
           %div.mt-2.mx-auto
             = render Display::AlertComponent.new(type:'info') do
               %h4= t("check_resolvability.how_it_works.title")
@@ -54,7 +54,7 @@
             = render DropdownContainerComponent.new(id: "format#{count}" , title: "#{title} redirection path".html_safe) do
               = render TableComponent.new(stripped: true) do |t|
                 - result[:redirections].each_with_index do |redirection, index|
-                  - t.row do |row|
+                  - t.with_row do |row|
                     - row.td do
                       = link_to redirection.to_s, redirection.to_s
                       - if !index.eql?(result[:redirections].length - 1)

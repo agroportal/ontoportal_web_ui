@@ -160,4 +160,24 @@ RSpec.describe ConceptDetailsComponent, type: :component do
       expect(rendered.css("th").map { |th| th.text.strip }).to include("superGroup")
     end
   end
+
+  # A class page takes the scheme and SKOS-XL rows out of the listed ones, then
+  # adds them back from its view, one section each.
+  describe "#add_sections" do
+    let(:top_concept_of) { "http://www.w3.org/2004/02/skos/core#topConceptOf" }
+    let(:scheme) { "http://opendata.inrae.fr/thesaurusINRAE/mt_1" }
+
+    it "lists each added row in the Raw block" do
+      rendered = render_inline(
+        described_class.new(id: "concept-details", acronym: "INRAETHES", concept_id: concept,
+                            exclude_keys: %w[topConceptOf],
+                            properties: OpenStruct.new(top_concept_of => [scheme]))
+      ) do |c|
+        c.add_sections(%w[topConceptOf]) { |value| value }
+      end
+
+      expect(rendered.css("th").map { |th| th.text.strip }).to include("topConceptOf")
+      expect(rendered.css("td").text).to include(scheme)
+    end
+  end
 end

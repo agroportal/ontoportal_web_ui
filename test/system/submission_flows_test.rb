@@ -392,7 +392,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
     wait_for_text 'Acronym'
 
     assert_text 'Acronym'
-    assert_selector 'input[name="ontology[acronym]"][disabled="disabled"]'
+    assert_selector 'input[name="ontology[acronym]"][disabled]'
     fill_in 'ontology[name]', with: ontology.name
     tom_select 'submission[hasOntologyLanguage]', submission.hasOntologyLanguage
 

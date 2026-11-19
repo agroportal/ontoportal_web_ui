@@ -35,7 +35,7 @@ jobs:
         ports:
           - 11211:11211
       chrome-server:
-        image: selenium/standalone-chrome:112.0-chromedriver-112.0-grid-4.9.0-20230421
+        image: selenium/standalone-chrome:157.0-chromedriver-157.0-grid-4.52.0-20261101
         options: "--shm-size=2g"
         ports:
           - "4444:4444"
@@ -47,7 +47,7 @@ jobs:
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1'
+          ruby-version: .ruby-version
           bundler-cache: true
 
       - name: Run OntoPortal API

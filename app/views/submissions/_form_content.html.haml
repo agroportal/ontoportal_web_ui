@@ -7,6 +7,6 @@
       .edit-ontology-actions
         .save-button
           = render Buttons::RegularButtonComponent.new(id:'save-button', value: t('submissions.save_button'), variant: "primary", size: "slim", type: "submit") do |btn|
-            - btn.icon_left do
+            - btn.with_icon_left do
               - inline_svg_tag "check.svg"
 

@@ -40,7 +40,7 @@ class ConceptDetailsComponent < ViewComponent::Base
     rows = row_hash_properties(scheme_set, concept_properties, &block)
 
     rows.each do |row|
-      section do |table_row|
+      with_section do |table_row|
         table_row.create(*row)
       end
     end
@@ -70,7 +70,7 @@ class ConceptDetailsComponent < ViewComponent::Base
         block_given? ? block.call(v) : row_value(v, ontology_acronym)
       end
 
-      out << [th, { td: list_items_component(max_items: 5) { |r| ajax_links.map { |val| r.container { val.html_safe } } } }]
+      out << [th, { td: list_items_component(max_items: 5) { |r| ajax_links.map { |val| r.with_container { val.html_safe } } } }]
     end
     out
   end

@@ -10,10 +10,15 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   include ApplicationTestHelpers::Agents
   include ApplicationTestHelpers::Federation
 
+  # Fixture users log in with "password". Chrome flags it as breached and
+  # opens a "Change your password" dialog that swallows every native click
+  # until the next test resets the session
   driven_by :selenium, using: ENV['CI'].present? ? :headless_chrome : :chrome, screen_size: [1400, 1400], options: {
     browser: :remote,
     url: "http://localhost:4444"
-  }
+  } do |driver_option|
+    driver_option.add_preference('profile.password_manager_leak_detection', false)
+  end
 
   # How long an element must keep the same box before click_still clicks it,
   # and how long to wait for that
@@ -83,6 +88,10 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
     # Click the login button
     click_button 'Login'
+
+    # The click returns before the login lands: wait for its redirect, or
+    # the caller's next visit races the session cookie
+    assert_no_current_path login_index_path
   end
 
   def assert_date(date)
@@ -193,8 +202,9 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
     # Wait for the agent chip (or the new agent form) to replace the search
     # input. The swap resizes the row and moves the buttons below it: a click
-    # sent during the move is lost (e.g. "Add another" adds no row).
-    assert_no_selector("input[name='agent#{agent_id}']")
+    # sent during the move is lost (e.g. "Add another" adds no row). While the
+    # row's frame loads, it only hides the input: wait for it to leave the DOM.
+    assert_no_selector("input[name='agent#{agent_id}']", visible: :all)
 
     links_size.eql?(1) ? agent_id : nil
   end
@@ -219,9 +229,9 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       identifier = agent.identifiers.first
 
       if agent.agentType.eql?('organization')
-        fill_in "_identifiers_0_notation", with: identifier['notation']
+        fill_in "identifiers_0_notation", with: identifier['notation']
       else
-        fill_in "_identifiers_1_notation", with: identifier['notation']
+        fill_in "identifiers_1_notation", with: identifier['notation']
       end
 
       if is_affiliation || agent.agentType.eql?('organization')

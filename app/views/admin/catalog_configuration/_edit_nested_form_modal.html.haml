@@ -13,12 +13,12 @@
     = form_with url: admin_catalog_configuration_path, method: :patch, local: false, turbo: true do |f|
       = hidden_field_tag "config[#{@key}][]", "", id: "empty_config_#{@key}"
       = render NestedFormInputsComponent.new(object_name: "portal", show_add_button: !is_federated) do |c|
-        - c.header do
+        - c.with_header do
           - header_content = @field_names.map { |field_name| content_tag(:div, field_name.to_s.humanize, class: 'w-50 mx-1') }.join.html_safe
           = header_content
 
         - @value_attrs.each_with_index do |row_data, i|
-          - c.row do
+          - c.with_row do
             - row_options = { class: 'd-flex my-1 align-items-center' }
             - row_options[:data] = { controller: 'apikey-validator', 'apikey-validator-url-value': admin_validate_apikey_catalog_configuration_path } if is_federated
             = content_tag(:div, row_options) do
@@ -38,7 +38,7 @@
               - end.join.html_safe
 
         - unless is_federated
-          - c.template do
+          - c.with_template do
             = content_tag(:div, class: 'd-flex my-1') do
               - @field_names.map do |field_name|
                 - content_tag(:div, class: 'w-50 mx-1') do

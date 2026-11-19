@@ -9,7 +9,7 @@ Bundler.require(*Rails.groups)
 module BioportalWebUi
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
+    config.load_defaults 8.1
 
     # permitted locales available for the application
     config.i18n.available_locales = [:en, :fr, :it, :de]
@@ -35,6 +35,6 @@ module BioportalWebUi
     config.generators.test_framework  =  nil
 
     # Set the default layout to app/views/layouts/component_preview.html.erb
-    config.view_component.default_preview_layout = "component_preview"
+    config.view_component.previews.default_layout = "component_preview"
   end
 end
