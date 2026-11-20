@@ -398,7 +398,8 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
     list_checks selected_groups.map(&:acronym), @groups.map(&:acronym)
 
-    tom_select 'ontology[administeredBy][]', [@user_bob.username]
+    # The Danger Zone of the admin page manages the administrators
+    assert_no_selector 'select[name="ontology[administeredBy][]"]', visible: :all
 
     fill_in 'submission[URI]', with: submission.URI
     fill_in 'submission[versionIRI]', with: submission.versionIRI
