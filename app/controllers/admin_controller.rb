@@ -38,6 +38,11 @@ class AdminController < ApplicationController
     render 'metadata_administration'
   end
 
+  def ontology_administration
+    @ontologies_report = helpers.get_ontologies_report
+    render 'ontology_administration'
+  end
+
   def update_check_enabled
     enabled = LinkedData::Client::HTTP.get("#{ADMIN_URL}update_check_enabled", {}, raw: false)
 

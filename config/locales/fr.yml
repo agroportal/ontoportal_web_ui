@@ -10,6 +10,45 @@ fr:
               invalid_license_key: est une clé de licence invalide.
               no_appliance_id_for_comparison: n'a pas pu être validée. Impossible de récupérer l'ID de la machine virtuelle.
   admin:
+    ontologies:
+      col_ontology: "Ontologie"
+      col_admin: "Admin"
+      col_format: "Format"
+      col_date_created: "Date de création"
+      col_report_date: "Date du rapport"
+      col_url: "URL"
+      col_error_status: "Statut d'erreur"
+      col_missing_status: "Statut manquant"
+      col_issues: "Problèmes"
+      no_ontologies: "Aucune ontologie disponible"
+      filter: "Filtre : "
+      view_ontologies: "Afficher les ontologies :"
+      all: "Toutes"
+      problem_only: "Problèmes uniquement"
+      apply_to_selected: "Appliquer aux lignes sélectionnées :"
+      please_select: "Veuillez sélectionner"
+      go: "Valider"
+      generate: "Générer"
+      refresh: "Actualiser"
+      act_delete: "Supprimer"
+      act_process: "Traiter"
+      act_annotate: "Annoter"
+      act_diff: "Diff"
+      act_index: "Indexer"
+      act_metrics: "Métriques"
+      act_foops: "FOOPS!"
+      link_log: "Journal"
+      link_rest: "REST"
+      link_submissions: "Soumissions"
+      submissions_modal_title: "Soumissions de l'ontologie %{acronym}"
+      alert_select: "Veuillez sélectionner au moins une ontologie dans le tableau pour effectuer une action."
+      alert_choose: "Veuillez choisir une action à effectuer sur les ontologies sélectionnées."
+      del_onts_lead: "Vous êtes sur le point de supprimer les ontologies suivantes :"
+      cannot_undo: "Cette action est IRRÉVERSIBLE !!! Êtes-vous sûr ?"
+      proc_lead: "Vous êtes sur le point d'effectuer %{operation} sur les ontologies suivantes :"
+      proc_queue: "Les ontologies seront ajoutées à la file et traitées lors de la prochaine exécution du cron."
+      proceed: "Dois-je continuer ?"
+      refresh_confirm: "Actualiser ce rapport prend du temps... Êtes-vous prêt pour une pause café ?"
     analytics:
       active_users: Utilisateurs actifs
       ontologies_count: "%{size} nouvelle(s) ontologie(s) cette année"
@@ -135,6 +174,17 @@ fr:
       federation_provide_apikey: Veuillez fournir une clé API pour l'utilisateur de fédération correspondant à chaque portail afin d'activer la fédération.
       federation_not_allowed: Ce portail n'est pas autorisé à activer les fonctionnalités de fédération.
       federation_invalid_apikeys: "Les portails suivants n'ont pas été ajoutés car leur clé API est invalide : %{portals}"
+      sections:
+        general: Général
+        licensing: Licence
+        description: Description
+        dates: Dates
+        agents: Agents
+        community: Communauté
+        usage: Utilisation
+        methodology_and_provenance: Méthodologie et provenance
+        media: Média
+        other: Autre
     licenses:
       create:
         success: Licence renouvelée

@@ -7,6 +7,9 @@ import { application } from "./application"
 import BrowseFiltersController from "./browse_filters_controller"
 application.register("browse-filters", BrowseFiltersController)
 
+import AdminOntologiesController from "./admin_ontologies_controller"
+application.register("admin-ontologies", AdminOntologiesController)
+
 import Skos_collections_selector from "./skos_collections_selector"
 application.register("skos-collections-selector", Skos_collections_selector)
 

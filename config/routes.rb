@@ -259,6 +259,7 @@ Rails.application.routes.draw do
   get 'my-ontologies' => 'my_ontologies#index'
   get 'statistics' => 'statistics#index'
   get 'admin/metadata_administration' => 'admin#metadata_administration'
+  get 'admin/ontology_administration' => 'admin#ontology_administration'
   get 'search/json_search(/:id)' => 'search#json_search'
 
   mount Lookbook::Engine, at: '/lookbook'

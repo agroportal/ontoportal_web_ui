@@ -24,7 +24,7 @@
       - t.with_item_content do
         = render TurboFrameComponent.new(id: 'licenses-tab', src: admin_licenses_path, loading: 'lazy')
       - t.with_item_content do
-        = render partial: 'ontology_administration'
+        = render TurboFrameComponent.new(id: 'ontology-administration-tab', src: '/admin/ontology_administration', loading: 'lazy')
       - t.with_item_content do
         = render TurboFrameComponent.new(id: 'metadata-administration-tab', src: '/admin/metadata_administration', loading: 'lazy')
       - t.with_item_content do
