@@ -479,6 +479,7 @@ module OntologiesHelper
       sections += %w[schemes collections] if skos?
       sections += %w[instances] unless skos?
       sections += %w[notes mappings widgets]
+      sections << 'visualization' if vowl_ready?(@submission_latest)
       sections << 'sparql' if sparql_enabled?
     end
     sections
@@ -665,6 +666,10 @@ module OntologiesHelper
       title = "<b>#{label}</b>" + values.map { |v| "<br>" + link_to(v, v, target: '_blank') }.join
       ontology_icon_button(icon, "javascript:void(0);", title, interactive: true)
     end
+  end
+
+  def vowl_ready?(submission = @submission_latest)
+    Array(submission&.submissionStatus).include?('VOWL')
   end
 
   def ontology_icon_button(icon, url, title, interactive: false, **options)
