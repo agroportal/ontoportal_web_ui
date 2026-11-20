@@ -106,6 +106,14 @@ class OntologiesAdministrationController < ApplicationController
     end
   end
 
+  # The modelling pitfalls OOPS! found in the latest submission, in their own
+  # section of the page. The submission pipeline stores them (generate_oops)
+  def oops
+    @submission_id = @ontology.explore.latest_submission(include: 'submissionId').submissionId
+    @report = oops_report(@submission_id)
+    render partial: 'ontologies/admin/oops', layout: false
+  end
+
   # Asks for the acronym before deleting the ontology, in the application modal
   def confirm_destroy
     render partial: 'ontologies/admin/delete_ontology', layout: false
@@ -150,6 +158,16 @@ class OntologiesAdministrationController < ApplicationController
                                     .reject { |user| except.include?(user.id) }
                                     .map { |user| [user.username, user.id] }
                                     .sort_by { |username, _id| username.downcase }
+  end
+
+  # nil when the pipeline has not scanned the submission, or the scan failed:
+  # the API answers 404, without pitfalls. Fresh, a scan may have just ended
+  def oops_report(submission_id)
+    return nil if submission_id.nil?
+
+    report = LinkedData::Client::HTTP.get("/ontologies/#{@ontology.acronym}/submissions/#{submission_id}/oops",
+                                          invalidate_cache: true)
+    report if report&.pitfalls
   end
 
   # User URIs. The API leaves acl out of an ontology unless asked for it

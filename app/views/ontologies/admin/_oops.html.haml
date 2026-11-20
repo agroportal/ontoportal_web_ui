@@ -1,0 +1,31 @@
+= turbo_frame_tag 'oops' do
+  = render SummarySectionComponent.new(title: t('ontologies.admin.sections.oops')) do
+    .p-3
+      - if @report.nil?
+        %p.text-muted= t('ontologies.admin.oops.unavailable')
+      - else
+        %p= t('ontologies.admin.oops.summary', total: @report.total_pitfalls, critical: @report.total_critical, important: @report.total_important, minor: @report.total_minor)
+        -# Most severe first, as the API sorts them
+        %table.table.table-sm
+          %thead
+            %tr
+              %th= t('ontologies.admin.oops.code')
+              %th= t('ontologies.admin.oops.pitfall')
+              %th= t('ontologies.admin.oops.importance')
+              %th= t('ontologies.admin.oops.affected')
+          %tbody
+            - @report.pitfalls.each do |pitfall|
+              %tr
+                %td= pitfall.code
+                %td
+                  = pitfall.name
+                  %br
+                  %small.text-muted= pitfall.description
+                %td
+                  %span.oops-importance{class: "oops-importance--#{pitfall.importance.to_s.downcase}"}= pitfall.importance
+                %td= pitfall.affected_elements_total
+
+        -# The JSON of the API, with the affected elements
+        - href, target = api_button_link_and_target("#{@ontology.id}/submissions/#{@submission_id}/oops")
+        .d-flex.justify-content-end
+          = link_to t('ontologies.admin.oops.open'), href, target: target, class: 'btn btn-outline-primary'

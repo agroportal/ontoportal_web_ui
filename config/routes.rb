@@ -83,6 +83,7 @@ Rails.application.routes.draw do
       patch 'administrators', action: :update_administrators
       get 'object_description', action: :object_description, as: :object_description
       patch 'object_description', action: :update_object_description
+      get 'oops', action: :oops, as: :oops
     end
 
     resources :submissions do

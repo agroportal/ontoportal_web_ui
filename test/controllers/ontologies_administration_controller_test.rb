@@ -57,6 +57,15 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
     assert_select "turbo-frame#object_description_inputs[src*='properties=']"
   end
 
+  # The test API does not run OOPS!: no report, and no error either
+  test 'the OOPS! report has its own section' do
+    post login_index_url, params: { user: PORTAL_ADMIN }
+
+    get "#{PAGE}/oops"
+    assert_response :success
+    assert_select 'turbo-frame#oops p', text: 'No OOPS! report has been generated for the latest submission of this ontology.'
+  end
+
   test 'the state of a submission opens its processing details' do
     post login_index_url, params: { user: PORTAL_ADMIN }
 

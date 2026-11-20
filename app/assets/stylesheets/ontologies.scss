@@ -495,6 +495,29 @@ $widget-table-border-color: #EFEFEF;
     color: var(--gray-color) !important;
     background-color: var(--light-color);
   }
+
+  // Importance of an OOPS! pitfall, in the colors of the submission states
+  .oops-importance {
+    padding: 2px 12px;
+    border-radius: 32px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .oops-importance--critical {
+    color: $state-danger;
+    background-color: var(--bg-danger-light-color);
+  }
+
+  .oops-importance--important {
+    color: $state-warning;
+    background-color: var(--bg-warning-light-color);
+  }
+
+  .oops-importance--minor {
+    color: var(--gray-color);
+    background-color: var(--light-color);
+  }
 }
 
 // Processing details of a submission, in the application modal
