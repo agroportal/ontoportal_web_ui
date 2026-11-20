@@ -11,63 +11,19 @@
     = render PageHeaderComponent.new(title: t('ontologies.admin.title') , description: "")
   %br
 
-  .admin-section
-    .edit-ontology-title
-      %div
-        = t('ontologies.admin.submissions.title')
-      %hr
-    = render Layout::CardComponent.new do |c|
-      = turbo_frame_tag "admin_submissions_frame", src: submissions_ontology_administration_path(@ontology.acronym), loading: "lazy" do
-        .text-center.p-4
-          %i.fas.fa-spinner.fa-spin.mr-2
-          = t('ontologies.admin.submissions.loading')
-
-  .admin-section
-    .edit-ontology-title
-      %div.d-flex.justify-content-between.align-items-center.mb-2
-        %div
-          = t('ontologies.admin.log.title')
-        = link_to log_ontology_administration_path(@ontology.acronym), data: { turbo_frame: "admin_log_frame", turbo: "true" }, class: "btn btn-sm btn-outline-primary" do
-          %i.fas.fa-sync-alt.me-1
-      %hr
-    = render Layout::CardComponent.new do |c|
-      %div#admin_log_container.admin-log-container
-        -# = "hello"
-        = turbo_frame_tag "admin_log_frame", src: log_ontology_administration_path(@ontology.acronym), loading: "lazy" do
-          = t('ontologies.admin.log.loading')
-
-  -# .admin-section
-  -#   .edit-ontology-title
-  -#     %div
-  -#       = t('ontologies.admin.ontology.title')
-  -#     %hr
-  -#   = render Layout::CardComponent.new do |c|
-  -#     %p.admin-warning-text
-  -#       %strong= t('ontologies.admin.ontology.warning')
-  -#     .admin-actions
-  -#       = link_to ontology_administration_path(@ontology.acronym), method: :delete, data: { confirm: t('ontologies.admin.ontology.confirm_delete') }, class: "btn btn-danger" do
-  -#         = inline_svg_tag('icons/delete.svg', width: '16px', height: '16px', class: 'text-white')
-  -#         = t('ontologies.admin.ontology.delete')
+  -# A menu entry per section, as on the submission edit page; each section
+  -# is a partial. ?section=general opens one, the first by default
+  - sections = [t('ontologies.admin.sections.general'), t('ontologies.admin.sections.object_description')]
+  - section_ids = sections.map(&:parameterize)
+  - selected = section_ids.include?(params[:section]) ? params[:section] : section_ids.first
+  = render Layout::VerticalTabsComponent.new(titles: sections, selected: selected, url_parameter: 'section') do |tabs|
+    - tabs.with_item_content do
+      = render 'ontologies/admin/general'
+    - tabs.with_item_content do
+      -# Loads once the section shows
+      = render TurboFrameComponent.new(id: 'object_description', src: object_description_ontology_administration_path(@ontology.acronym), loading: 'lazy')
 
 :javascript
-  // Checkboxes validation
-  document.addEventListener("turbo:load", function() {
-    const bulkDeleteForm = document.getElementById('bulk_delete_form');
-    const bulkDeleteButton = document.getElementById('bulk_delete_button');
-    
-    if (bulkDeleteForm && bulkDeleteButton) {
-      bulkDeleteButton.addEventListener('click', function(event) {
-        const checkboxes = bulkDeleteForm.querySelectorAll('input[name="ids[]"]:checked');
-        if (checkboxes.length === 0) {
-          event.preventDefault();
-          event.stopPropagation();
-          alert("#{t('ontologies.admin.submissions.select_at_least_one')}");
-          return false;
-        }
-      });
-    }
-  });
-
   // Highlight logs after refresh
   document.addEventListener("turbo:frame-load", function(event) {
     if (event.target.id === "admin_log_frame") {

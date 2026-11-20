@@ -1,0 +1,13 @@
+= turbo_frame_tag 'object_description' do
+  = render SummarySectionComponent.new(title: t('ontologies.admin.sections.object_description')) do
+    - if @submission_id.nil?
+      %p.p-3= t('ontologies.admin.object_description.no_submission', acronym: @ontology.acronym)
+    - else
+      -# Those of the latest submission. A full page load: the response
+      -# comes back to this section
+      = form_tag object_description_ontology_administration_path(@ontology.acronym), method: :patch, class: 'p-3', data: { turbo: false } do
+        = hidden_field_tag :submission_id, @submission_id
+        = render TurboFrameComponent.new(id: 'object_description_inputs', loading: 'lazy',
+                                         src: ontology_submission_edit_properties_path(@ontology.acronym, @submission_id, properties: @attributes.join(','), container_id: 'object_description_inputs'))
+        .d-flex.justify-content-end
+          = submit_tag t('ontologies.admin.object_description.save'), class: 'btn btn-primary'

@@ -99,7 +99,7 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
       # Licencing tab
       click_on "Licensing"
-      submission_licensing_edit_fill(ontology_2, submission_2)
+      submission_licensing_edit_fill(submission_2)
 
       # Agents tab
       click_on "Agents"
@@ -398,7 +398,8 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
     list_checks selected_groups.map(&:acronym), @groups.map(&:acronym)
 
-    tom_select 'ontology[administeredBy][]', [@user_bob.username]
+    # The Danger Zone of the admin page manages the administrators
+    assert_no_selector 'select[name="ontology[administeredBy][]"]', visible: :all
 
     fill_in 'submission[URI]', with: submission.URI
     fill_in 'submission[versionIRI]', with: submission.versionIRI
@@ -459,10 +460,10 @@ class SubmissionFlowsTest < ApplicationSystemTestCase
 
   end
 
-  def submission_licensing_edit_fill(ontology, submission)
-    wait_for_text "Visibility"
+  # The visibility is no longer here: the Danger Zone of the admin page changes it
+  def submission_licensing_edit_fill(submission)
+    wait_for '[name="submission[useGuidelines]"]'
 
-    tom_select 'ontology[viewingRestriction]', ontology.viewingRestriction
     tom_select 'submission[hasLicense]', 'CC Attribution 3.0'
     fill_in 'submission[useGuidelines]', with: submission.useGuidelines
     fill_in 'submission[morePermissions]', with: submission.morePermissions

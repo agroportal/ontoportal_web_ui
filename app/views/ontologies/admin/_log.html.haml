@@ -1,8 +1,12 @@
 = turbo_frame_tag "admin_log_frame" do
+  -# The status tells whether a step failed, the log may hold no ERROR line.
+  -# Without a failure, a sentence replaces the lines; Download has them
   - if @log.blank?
     %p= t('ontologies.admin.log.no_log')
+  - elsif !submission_failed?(@latest_submission)
+    %p= t('ontologies.admin.log.no_errors', acronym: @ontology.acronym)
   - else
-    %div{style: "max-height: 400px; white-space: pre;"}
+    %div
       - begin
         - logs = @log.is_a?(String) ? JSON.parse(@log) : @log
         - logs = [logs] unless logs.is_a?(Array)
@@ -14,7 +18,7 @@
               - when 'DEBUG' then 'text-warning'
               - when 'INFO' then 'text-success'
               - else ''
-            = "[#{entry[:timestamp]}] <span class=\"#{severity_class}\">#{entry[:severity]}:</span> #{entry[:message]}".html_safe
+            = safe_join(["[#{entry[:timestamp]}] ", content_tag(:span, "#{entry[:severity]}:", class: severity_class), " #{entry[:message]}"])
           - else
             = entry.to_s
       - rescue => e

@@ -18,7 +18,8 @@
     %div
       = @ontology.acronym
   .ontology-details-header-sub-container
-    .ontology-details-header-left-container{style:'width: 70%'}
+    -# 70% wide; shrinks to 60% to keep the buttons on this row
+    .ontology-details-header-left-container{style:'flex: 1 1 60%; max-width: 70%'}
       .ontology-details-name-bar
         %div
           = @ontology.name
@@ -41,9 +42,8 @@
             = t('ontology_details.header.last_submission_date')
             = render DateTimeFieldComponent.new(value: sub.creationDate)
     .ontology-details-header-right-container.justify-content-end{style: 'min-width: 20%;'}
-      -# TODO: reenable in the next releases
-      -# %span.mx-1
-      -#   = ontology_admin_button
+      %span.mx-1
+        = ontology_admin_button
       %span.mx-1
         = new_submission_button
       - if @submission_latest

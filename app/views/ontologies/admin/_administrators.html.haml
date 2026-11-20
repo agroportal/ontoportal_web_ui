@@ -1,0 +1,7 @@
+= render_in_modal do
+  %p.text-muted= t('ontologies.admin.administrators.description')
+  -# Every account, the current administrators selected: saving replaces them.
+  -# A full page load: the response leaves the modal
+  = form_tag administrators_ontology_administration_path(@ontology.acronym), method: :patch, data: { turbo: false } do
+    = select_input(label: t('ontologies.admin.administrators.picker'), name: 'administrators', values: @users, selected: @ontology.administeredBy, multiple: true)
+    = submit_tag t('ontologies.admin.administrators.save'), class: 'btn btn-primary mt-3'

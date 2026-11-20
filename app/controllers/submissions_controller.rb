@@ -71,14 +71,15 @@ class SubmissionsController < ApplicationController
     ontology_not_found(params[:ontology_id]) unless @ontology
     category_attributes = submission_metadata.group_by{|x| x['category']}.transform_values{|x| x.map{|attr| attr['attribute']} }
     category_attributes = category_attributes.reject{|key| ['no'].include?(key.to_s)}
-    category_attributes['general'] << %w[acronym name groups administeredBy sampleQueries]
-    category_attributes['licensing'] << 'viewingRestriction'
+    # No administeredBy nor viewingRestriction: the Danger Zone of the admin page changes them
+    category_attributes['general'] << %w[acronym name groups sampleQueries]
     category_attributes['relations'] << 'viewOf'
     category_attributes["description"] << %w[hasDomain subjects]
     category_attributes["usage"].delete("hasDomain")
     @selected_attributes = Array(params[:properties])
     if @selected_attributes.empty?
-      @categories_order = ['general', 'description', 'dates', 'licensing', 'agents', 'links', 'media', 'community', 'usage' ,'relations', 'content','methodology', 'object description properties']
+      # No 'object description properties': the ontology administration page edits them
+      @categories_order = ['general', 'description', 'dates', 'licensing', 'agents', 'links', 'media', 'community', 'usage' ,'relations', 'content','methodology']
       @category_attributes = category_attributes
     end
     render 'submissions/edit', layout: params[:container_id] ?  nil : 'ontology'

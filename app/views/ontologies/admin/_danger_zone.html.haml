@@ -1,0 +1,40 @@
+-# One row per irreversible action, as on GitHub
+= render SummarySectionComponent.new(title: t('ontologies.admin.danger_zone.title'), show_card: false) do
+  -# User URIs end with the username: .../users/alice
+  - usernames = ->(user_ids) { Array(user_ids).map { |user_id| user_id.to_s.split('/').last } }
+  .danger-zone
+    -# The menu offers the other visibility, after a confirmation. A private
+    -# ontology also lists the accounts allowed to see it; the administrators
+    -# row below grants access instead
+    - restricted = @ontology.viewingRestriction == 'private'
+    - visibility, other_visibility = restricted ? %w[private public] : %w[public private]
+    - accounts = usernames.(@acl)
+    .danger-zone-item
+      %div
+        %strong= t('ontologies.admin.visibility.title')
+        %p= t("ontologies.admin.visibility.current.#{visibility}")
+        - if restricted
+          %p= accounts.empty? ? t('ontologies.admin.visibility.accounts.none') : t('ontologies.admin.visibility.accounts.list', accounts: accounts.to_sentence)
+      .dropdown
+        %button.btn.btn-outline-danger.dropdown-toggle{type: 'button', data: { toggle: 'dropdown' }, 'aria-haspopup': 'true', 'aria-expanded': 'false'}
+          = t('ontologies.admin.visibility.change')
+        .dropdown-menu.dropdown-menu-right
+          = button_to t("ontologies.admin.visibility.to.#{other_visibility}"), visibility_ontology_administration_path(@ontology.acronym),
+                      method: :patch, params: { visibility: other_visibility }, class: 'dropdown-item', form: { data: { turbo: false } },
+                      data: { confirm: t("ontologies.admin.visibility.confirm.#{other_visibility}", acronym: @ontology.acronym) }
+
+    -# Its button adds and removes administrators in the application modal
+    .danger-zone-item
+      %div
+        %strong= t('ontologies.admin.administrators.title')
+        %p= t('ontologies.admin.administrators.description')
+      = link_to_modal(nil, administrators_ontology_administration_path(@ontology.acronym), class: 'btn btn-outline-danger',
+                      data: { show_modal_title_value: t('ontologies.admin.administrators.modal_title', acronym: @ontology.acronym) }) do
+        = t('ontologies.admin.administrators.manage')
+
+    -# Ontology admins may not delete their ontology (agroportal/project-management#765):
+    -# no button, support deletes it
+    .danger-zone-item
+      %div
+        %strong= t('ontologies.admin.ontology.title')
+        %p= t('ontologies.admin.ontology.restricted')

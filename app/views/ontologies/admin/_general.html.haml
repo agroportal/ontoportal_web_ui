@@ -1,0 +1,23 @@
+-# Titled like the sections of the ontology summary page
+.admin-section
+  = render SummarySectionComponent.new(title: t('ontologies.admin.submissions.title')) do
+    = turbo_frame_tag "admin_submissions_frame", src: submissions_ontology_administration_path(@ontology.acronym), loading: "lazy" do
+      .text-center.p-4
+        %i.fas.fa-spinner.fa-spin.mr-2
+        = t('ontologies.admin.submissions.loading')
+
+.admin-section
+  = render SummarySectionComponent.new(title: t('ontologies.admin.log.title')) do |section|
+    - section.with_action_link do
+      = link_to log_ontology_administration_path(@ontology.acronym), data: { turbo_frame: "admin_log_frame", turbo: "true" }, class: "btn btn-sm btn-outline-primary" do
+        %i.fas.fa-sync-alt.me-1
+    - section.with_action_link do
+      = link_to log_ontology_administration_path(@ontology.acronym, format: :txt), title: t('ontologies.admin.log.download'), 'aria-label': t('ontologies.admin.log.download'), class: "btn btn-sm btn-outline-primary" do
+        %i.fas.fa-download
+    %div#admin_log_container.admin-log-container
+      -# = "hello"
+      = turbo_frame_tag "admin_log_frame", src: log_ontology_administration_path(@ontology.acronym), loading: "lazy" do
+        = t('ontologies.admin.log.loading')
+
+.admin-section
+  = render 'ontologies/admin/danger_zone'

@@ -22,7 +22,8 @@
           - if @selected_attributes.empty?
             .edit-ontology-left-column{:role => "tablist",onchange:"onMetadataChange()"}
               .edit-ontology-desc
-                = submission_metadata_selector
+                -# The admin page changes the visibility, the administrators and the object description properties
+                = submission_metadata_selector(except: [:viewingRestriction, :administeredBy, *object_description_attributes])
               %div.nav.nav-pills.flex-column#categories-tabs
                 - @categories_order.each_with_index  do |key, index|
                   %a.edit-ontology-tab-item.d-block{href: "##{key.parameterize}-tab", "data-toggle" => "pill", class:  section.eql?(key.parameterize) ? 'active show' : ''}

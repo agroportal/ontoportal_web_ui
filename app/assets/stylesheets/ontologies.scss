@@ -356,15 +356,190 @@ $widget-table-border-color: #EFEFEF;
     max-height: 500px;
     overflow-y: auto;
     font-family: monospace;
+    // Long lines wrap, URIs included: no horizontal scrollbar
     white-space: pre-wrap;
+    overflow-wrap: anywhere;
     font-size: 0.9em;
     line-height: 1.4;
   }
-  
+
+  // Danger Zone: a red frame around one row per irreversible action, as on
+  // GitHub: what it does on the left, its button on the right
+  .danger-zone {
+    border: 1px solid var(--danger-color, #dc3545);
+    border-radius: 6px;
+  }
+
+  .danger-zone-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+
+    & + .danger-zone-item {
+      border-top: 1px solid #dee2e6;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .btn,
+    .dropdown {
+      flex: none;
+    }
+
+    // A link button turns red over the theme's link color; white only on
+    // the red fill of :hover and :active, as :focus keeps a transparent
+    // background. Buttons keep Bootstrap's colors, open menu included
+    a.btn-outline-danger {
+      color: var(--danger-color, #dc3545) !important;
+
+      &:hover,
+      &:active {
+        color: #fff !important;
+      }
+    }
+
+    // A link in a menu, like its buttons, over the theme's link color
+    a.dropdown-item {
+      color: inherit !important;
+    }
+  }
+
+  // Section titles (SummarySectionComponent) as on the ontology summary
+  // page: dark text, underlined in the primary color. The h2 rule above is
+  // for the page title.
+  .card_title {
+    color: inherit;
+  }
+
   .admin-actions {
     margin-top: 15px;
     display: flex;
     gap: 10px;
+  }
+
+  // Paging controls of the submissions table, off the card's borders like
+  // the delete button (px-3)
+  .dataTables_length {
+    padding: 1rem 1rem 0;
+  }
+
+  .dataTables_paginate {
+    padding-right: 1rem;
+  }
+
+  // Phones: the section menu (Layout::VerticalTabsComponent) goes above the
+  // section, or the submissions table ends up off-screen
+  @media (max-width: 767.98px) {
+    [data-controller='tabs-container'] {
+      flex-direction: column;
+    }
+  }
+
+  // Processing state of a submission (SubmissionStatusHelper), in the colors
+  // of the banner atop the ontology page (components/alert.scss)
+  $state-success: rgb(34, 197, 94);
+  $state-danger: rgb(239, 68, 68);
+  $state-warning: rgb(234, 179, 8);
+  $state-info: rgb(59, 130, 246);
+
+  .submission-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 12px;
+    border-radius: 32px;
+    font-size: 14px;
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: none;
+      box-shadow: inset 0 0 0 1px currentColor;
+    }
+
+    // The banner icons carry a margin utility and their own fill
+    svg {
+      margin: 0 !important;
+    }
+
+    svg path {
+      fill: currentColor;
+    }
+  }
+
+  // !important: the theme forces the color of every link
+  .submission-state--ready {
+    color: $state-success !important;
+    background-color: var(--bg-success-light-color);
+  }
+
+  .submission-state--failed {
+    color: $state-danger !important;
+    background-color: var(--bg-danger-light-color);
+  }
+
+  .submission-state--partly_failed {
+    color: $state-warning !important;
+    background-color: var(--bg-warning-light-color);
+  }
+
+  .submission-state--not_parsed {
+    color: $state-info !important;
+    background-color: var(--bg-info-light-color);
+  }
+
+  .submission-state--archived {
+    color: var(--gray-color) !important;
+    background-color: var(--light-color);
+  }
+}
+
+// Processing details of a submission, in the application modal
+.submission-processing {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .processing-stage,
+  .processing-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    svg {
+      flex: none;
+    }
+  }
+
+  .processing-stage {
+    margin-top: 12px;
+    font-weight: 600;
+  }
+
+  .processing-steps {
+    padding-left: 24px;
+  }
+
+  .processing-step {
+    margin-top: 4px;
+
+    code {
+      color: var(--gray-color);
+    }
+  }
+
+  // Same size as the done and failed icons
+  .processing-not-run {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--gray-color);
+    border-radius: 50%;
   }
 }
 
