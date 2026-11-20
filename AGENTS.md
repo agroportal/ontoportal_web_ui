@@ -27,7 +27,7 @@ Browser ──> Rails UI (this repo) ──ontologies_api_client──> OntoPort
 - **Database**: MySQL 8.0 (`mysql2`)
 - **Cache**: Memcached (`dalli`), also the session store
 - **Templates**: Haml 5
-- **View Components**: ViewComponent 2.83 + Lookbook 1.5 (`/lookbook`)
+- **View Components**: ViewComponent 4 + Lookbook 2 (`/lookbook`)
 - **JavaScript**: esbuild (`jsbundling-rails`), Stimulus 3, Turbo (Drive
   disabled); legacy jQuery scripts through Sprockets
 - **CSS**: SCSS (`sassc-rails`), Bootstrap 4.2
@@ -162,6 +162,9 @@ spec/                      # RSpec
   `app/helpers/check_resolvability_helper.rb`.
 - New UI: a ViewComponent plus a Lookbook preview in
   `test/components/previews/`.
+- Component initializers call `super()`, never bare `super`: ViewComponent 4
+  has no catch-all initializer. Gem helpers missing in components go in
+  `config/initializers/view_component.rb`.
 - Stimulus: register page controllers in `app/javascript/controllers/index.js`,
   component controllers in `app/javascript/component_controllers/index.js`.
 - Turbo Drive is off (`app/javascript/application_esbuild.js`); use Turbo

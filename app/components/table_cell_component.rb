@@ -3,7 +3,7 @@
 class TableCellComponent < ViewComponent::Base
 
   def initialize(width: nil, colspan: nil,type: 'td', data: nil)
-    super
+    super()
     @width = width
     @type = type
     @colspan = colspan

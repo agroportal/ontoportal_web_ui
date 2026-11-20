@@ -2,6 +2,10 @@ require "application_system_test_case"
 require 'webmock/minitest'
 
 class AnnotatorPageTest < ApplicationSystemTestCase
+    # An annotation page takes ~2 s server side, longer than Capybara's
+    # default wait, and the click that submits it returns right away
+    ANNOTATION_WAIT_S = 10
+
     def setup
         WebMock.disable!
         @apikey = LinkedData::Client.settings.apikey
@@ -65,7 +69,7 @@ class AnnotatorPageTest < ApplicationSystemTestCase
         find(".annotator-page-button #annotator").click
 
         # Check if we get the table of annotations
-        assert_selector 'table#annotator-table'
+        assert_selector 'table#annotator-table', wait: ANNOTATION_WAIT_S
 
         # Check if the number of annotations is 4
         assert_equal 5, page.all('tr').count
@@ -102,7 +106,7 @@ class AnnotatorPageTest < ApplicationSystemTestCase
         find(".annotator-page-button #annotator").click
         
         # Check if we got the empty state correctly
-        assert_selector 'div.browse-empty-illustration'
+        assert_selector 'div.browse-empty-illustration', wait: ANNOTATION_WAIT_S
     end
 
 end

@@ -3,7 +3,7 @@
 class NotificationComponent < ViewComponent::Base
 
   def initialize(title:, comment: '', type: 'success', auto_remove: true)
-    super
+    super()
     @title = title
     @comment = comment
     @type = type

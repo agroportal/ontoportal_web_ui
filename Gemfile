@@ -82,8 +82,8 @@ gem 'recaptcha', '~> 5.9.0'
 gem 'rest-client'
 
 # View components framework for Rails
-gem 'lookbook', '~> 1.5.5'
-gem 'view_component', '~> 3.0'
+gem 'lookbook', '~> 2.3'
+gem 'view_component', '~> 4.1', '>= 4.1.1'
 
 # Pagination library for Rails
 gem 'will_paginate', '~> 3.0'
@@ -113,7 +113,7 @@ gem 'net-http', '~> 0.3.2'
 
 # Multi-Provider Authentication
 gem 'omniauth'
-gem 'omniauth-rails_csrf_protection'
+gem 'omniauth-rails_csrf_protection', '~> 2.0'
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-keycloak'
