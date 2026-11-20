@@ -1,4 +1,6 @@
 class OntologiesController < ApplicationController
+  skip_after_action :verify_same_origin_request, only: :documentation_proxy, raise: false
+
   include MappingsHelper
   include FairScoreHelper
   include InstancesHelper
@@ -229,6 +231,34 @@ class OntologiesController < ApplicationController
     else
       render partial: 'ontologies/sections/sparql', layout: 'ontology_viewer'
     end
+  end
+
+
+  def documentation_proxy
+    acronym = params[:acronym]
+    path = params[:path].to_s
+    is_index = path.blank?
+    path = 'index-en.html' if is_index
+
+    base = $REST_URL.to_s.chomp('/')
+    uri = URI.parse("#{base}/ontologies/#{acronym}/documentation/#{path}")
+    uri.query = URI.encode_www_form(apikey: get_apikey)
+
+    res = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
+      http.get(uri.request_uri)
+    end
+
+    unless res.is_a?(Net::HTTPSuccess)
+      render plain: 'Documentation not available', status: :not_found
+      return
+    end
+
+    body = res.body
+    if is_index
+      base_tag = "<base href=\"/ontologies/#{acronym}/documentation/\">"
+      body = body.sub(/<head[^>]*>/i) { |m| "#{m}#{base_tag}" }
+    end
+    send_data body, type: res['Content-Type'], disposition: 'inline'
   end
 
   def content_serializer
