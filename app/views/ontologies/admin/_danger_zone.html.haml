@@ -32,12 +32,9 @@
                       data: { show_modal_title_value: t('ontologies.admin.administrators.modal_title', acronym: @ontology.acronym) }) do
         = t('ontologies.admin.administrators.manage')
 
-    -# Ontology admins may not delete their ontology yet (agroportal/project-management#765).
-    -# Its button opens the confirmation in the application modal
-    - if current_user_admin?
-      .danger-zone-item
-        %div
-          %strong= t('ontologies.admin.ontology.title')
-          %p= t('ontologies.admin.ontology.warning')
-        = link_to_modal(nil, confirm_destroy_ontology_administration_path(@ontology.acronym), class: 'btn btn-outline-danger', data: { show_modal_title_value: t('ontologies.admin.ontology.title') }) do
-          = t('ontologies.admin.ontology.title')
+    -# Ontology admins may not delete their ontology (agroportal/project-management#765):
+    -# no button, support deletes it
+    .danger-zone-item
+      %div
+        %strong= t('ontologies.admin.ontology.title')
+        %p= t('ontologies.admin.ontology.restricted')

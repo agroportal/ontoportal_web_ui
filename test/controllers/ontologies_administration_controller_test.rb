@@ -4,7 +4,7 @@ require 'test_helper'
 require_relative '../helpers/application_test_helpers'
 
 # Admins reach the ontology administration page from the gear button of the
-# ontology header. Only portal admins may delete the ontology from it.
+# ontology header.
 class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
   include ApplicationTestHelpers::Users
   include ApplicationTestHelpers::Ontologies
@@ -12,13 +12,11 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
   ACRONYM = 'STY'
   PAGE = "/ontologies/#{ACRONYM}/administration"
   GEAR_BUTTON = "a.rounded-button[href='#{PAGE}']"
-  DANGER_ZONE = '.danger-zone'
-  DELETE_BUTTON = "a[href$='/administration/delete']"
   HTML = { 'Accept' => 'text/html' }.freeze
   # Seeded by bin/run_api
   PORTAL_ADMIN = { username: 'admin', password: 'password' }.freeze
   # Administered by a regular user, deleted by the tests
-  OWNED = { acronym: 'ADMINDEL', name: 'Ontology deleted from its admin page' }.freeze
+  OWNED = { acronym: 'ADMINDEL', name: 'Ontology administered by a regular user' }.freeze
 
   teardown do
     delete_ontologies([@owned]) if @owned
@@ -74,44 +72,6 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
 
     get PAGE
     assert_redirected_to '/'
-  end
-
-  test 'portal admins delete the ontology once they type its acronym' do
-    create_owned_ontology
-    post login_index_url, params: { user: PORTAL_ADMIN }
-
-    get owned_page
-    assert_select "#{DANGER_ZONE} #{DELETE_BUTTON}"
-
-    # The confirmation the Danger Zone opens in the application modal
-    get "#{owned_page}/delete"
-    assert_select "turbo-frame#application_modal_content form[action='#{owned_page}'] input[name=confirmation]"
-
-    delete owned_page, params: { confirmation: OWNED[:acronym].downcase }
-    assert_redirected_to owned_page
-    assert ontology_exists?
-
-    delete owned_page, params: { confirmation: OWNED[:acronym] }
-    assert_redirected_to my_ontologies_path
-    assert_not ontology_exists?
-  end
-
-  # agroportal/project-management#765
-  test 'ontology admins may not delete their ontology' do
-    create_owned_ontology
-    post login_index_url, params: { user: { username: @owner.username, password: @owner.password } }
-
-    get owned_page
-    assert_response :success
-    assert_select DANGER_ZONE
-    assert_select DELETE_BUTTON, count: 0
-
-    get "#{owned_page}/delete"
-    assert_redirected_to '/'
-
-    delete owned_page, params: { confirmation: OWNED[:acronym] }
-    assert_redirected_to '/'
-    assert ontology_exists?
   end
 
   # As on the edit page, which already lets them
@@ -172,10 +132,5 @@ class OntologiesAdministrationControllerTest < ActionDispatch::IntegrationTest
 
   def owned_ontology
     LinkedData::Client::Models::Ontology.find_by_acronym(OWNED[:acronym], invalidate_cache: true).first
-  end
-
-  # The API answers a missing ontology with an error object, not nil
-  def ontology_exists?
-    owned_ontology&.acronym == OWNED[:acronym]
   end
 end

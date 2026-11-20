@@ -2,8 +2,7 @@
 
 require 'test_helper'
 
-# The Danger Zone of the ontology admin page, as an ontology admin sees it:
-# no admin session, so no deletion (agroportal/project-management#765)
+# The Danger Zone of the ontology admin page
 class OntologyAdminDangerZoneTest < ActionView::TestCase
   VISIBILITY_FORM = "form[action='/ontologies/STY/administration/visibility']"
   # As the API lists them: user URIs
@@ -59,13 +58,14 @@ class OntologyAdminDangerZoneTest < ActionView::TestCase
     assert_select "a.btn-outline-danger[href='/ontologies/STY/administration/administrators']", text: 'Manage administrators'
   end
 
-  test 'leaves the deletion to portal admins' do
+  test 'sends the deletion to support' do
     @ontology = OpenStruct.new(acronym: 'STY', viewingRestriction: 'public')
 
     render partial: 'ontologies/admin/danger_zone'
 
-    # Visibility and administrators
-    assert_select '.danger-zone-item', count: 2
-    assert_select "a[href='/ontologies/STY/administration/delete']", count: 0
+    assert_select '.danger-zone-item:last-child' do
+      assert_select 'p', text: 'Deleting an ontology is restricted to portal administrators. Please contact support.'
+      assert_select 'a, button', count: 0
+    end
   end
 end

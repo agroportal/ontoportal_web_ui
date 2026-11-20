@@ -1313,12 +1313,7 @@ fr:
           none: "Aucun compte n'est autorisé en dehors de ses administrateurs."
       ontology:
         title: "Supprimer cette ontologie"
-        warning: "Supprimer l'ontologie supprime ses soumissions, vues, notes, avis et fichiers. Cette action est irréversible."
-        type_acronym: "Saisissez l'acronyme pour confirmer :"
-        delete: "Supprimer l'ontologie « %{acronym} »"
-        not_confirmed: "Saisissez l'acronyme %{acronym} pour supprimer l'ontologie."
-        deleted: "Ontologie %{acronym} supprimée."
-        error: "Impossible de supprimer l'ontologie %{acronym}."
+        restricted: "La suppression d'une ontologie est réservée aux administrateurs du portail. Veuillez contacter le support."
     add_new_submission: Ajouter une nouvelle soumission
     admin_links: Liens d'administratiion
     administrator: 'Administrateur :'

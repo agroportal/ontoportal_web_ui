@@ -11,8 +11,6 @@ class OntologiesAdministrationController < ApplicationController
   private_constant :VISIBILITIES
 
   before_action :authorize_ontology_admin
-  # Ontology admins may not delete their ontology yet (agroportal/project-management#765)
-  before_action :authorize_admin, only: [:confirm_destroy, :destroy]
 
   def show
     # The Danger Zone lists the accounts allowed to see a private ontology
@@ -106,26 +104,12 @@ class OntologiesAdministrationController < ApplicationController
     end
   end
 
-  # Asks for the acronym before deleting the ontology, in the application modal
-  def confirm_destroy
-    render partial: 'ontologies/admin/delete_ontology', layout: false
-  end
-
   def destroy
-    acronym = @ontology.acronym
-    page = ontology_administration_path(acronym)
-
-    # The acronym typed in the caution zone, checked again here: a request
-    # without it deletes nothing
-    unless params[:confirmation].to_s.strip == acronym
-      return redirect_to(page, alert: t('ontologies.admin.ontology.not_confirmed', acronym: acronym))
-    end
-
     response = @ontology.delete
     if response_success?(response)
-      redirect_to my_ontologies_path, notice: t('ontologies.admin.ontology.deleted', acronym: acronym)
+      redirect_to my_ontologies_path, notice: "Ontology deleted successfully"
     else
-      redirect_to page, alert: t('ontologies.admin.ontology.error', acronym: acronym)
+      redirect_to ontology_administration_path(@ontology.acronym), alert: "Error deleting ontology"
     end
   end
 
