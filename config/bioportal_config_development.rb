@@ -61,9 +61,6 @@ $INTERPORTAL_HASH = {}
 
 $NOT_DOWNLOADABLE = {}
 
-# Bugsnag API key for monitoring exception
-#$BUGSNAG_API_KEY=
-
 # OAuth2 authentication
 $OMNIAUTH_PROVIDERS = {
   github: {
@@ -264,7 +261,6 @@ $FOOTER_LINKS = {
 $SENTRY_DSN = ENV['SENTRY_DSN'] # if you want to use sentry.io
 $SENTRY_TRACES_SAMPLE_RATE = ENV['SENTRY_TRACES_SAMPLE_RATE']&.to_f
 $SENTRY_PROFILES_SAMPLE_RATE = ENV['SENTRY_PROFILES_SAMPLE_RATE']&.to_f
-$NEW_RELIC_LICENSE_KEY = ENV['NEW_RELIC_LICENSE_KEY'] # if you want to use newrelic.io
 
 $UI_THEME = ENV['UI_THEME'] || 'ontoportal'
 $HOSTNAME = ENV['API_URL']
