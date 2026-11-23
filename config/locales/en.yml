@@ -1182,6 +1182,15 @@ en:
       sections:
         general: "General"
         object_description: "Object description properties"
+        oops: "Quality report"
+      oops:
+        title: "Quality report (OOPS!)"
+        unavailable: "No OOPS! report has been generated for this ontology."
+        summary: "%{total} pitfalls found: %{critical} critical, %{important} important, %{minor} minor."
+        code: "Code"
+        pitfall: "Pitfall"
+        importance: "Importance"
+        affected: "Affected elements"
       object_description:
         save: "Save"
         saved: "Object description properties of %{acronym} saved."

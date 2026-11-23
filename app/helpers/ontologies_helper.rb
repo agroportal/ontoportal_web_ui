@@ -484,6 +484,33 @@ module OntologiesHelper
     sections
   end
 
+  def oops_report_url(acronym)
+    "#{rest_url}/ontologies/#{acronym}/oops"
+  end
+
+  def oops_report(acronym)
+    conn = Faraday.new do |f|
+      f.options.timeout = 10
+      f.options.open_timeout = 5
+      f.headers['Authorization'] = "apikey token=#{get_apikey}"
+    end
+    response = conn.get(oops_report_url(acronym))
+    return nil unless response.status.eql?(200)
+
+    MultiJson.load(response.body.force_encoding('UTF-8'))
+  rescue StandardError => e
+    Rails.logger.warn "Stored OOPS report unavailable for #{acronym}: #{e.message}"
+    nil
+  end
+
+  def oops_importance_class(importance)
+    case importance
+    when 'CRITICAL' then 'bg-danger'
+    when 'IMPORTANT' then 'bg-warning'
+    else 'bg-secondary'
+    end
+  end
+
   def not_ready_submission_alert(ontology: @ontology, submission: @submission, old_submission_ready: @old_submission_ready)
     if ontology.admin?(session[:user])
       status = status_string(submission)

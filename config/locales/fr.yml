@@ -1214,6 +1214,15 @@ fr:
       sections:
         general: "Général"
         object_description: "Propriétés de description des objets"
+        oops: "Rapport qualité"
+      oops:
+        title: "Rapport qualité (OOPS!)"
+        unavailable: "Aucun rapport OOPS! n'a été généré pour cette ontologie."
+        summary: "%{total} pièges détectés : %{critical} critiques, %{important} importants, %{minor} mineurs."
+        code: "Code"
+        pitfall: "Piège"
+        importance: "Importance"
+        affected: "Éléments concernés"
       object_description:
         save: "Enregistrer"
         saved: "Propriétés de description des objets de %{acronym} enregistrées."
