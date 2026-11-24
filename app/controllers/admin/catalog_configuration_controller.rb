@@ -5,7 +5,7 @@ class Admin::CatalogConfigurationController < ApplicationController
   before_action :load_catalog_metadata, only: [:show]
   before_action :load_catalog_data, only: [:show]
 
-  CATALOG_PATH = "#{LinkedData::Client.settings.rest_url}/".freeze
+  Catalog = LinkedData::Client::Models::SemanticArtefactCatalog
   CATALOG_METADATA_URL = "#{LinkedData::Client.settings.rest_url}/catalog_metadata".freeze
 
   def show
@@ -146,9 +146,9 @@ class Admin::CatalogConfigurationController < ApplicationController
     return @catalog_data if @catalog_data
 
     params = build_catalog_params(exclude_agents: true)
-    @catalog_data = LinkedData::Client::HTTP.get(CATALOG_PATH, params).to_hash
+    @catalog_data = Catalog.get(params).to_hash
     agent_params = build_catalog_params(agents_only: true)
-    catalog_agents = LinkedData::Client::HTTP.get(CATALOG_PATH, agent_params).to_hash
+    catalog_agents = Catalog.get(agent_params).to_hash
     @catalog_data.merge!(catalog_agents.to_hash)
     @catalog_data = sanitize_catalog_data(@catalog_data)
     session[:catalog_data] = @catalog_data
@@ -195,7 +195,7 @@ class Admin::CatalogConfigurationController < ApplicationController
   end
 
   def update_remote_config(config)
-    response = LinkedData::Client::HTTP.patch(CATALOG_PATH, config)
+    response = Catalog.update(config)
   rescue StandardError => e
     Rails.logger.error("Config update failed: #{e.message}")
     OpenStruct.new(status: 500, body: e.message)
