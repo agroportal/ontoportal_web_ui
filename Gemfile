@@ -100,7 +100,7 @@ gem 'iso-639', '~> 0.3.6'
 gem 'countries', '~> 5.7'
 
 # Custom API client
-gem 'ontologies_api_client', git: 'https://github.com/agroportal/ontologies_api_ruby_client.git', branch: 'master'
+gem 'ontologies_api_client', git: 'https://github.com/ontoportal/ontologies_api_ruby_client.git', branch: 'master'
 
 # SSRF protection for the URI resolvability checker
 gem 'ssrf_filter', '~> 1.5'
