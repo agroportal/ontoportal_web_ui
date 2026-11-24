@@ -1,5 +1,5 @@
 GIT
-  remote: https://github.com/agroportal/ontologies_api_ruby_client.git
+  remote: https://github.com/ontoportal/ontologies_api_ruby_client.git
   revision: 8a58e5cfa399cadaaa2279efaed436ff8747d4c3
   branch: master
   specs:
