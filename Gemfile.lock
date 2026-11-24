@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/agroportal/ontologies_api_ruby_client.git
-  revision: 9ce6608a977bb073d4810717614626ed9a7374e9
+  revision: 8a58e5cfa399cadaaa2279efaed436ff8747d4c3
   branch: master
   specs:
     ontologies_api_client (2.2.0)
@@ -10,7 +10,7 @@ GIT
       faraday
       faraday-excon (~> 2.0.0)
       faraday-multipart
-      lz4-ruby
+      lz4_flex (~> 1.1.2)
       multi_json
       oj
       parallel
@@ -332,7 +332,11 @@ GEM
       view_component (>= 2.0)
       yard (~> 0.9)
       zeitwerk (~> 2.5)
-    lz4-ruby (0.3.3)
+    lz4_flex (1.1.2-aarch64-linux)
+    lz4_flex (1.1.2-aarch64-linux-musl)
+    lz4_flex (1.1.2-arm64-darwin)
+    lz4_flex (1.1.2-x86_64-linux)
+    lz4_flex (1.1.2-x86_64-linux-musl)
     mail (2.9.1)
       logger
       mini_mime (>= 0.1.1)

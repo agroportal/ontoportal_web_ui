@@ -38,7 +38,7 @@ module FederationHelper
     params[:_ts] = Time.current.to_i if bust_cache
 
     # Fetch federated portals from the catalog metadata
-    catalog_data = LinkedData::Client::HTTP.get("#{LinkedData::Client.settings.rest_url}/", params)
+    catalog_data = LinkedData::Client::Models::SemanticArtefactCatalog.get(params)
 
     federated = {}
     if catalog_data&.federated_portals.present?
