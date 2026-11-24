@@ -1185,6 +1185,7 @@ en:
         oops: "Quality report"
       oops:
         title: "Quality report (OOPS!)"
+        description: "Modelling pitfalls detected with OOPS! (OntOlogy Pitfall Scanner!), developed by the Ontology Engineering Group (UPM), on the file loaded in the portal. More details here: https://github.com/oeg-upm/OOPS"
         unavailable: "No OOPS! report has been generated for this ontology."
         summary: "%{total} pitfalls found: %{critical} critical, %{important} important, %{minor} minor."
         code: "Code"
