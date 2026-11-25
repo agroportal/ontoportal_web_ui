@@ -421,6 +421,8 @@ class OntologiesController < ApplicationController
   end
 
   def visualization
+    return redirect_to(ontology_path(@ontology.acronym, p: 'summary')) unless helpers.vowl_enabled?
+
     if request.xhr?
       render partial: 'ontologies/sections/visualization', layout: false
     else
