@@ -1126,7 +1126,7 @@ en:
     allow_users: Allow users to view the metadata of your ontology (Summary) only.
     browser:
       admin_welcome: Welcome admin,this coloring indicates admin-only features
-      search_placeholder: Filter ontologies, e.g., household, income
+      search_placeholder: Filter ontologies, e.g., ELSST, geography
       show_my_ontologies: Show my ontologies only
       show_ontology_views: Show ontology views
       show_public_ontology: Show public ontology only
