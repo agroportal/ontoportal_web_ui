@@ -716,7 +716,7 @@ en:
     include_name: Please include your name
     index:
       agents_tooltip: Top 5 agents with the highest ontology usage
-      tagline: The home of ontologies and semantic artefacts in agri-food and related
+      tagline: The home of social science ontologies and semantic artefacts.
         domains.
       title: Welcome to %{site}
       welcome: Welcome to %{site},
@@ -1288,7 +1288,7 @@ en:
     allow_users: Allow users to view the metadata of your ontology (Summary) only.
     browser:
       admin_welcome: Welcome admin,this coloring indicates admin-only features
-      search_placeholder: Filter ontologies, e.g., AGROVOC, plant
+      search_placeholder: Filter ontologies, e.g., ELSST, geography
       show_my_ontologies: Show my ontologies only
       show_ontology_views: Show ontology views
       show_public_ontology: Show public ontology only
@@ -1400,8 +1400,8 @@ en:
       steps failed, here are the current statuses: %{status}'
     ontology_processing_failed: 'The ontology processing failed, with the current
       statuses: %{status}'
-    ontology_search_prompt: Search an ontology or a term (e.g., plant height)
-    class_search_prompt: Search a class (e.g., plant height)
+    ontology_search_prompt: Search an ontology or a term (e.g., household income)
+    class_search_prompt: Search a class (e.g., household income)
     ontology_submitted: Ontology submitted successfully!
     ontology_types: Ontology types
     outside: outside
@@ -1826,7 +1826,7 @@ en:
       more_from_ontology: more from this ontology
       reuses_in: Reuses in
       visualize: Vizualize
-    search_place_holder: Enter a term, e.g., plant height
+    search_place_holder: Enter a term, e.g., household income
     show_advanced_options: Show options
   show_advanced_options: Show advanced options
   statistics:

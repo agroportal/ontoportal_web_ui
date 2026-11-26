@@ -19,17 +19,33 @@ ENV RAILS_LOG_TO_STDOUT="1" \
     NODE_ENV="production" \
     BUNDLE_PATH=/usr/local/bundle \
     BUNDLE_WITHOUT="development test" \
-    SECRET_KEY_BASE_DUMMY=1
+    SECRET_KEY_BASE_DUMMY=1 \
+    HOME=/home/app
+ENV UI_THEME="socioportal"
 
-COPY Gemfile* .
+
 RUN gem install bundler
+
+
+# NEW: non-root user that owns the folders it writes to
+RUN groupadd -g 1000 app && useradd -u 1000 -g app -m -d /home/app app \
+ && mkdir -p /node_modules \
+ && chown -R app:app /app /node_modules /usr/local/bundle
+
+
+USER app
+
+
+COPY --chown=app:app Gemfile* ./
 RUN bundle install
 
-COPY package.json *yarn* ./
-RUN mkdir /node_modules
+
+COPY --chown=app:app package.json *yarn* ./
 RUN yarn install
 
-COPY . .
+
+COPY --chown=app:app . .
+
 
 RUN cp config/bioportal_config_env.rb.sample config/bioportal_config_production.rb \
  && cp config/bioportal_config_env.rb.sample config/bioportal_config_development.rb \
