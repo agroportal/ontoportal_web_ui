@@ -1,6 +1,6 @@
 # app/lib/flipper_setup.rb
 module FlipperSetup
-  FEATURES = ["Agents", "SPARQL", "SIDEKIQ_UI", "FOOPS"].freeze
+  FEATURES = ["Agents", "SPARQL", "SIDEKIQ_UI", "FOOPS", "WEBVOWL"].freeze
   # Listed in the Flipper UI but left off: an admin turns them on per portal
   OPT_IN_FEATURES = ["ENTITY_GRAPH"].freeze
 
