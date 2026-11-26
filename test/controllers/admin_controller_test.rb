@@ -11,4 +11,11 @@ class AdminControllerTest < ActionController::TestCase
     assert_response :success
     assert_select 'turbo-frame#agents-list[src=?]', '/admin/agents?page=14'
   end
+
+  test 'loads the ontology administration table in its lazy tab' do
+    get :index, params: { section: 'ontology-administration' }, session: { user: ADMIN }
+
+    assert_response :success
+    assert_select 'turbo-frame#ontology-administration-tab[src=?]', '/admin/ontology_administration'
+  end
 end

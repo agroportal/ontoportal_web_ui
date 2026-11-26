@@ -10,6 +10,45 @@ en:
               invalid_license_key: is an invalid license key.
               no_appliance_id_for_comparison: Could not be validated. Unable to retrieve virtual appliance ID.
   admin:
+    ontologies:
+      col_ontology: "Ontology"
+      col_admin: "Admin"
+      col_format: "Format"
+      col_date_created: "Date Created"
+      col_report_date: "Report Date"
+      col_url: "URL"
+      col_error_status: "Error Status"
+      col_missing_status: "Missing Status"
+      col_issues: "Issues"
+      no_ontologies: "No ontologies available"
+      filter: "Filter: "
+      view_ontologies: "View Ontologies:"
+      all: "All"
+      problem_only: "Problem Only"
+      apply_to_selected: "Apply to Selected Rows:"
+      please_select: "Please Select"
+      go: "Go"
+      generate: "Generate"
+      refresh: "Refresh"
+      act_delete: "Delete"
+      act_process: "Process"
+      act_annotate: "Annotate"
+      act_diff: "Diff"
+      act_index: "Index"
+      act_metrics: "Metrics"
+      act_foops: "FOOPS!"
+      link_log: "Log"
+      link_rest: "REST"
+      link_submissions: "Submissions"
+      submissions_modal_title: "Ontology Submissions for %{acronym}"
+      alert_select: "Please select at least one ontology from the table to perform action on."
+      alert_choose: "Please choose an action to perform on the selected ontologies."
+      del_onts_lead: "You are about to delete the following ontologies:"
+      cannot_undo: "This action CAN NOT be undone!!! Are you sure?"
+      proc_lead: "You are about to perform %{operation} on the following ontologies:"
+      proc_queue: "The ontologies will be added to the queue and processed on the next cron job execution."
+      proceed: "Should I proceed?"
+      refresh_confirm: "Refreshing this report takes a while... Are you ready for some coffee time?"
     analytics:
       active_users: Active users
       ontologies_count: "%{size} new ontology(ies) this year"
@@ -129,6 +168,17 @@ en:
       federation_provide_apikey: Please provide an APIKEY for the federation user corresponding to each portal in order to enable the federation.
       federation_not_allowed: This portal isn't allowed to activate federation features.
       federation_invalid_apikeys: 'The following portals were not added because their API key is invalid: %{portals}'
+      sections:
+        general: General
+        licensing: Licensing
+        description: Description
+        dates: Dates
+        agents: Agents
+        community: Community
+        usage: Usage
+        methodology_and_provenance: Methodology and provenance
+        media: Media
+        other: Other
     licenses:
       create:
         success: License renewed successfully

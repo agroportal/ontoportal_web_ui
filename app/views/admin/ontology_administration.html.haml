@@ -1,0 +1,72 @@
+= turbo_frame_tag 'ontology-administration-tab' do
+  - report = @ontologies_report || {}
+  - ontologies = report[:ontologies] || {}
+  - hide = %i[format administeredBy date_created report_date_updated errErrorStatus errMissingStatus problem logFilePath]
+  %div{ data: { controller: 'admin-ontologies',
+                'admin-ontologies-process-url-value': '/admin/ontologies',
+                'admin-ontologies-refresh-url-value': '/admin/refresh_ontologies_report',
+                'admin-ontologies-report-url-value': '/admin/ontologies_report',
+                'admin-ontologies-choose-value': t('admin.ontologies.alert_choose'),
+                'admin-ontologies-select-value': t('admin.ontologies.alert_select'),
+                'admin-ontologies-proc-lead-value': t('admin.ontologies.proc_lead', operation: '%{operation}'),
+                'admin-ontologies-proc-queue-value': t('admin.ontologies.proc_queue'),
+                'admin-ontologies-proceed-value': t('admin.ontologies.proceed'),
+                'admin-ontologies-delete-lead-value': t('admin.ontologies.del_onts_lead'),
+                'admin-ontologies-cannot-undo-value': t('admin.ontologies.cannot_undo'),
+                'admin-ontologies-refresh-confirm-value': t('admin.ontologies.refresh_confirm') } }
+    #admin_ontologies_messages
+      - if report[:errors].present?
+        = render Display::AlertComponent.new(message: report[:errors], type: 'danger', closable: true)
+    .d-flex.align-items-center.flex-wrap.mb-2
+      %span= t('admin.index.report_generated_on')
+      %span.mx-2.font-weight-bold{ data: { 'admin-ontologies-target': 'reportDate' } }= report[:report_date_generated]
+      %button.btn.btn-sm.btn-outline-primary{ data: { 'admin-ontologies-target': 'refreshButton', action: 'admin-ontologies#refresh' } }
+        = report[:report_date_generated].present? ? t('admin.ontologies.refresh') : t('admin.ontologies.generate')
+    .d-flex.align-items-center.flex-wrap.mb-3
+      %span.mr-2= t('admin.ontologies.view_ontologies')
+      %a.mr-2{ href: '#', data: { action: 'admin-ontologies#showAll' } }= t('admin.ontologies.all')
+      %span.mr-2= '|'
+      %a.mr-4{ href: '#', data: { action: 'admin-ontologies#showProblemOnly' } }= t('admin.ontologies.problem_only')
+      %span.mr-2= t('admin.ontologies.apply_to_selected')
+      %select.custom-select.custom-select-sm.w-auto.mr-2{ data: { 'admin-ontologies-target': 'action' } }
+        %option{ value: '' }= t('admin.ontologies.please_select')
+        %option{ value: 'delete' }= t('admin.ontologies.act_delete')
+        %option{ value: 'all' }= t('admin.ontologies.act_process')
+        %option{ value: 'process_annotator' }= t('admin.ontologies.act_annotate')
+        %option{ value: 'diff' }= t('admin.ontologies.act_diff')
+        %option{ value: 'index_search' }= t('admin.ontologies.act_index')
+        %option{ value: 'run_metrics' }= t('admin.ontologies.act_metrics')
+        %option{ value: 'generate_foops' }= t('admin.ontologies.act_foops')
+      %button.btn.btn-sm.btn-primary{ data: { action: 'admin-ontologies#performAction' } }= t('admin.ontologies.go')
+    - if ontologies.empty?
+      .alert.alert-light.text-center= t('admin.ontologies.no_ontologies')
+    - else
+      = render TableComponent.new(id: 'adminOntologies', stripped: true, searching: true, paging: true, ordering: true, no_init_sort: true, search_placeholder: t('admin.ontologies.filter')) do |tbl|
+        - tbl.with_header do |h|
+          - h.th { check_box_tag('select_all', '1', false, data: { action: 'admin-ontologies#toggleAll' }) }
+          - h.th { t('admin.ontologies.col_ontology') }
+          - h.th { t('admin.ontologies.col_admin') }
+          - h.th { t('admin.ontologies.col_format') }
+          - h.th { t('admin.ontologies.col_date_created') }
+          - h.th { t('admin.ontologies.col_report_date') }
+          - h.th { t('admin.ontologies.col_url') }
+          - h.th { t('admin.ontologies.col_error_status') }
+          - h.th { t('admin.ontologies.col_missing_status') }
+          - h.th { t('admin.ontologies.col_issues') }
+        - ontologies.each do |acronym, o|
+          - acr = acronym.to_s
+          - tbl.with_row(id: "tr_#{acr}", class_css: (o[:problem] ? 'problem' : '')) do |r|
+            - r.td { check_box_tag('ontology_ids[]', acr, false, id: nil, data: { 'admin-ontologies-target': 'checkbox' }) }
+            - r.td { link_to(acr, "/ontologies/#{acr}", target: '_blank', style: (o[:problem] ? 'color:red;' : '')) }
+            - r.td { Array(o[:administeredBy]).join('<br>').html_safe }
+            - r.td { o[:format] }
+            - r.td { o[:date_created] }
+            - r.td { o[:report_date_updated] }
+            - r.td do
+              - if o[:logFilePath].present?
+                %div= link_to t('admin.ontologies.link_log'), "/admin/ontologies/#{acr}/log", target: '_blank'
+              %div= link_to t('admin.ontologies.link_rest'), "#{$REST_URL}/ontologies/#{acr}", target: '_blank'
+              %div= link_to t('admin.ontologies.link_submissions'), "/ontologies/#{acr}/submissions?container_id=application_modal_content", data: { controller: 'show-modal', 'show-modal-title-value': t('admin.ontologies.submissions_modal_title', acronym: acr), action: 'click->show-modal#show', turbo: 'true', 'turbo-frame': 'application_modal_content' }
+            - r.td { Array(o[:errErrorStatus]).join(', ').html_safe }
+            - r.td { Array(o[:errMissingStatus]).join(', ').html_safe }
+            - r.td { o.reject { |k, _| hide.include?(k) }.values.join('<br>').html_safe }
