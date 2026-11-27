@@ -90,6 +90,11 @@ class OntologiesAdministrationController < ApplicationController
     render partial: 'ontologies/admin/object_description', layout: false
   end
 
+  def oops
+    @oops = oops_report(@ontology.acronym)
+    render partial: 'ontologies/admin/oops', layout: false
+  end
+
   def update_object_description
     acronym = @ontology.acronym
     section = ontology_administration_path(acronym, section: t('ontologies.admin.sections.object_description').parameterize)

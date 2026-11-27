@@ -1214,6 +1214,16 @@ fr:
       sections:
         general: "Général"
         object_description: "Propriétés de description des objets"
+        oops: "Rapport qualité"
+      oops:
+        title: "Rapport qualité (OOPS!)"
+        description: "Pièges de modélisation détectés avec OOPS! (OntOlogy Pitfall Scanner!), développé par l'Ontology Engineering Group (UPM), à partir du fichier déposé dans le portail. Plus de détails ici : https://github.com/oeg-upm/OOPS"
+        unavailable: "Aucun rapport OOPS! n'a été généré pour cette ontologie."
+        summary: "%{total} pièges détectés : %{critical} critiques, %{important} importants, %{minor} mineurs."
+        code: "Code"
+        pitfall: "Piège"
+        importance: "Importance"
+        affected: "Éléments concernés"
       object_description:
         save: "Enregistrer"
         saved: "Propriétés de description des objets de %{acronym} enregistrées."

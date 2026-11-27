@@ -1,0 +1,32 @@
+= turbo_frame_tag 'oops' do
+  - service_link, target = api_button_link_and_target(oops_report_url(@ontology.acronym)) if @oops.present?
+  = render SummarySectionComponent.new(title: t('ontologies.admin.oops.title')) do |section|
+    - section.with_action_link do
+      = info_tooltip(content_tag(:div, t('ontologies.admin.oops.description'), style: 'width: 320px'), interactive: false)
+    - if service_link
+      - section.with_action_link do
+        = render IconWithTooltipComponent.new(icon: 'json.svg', link: service_link, target: target, title: t('components.go_to_api'), size: 'small', style: 'vertical-align: middle;')
+    .p-3
+      - if @oops.blank?
+        %p.text-muted= t('ontologies.admin.oops.unavailable')
+      - else
+        %p.text-muted
+          = t('ontologies.admin.oops.summary', total: @oops['total_pitfalls'], critical: @oops['total_critical'], important: @oops['total_important'], minor: @oops['total_minor'])
+        %table.table.table-sm
+          %thead
+            %tr
+              %th= t('ontologies.admin.oops.code')
+              %th= t('ontologies.admin.oops.pitfall')
+              %th= t('ontologies.admin.oops.importance')
+              %th= t('ontologies.admin.oops.affected')
+          %tbody
+            - @oops['pitfalls'].each do |pitfall|
+              %tr
+                %td= pitfall['code']
+                %td
+                  = pitfall['name']
+                  %br
+                  %small.text-muted= pitfall['description']
+                %td
+                  %span.badge.badge-pill.text-white{class: oops_importance_class(pitfall['importance'])}= pitfall['importance']
+                %td= pitfall['affected_elements_total']

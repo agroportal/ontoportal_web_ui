@@ -13,7 +13,7 @@
 
   -# A menu entry per section, as on the submission edit page; each section
   -# is a partial. ?section=general opens one, the first by default
-  - sections = [t('ontologies.admin.sections.general'), t('ontologies.admin.sections.object_description')]
+  - sections = [t('ontologies.admin.sections.general'), t('ontologies.admin.sections.object_description'), t('ontologies.admin.sections.oops')]
   - section_ids = sections.map(&:parameterize)
   - selected = section_ids.include?(params[:section]) ? params[:section] : section_ids.first
   = render Layout::VerticalTabsComponent.new(titles: sections, selected: selected, url_parameter: 'section') do |tabs|
@@ -22,6 +22,8 @@
     - tabs.with_item_content do
       -# Loads once the section shows
       = render TurboFrameComponent.new(id: 'object_description', src: object_description_ontology_administration_path(@ontology.acronym), loading: 'lazy')
+    - tabs.with_item_content do
+      = render TurboFrameComponent.new(id: 'oops', src: oops_ontology_administration_path(@ontology.acronym), loading: 'lazy')
 
 :javascript
   // Highlight logs after refresh
